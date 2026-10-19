@@ -1,0 +1,180 @@
+[
+ {
+  "id": "w_monocyte_nip",
+  "kind": "melee",
+  "damage": 4,
+  "cooldown": 20,
+  "windup": 4,
+  "range": 256,
+  "minRange": 0,
+  "splash": 0,
+  "arc": 0,
+  "bonus": {},
+  "maxTargets": 1,
+  "engulfMaxHp": 0
+ },
+ {
+  "id": "w_neutrophil_claw",
+  "kind": "melee",
+  "damage": 8,
+  "cooldown": 16,
+  "windup": 4,
+  "range": 256,
+  "minRange": 0,
+  "splash": 0,
+  "arc": 0,
+  "bonus": {},
+  "maxTargets": 1,
+  "engulfMaxHp": 0
+ },
+ {
+  "id": "w_eos_granule",
+  "kind": "projectile",
+  "damage": 12,
+  "cooldown": 30,
+  "windup": 6,
+  "range": 1024,
+  "minRange": 0,
+  "splash": 0,
+  "arc": 0,
+  "bonus": {
+   "armored": 2000,
+   "building": 2000
+  },
+  "maxTargets": 1,
+  "engulfMaxHp": 0
+ },
+ {
+  "id": "w_macro_engulf",
+  "kind": "engulf",
+  "damage": 16,
+  "cooldown": 30,
+  "windup": 6,
+  "range": 256,
+  "minRange": 0,
+  "splash": 0,
+  "arc": 0,
+  "bonus": {},
+  "maxTargets": 1,
+  "engulfMaxHp": 150
+ },
+ {
+  "id": "w_plasma_volley",
+  "kind": "projectile",
+  "damage": 30,
+  "cooldown": 60,
+  "windup": 10,
+  "range": 2560,
+  "minRange": 768,
+  "splash": 0,
+  "arc": 0,
+  "bonus": {
+   "building": 3000
+  },
+  "maxTargets": 1,
+  "engulfMaxHp": 0
+ },
+ {
+  "id": "w_histamine",
+  "kind": "projectile",
+  "damage": 3,
+  "cooldown": 20,
+  "windup": 4,
+  "range": 1280,
+  "minRange": 0,
+  "splash": 512,
+  "arc": 0,
+  "bonus": {},
+  "maxTargets": 1,
+  "engulfMaxHp": 0
+ },
+ {
+  "id": "w_coccus_bite",
+  "kind": "melee",
+  "damage": 5,
+  "cooldown": 16,
+  "windup": 4,
+  "range": 256,
+  "minRange": 0,
+  "splash": 0,
+  "arc": 0,
+  "bonus": {},
+  "maxTargets": 1,
+  "engulfMaxHp": 0
+ },
+ {
+  "id": "w_flagellate_bite",
+  "kind": "melee",
+  "damage": 8,
+  "cooldown": 16,
+  "windup": 4,
+  "range": 256,
+  "minRange": 0,
+  "splash": 0,
+  "arc": 0,
+  "bonus": {},
+  "maxTargets": 1,
+  "engulfMaxHp": 0
+ },
+ {
+  "id": "w_spiro_drill",
+  "kind": "melee",
+  "damage": 12,
+  "cooldown": 30,
+  "windup": 6,
+  "range": 256,
+  "minRange": 0,
+  "splash": 0,
+  "arc": 0,
+  "bonus": {
+   "armored": 2000,
+   "building": 2000
+  },
+  "maxTargets": 1,
+  "engulfMaxHp": 0
+ },
+ {
+  "id": "w_strep_whip",
+  "kind": "arc",
+  "damage": 14,
+  "cooldown": 24,
+  "windup": 6,
+  "range": 384,
+  "minRange": 0,
+  "splash": 0,
+  "arc": 120,
+  "bonus": {},
+  "maxTargets": 3,
+  "engulfMaxHp": 0
+ },
+ {
+  "id": "w_toxin_spit",
+  "kind": "projectile",
+  "damage": 28,
+  "cooldown": 60,
+  "windup": 10,
+  "range": 2304,
+  "minRange": 768,
+  "splash": 192,
+  "arc": 0,
+  "bonus": {
+   "building": 3000
+  },
+  "maxTargets": 1,
+  "engulfMaxHp": 0
+ },
+ {
+  "id": "w_toxin_spray",
+  "kind": "projectile",
+  "damage": 6,
+  "cooldown": 20,
+  "windup": 4,
+  "range": 1024,
+  "minRange": 0,
+  "splash": 128,
+  "arc": 0,
+  "bonus": {},
+  "maxTargets": 1,
+  "engulfMaxHp": 0
+ }
+]

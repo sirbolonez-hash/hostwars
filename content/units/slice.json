@@ -1,0 +1,373 @@
+[
+ {
+  "id": "unit_wl_glut",
+  "faction": "wl",
+  "role": "worker",
+  "cost": [
+   60,
+   0
+  ],
+  "trainTicks": 300,
+  "supply": 1,
+  "hp": 60,
+  "armor": 0,
+  "speed": 38,
+  "radius": 77,
+  "navClass": "small",
+  "sight": 1536,
+  "weapon": null,
+  "tags": [
+   "biological",
+   "worker"
+  ],
+  "carry": 10,
+  "lifespan": 0,
+  "producedAt": "bld_wl_lymphnode",
+  "requires": [],
+  "morphsTo": null
+ },
+ {
+  "id": "unit_wl_platelets",
+  "faction": "wl",
+  "role": "builder",
+  "cost": [
+   75,
+   0
+  ],
+  "trainTicks": 300,
+  "supply": 1,
+  "hp": 75,
+  "armor": 0,
+  "speed": 51,
+  "radius": 77,
+  "navClass": "small",
+  "sight": 1536,
+  "weapon": null,
+  "tags": [
+   "biological"
+  ],
+  "carry": 0,
+  "lifespan": 0,
+  "producedAt": "bld_wl_marrow",
+  "requires": [],
+  "morphsTo": null
+ },
+ {
+  "id": "unit_wl_monocyte",
+  "faction": "wl",
+  "role": "scout",
+  "cost": [
+   70,
+   0
+  ],
+  "trainTicks": 300,
+  "supply": 1,
+  "hp": 60,
+  "armor": 0,
+  "speed": 77,
+  "radius": 77,
+  "navClass": "small",
+  "sight": 2304,
+  "weapon": "w_monocyte_nip",
+  "tags": [
+   "biological"
+  ],
+  "carry": 0,
+  "lifespan": 0,
+  "producedAt": "bld_wl_marrow",
+  "requires": [],
+  "morphsTo": "unit_wl_macrophage"
+ },
+ {
+  "id": "unit_wl_neutrophil",
+  "faction": "wl",
+  "role": "infantry",
+  "cost": [
+   50,
+   0
+  ],
+  "trainTicks": 240,
+  "supply": 1,
+  "hp": 80,
+  "armor": 0,
+  "speed": 51,
+  "radius": 77,
+  "navClass": "small",
+  "sight": 1792,
+  "weapon": "w_neutrophil_claw",
+  "tags": [
+   "biological"
+  ],
+  "carry": 0,
+  "lifespan": 3600,
+  "producedAt": "bld_wl_marrow",
+  "requires": [],
+  "morphsTo": null
+ },
+ {
+  "id": "unit_wl_dendritic",
+  "faction": "wl",
+  "role": "intel",
+  "cost": [
+   75,
+   25
+  ],
+  "trainTicks": 400,
+  "supply": 1,
+  "hp": 50,
+  "armor": 0,
+  "speed": 58,
+  "radius": 102,
+  "navClass": "medium",
+  "sight": 2304,
+  "weapon": null,
+  "tags": [
+   "biological"
+  ],
+  "carry": 0,
+  "lifespan": 0,
+  "producedAt": "bld_wl_marrow",
+  "requires": [],
+  "morphsTo": null
+ },
+ {
+  "id": "unit_wl_eosinophil",
+  "faction": "wl",
+  "role": "antiarmor",
+  "cost": [
+   100,
+   40
+  ],
+  "trainTicks": 480,
+  "supply": 2,
+  "hp": 90,
+  "armor": 0,
+  "speed": 36,
+  "radius": 102,
+  "navClass": "medium",
+  "sight": 2048,
+  "weapon": "w_eos_granule",
+  "tags": [
+   "biological"
+  ],
+  "carry": 0,
+  "lifespan": 0,
+  "producedAt": "bld_wl_spleen",
+  "requires": [],
+  "morphsTo": null
+ },
+ {
+  "id": "unit_wl_macrophage",
+  "faction": "wl",
+  "role": "heavy",
+  "cost": [
+   90,
+   40
+  ],
+  "trainTicks": 120,
+  "supply": 3,
+  "hp": 220,
+  "armor": 2,
+  "speed": 28,
+  "radius": 141,
+  "navClass": "large",
+  "sight": 1792,
+  "weapon": "w_macro_engulf",
+  "tags": [
+   "biological",
+   "armored"
+  ],
+  "carry": 0,
+  "lifespan": 0,
+  "producedAt": "unit_wl_monocyte",
+  "requires": [
+   "bld_wl_spleen"
+  ],
+  "morphsTo": null
+ },
+ {
+  "id": "unit_wl_plasma",
+  "faction": "wl",
+  "role": "siege",
+  "cost": [
+   180,
+   90
+  ],
+  "trainTicks": 700,
+  "supply": 4,
+  "hp": 140,
+  "armor": 0,
+  "speed": 26,
+  "radius": 141,
+  "navClass": "large",
+  "sight": 2048,
+  "weapon": "w_plasma_volley",
+  "tags": [
+   "biological"
+  ],
+  "carry": 0,
+  "lifespan": 0,
+  "producedAt": "bld_wl_germinal",
+  "requires": [
+   "antigen:any"
+  ],
+  "morphsTo": null
+ },
+ {
+  "id": "unit_col_feeder",
+  "faction": "col",
+  "role": "worker",
+  "cost": [
+   50,
+   0
+  ],
+  "trainTicks": 240,
+  "supply": 1,
+  "hp": 50,
+  "armor": 0,
+  "speed": 41,
+  "radius": 77,
+  "navClass": "small",
+  "sight": 1536,
+  "weapon": null,
+  "tags": [
+   "biological",
+   "worker"
+  ],
+  "carry": 10,
+  "lifespan": 0,
+  "producedAt": "bld_col_biofilm_core",
+  "requires": [],
+  "morphsTo": null
+ },
+ {
+  "id": "unit_col_coccus",
+  "faction": "col",
+  "role": "infantry",
+  "cost": [
+   40,
+   0
+  ],
+  "trainTicks": 200,
+  "supply": 1,
+  "hp": 55,
+  "armor": 0,
+  "speed": 45,
+  "radius": 77,
+  "navClass": "small",
+  "sight": 1792,
+  "weapon": "w_coccus_bite",
+  "tags": [
+   "biological"
+  ],
+  "carry": 0,
+  "lifespan": 0,
+  "producedAt": "bld_col_fission",
+  "requires": [],
+  "morphsTo": null
+ },
+ {
+  "id": "unit_col_flagellate",
+  "faction": "col",
+  "role": "scout",
+  "cost": [
+   100,
+   0
+  ],
+  "trainTicks": 360,
+  "supply": 2,
+  "hp": 80,
+  "armor": 0,
+  "speed": 70,
+  "radius": 102,
+  "navClass": "medium",
+  "sight": 2304,
+  "weapon": "w_flagellate_bite",
+  "tags": [
+   "biological"
+  ],
+  "carry": 0,
+  "lifespan": 0,
+  "producedAt": "bld_col_flagellum",
+  "requires": [],
+  "morphsTo": null
+ },
+ {
+  "id": "unit_col_spirochete",
+  "faction": "col",
+  "role": "antiarmor",
+  "cost": [
+   95,
+   35
+  ],
+  "trainTicks": 440,
+  "supply": 2,
+  "hp": 85,
+  "armor": 0,
+  "speed": 38,
+  "radius": 102,
+  "navClass": "medium",
+  "sight": 1792,
+  "weapon": "w_spiro_drill",
+  "tags": [
+   "biological"
+  ],
+  "carry": 0,
+  "lifespan": 0,
+  "producedAt": "bld_col_flagellum",
+  "requires": [],
+  "morphsTo": null
+ },
+ {
+  "id": "unit_col_strep",
+  "faction": "col",
+  "role": "heavy",
+  "cost": [
+   150,
+   30
+  ],
+  "trainTicks": 520,
+  "supply": 3,
+  "hp": 180,
+  "armor": 1,
+  "speed": 33,
+  "radius": 141,
+  "navClass": "large",
+  "sight": 1792,
+  "weapon": "w_strep_whip",
+  "tags": [
+   "biological"
+  ],
+  "carry": 0,
+  "lifespan": 0,
+  "producedAt": "bld_col_flagellum",
+  "requires": [],
+  "morphsTo": null
+ },
+ {
+  "id": "unit_col_toxin",
+  "faction": "col",
+  "role": "siege",
+  "cost": [
+   170,
+   80
+  ],
+  "trainTicks": 640,
+  "supply": 4,
+  "hp": 120,
+  "armor": 0,
+  "speed": 26,
+  "radius": 141,
+  "navClass": "large",
+  "sight": 2048,
+  "weapon": "w_toxin_spit",
+  "tags": [
+   "biological"
+  ],
+  "carry": 0,
+  "lifespan": 0,
+  "producedAt": "bld_col_toxinfoundry",
+  "requires": [],
+  "morphsTo": null
+ }
+]

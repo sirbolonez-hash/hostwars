@@ -79,6 +79,7 @@ section.station { padding-block: 40px 8px; display: grid; gap: 16px; scroll-marg
 .decisions ol { margin: 0; padding-inline-start: 22px; display: grid; gap: 10px; }
 .decisions li { max-width: 80ch; }
 .decisions .rec { color: var(--ok); font-weight: 700; }
+header.top .logo { width: min(100%, 640px); height: auto; justify-self: start; }
 
 .grid { display: grid; gap: 14px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 210px), 1fr)); }
 .grid.wide { grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr)); }
@@ -112,7 +113,8 @@ footer { padding-block: 32px; color: var(--muted); font-size: 14px; }
 
 <div class="wrap">
   <header class="top">
-    <div class="eyebrow">HOST WARS · gate 0 · asset review</div>
+    <div class="eyebrow">HOST WARS · gate 0 · accepted 19.10.2026</div>
+    <img class="logo" src="assets/ui/logo.webp" alt="HOST WARS" width="800" height="199">
     <h1>הגרפיקה שלך, כמו שהיא תיראה במשחק</h1>
     <p class="lead">כל 302 התמונות עברו את צינור העיבוד: ניקוי רקע, חיתוך, הקטנה לגודל המשחק, חיתוך פריימים ואריזה לאטלסים. כל מה שמופיע כאן נטען מאותם קבצים שהמשחק יטען.</p>
     <div class="stats" id="stats"><span class="stat">טוען…</span></div>
@@ -125,15 +127,13 @@ footer { padding-block: 32px; color: var(--muted); font-size: 14px; }
 
   <section class="station" id="decide">
     <div class="decisions">
-      <h2>ארבע החלטות שאני צריך ממך</h2>
+      <h2>ההחלטות שנסגרו</h2>
       <ol>
-        <li><b>מבני השורה הלבנה הגיעו בשתי גרסאות.</b> גרסה B (לבן, תכלת וזהב) תואמת את צבעי הפלג; גרסה A (ורוד עם טחב) היא זו שציירת לה גם מצבי &quot;פגוע&quot;. ההשוואה בתחנת המבנים.
-          <span class="rec">ההמלצה שלי: B, ואת מצב הפגיעה אצייר בקוד (סדקים, עשן, הבהוב)</span>, כדי שהמבנה לא ישנה צבע כשהוא נפגע.</li>
-        <li><b>גודל היחידות.</b> בקנה מידה 100% יחידת חי&quot;ר היא כ-62 פיקסלים, ומבנה מרכז כ-173. תסתכל בתחנת הכוחות: גדול מדי, קטן מדי, או בדיוק?</li>
-        <li><b>דף ההבעות של הכתר הגיע פעמיים.</b> שתי הגרסאות בתחנת הדמויות. איזו?</li>
-        <li><b>הלוגו &quot;HOST WARS&quot; חסר.</b> אני מציע לבנות אותו בקוד, בעברית ובאנגלית, מעל אמנות השער. מתאים?</li>
+        <li><b>מבני השורה הלבנה:</b> <span class="rec">גרסה A</span>, עם מצבי ה&quot;פגוע&quot; שציירת לה. גרסה B נשמרת כחלופה, וההשוואה נשארת בתחנת המבנים.</li>
+        <li><b>גודל היחידות:</b> <span class="rec">נשאר כמו שהוא</span>. חי&quot;ר כ-62 פיקסלים, מבנה מרכז כ-173.</li>
+        <li><b>הבעות הכתר:</b> <span class="rec">הגרסה הראשונה</span> (&quot;Virus Queen&quot;). הכתר נראה בה במלואו, והפנים הרגועות מתאימות לפורטרט. השנייה נשמרת כחלופה.</li>
+        <li><b>הלוגו:</b> <span class="rec">באנגלית, בנוי בקוד</span>, למעלה בעמוד. ה-O הוא תא חיסון מחייך, חיידק מציץ מאחורי ה-H, ונגיף-אבן-חן עם כתר יושב על ה-S.</li>
       </ol>
-      <p class="lead">אפשר לענות בצ'אט במספרים, למשל: &quot;1 B, 2 בסדר, 3 הראשונה, 4 כן&quot;.</p>
     </div>
   </section>
 
@@ -159,13 +159,11 @@ footer { padding-block: 32px; color: var(--muted); font-size: 14px; }
         <button data-v="wl" aria-pressed="true">השורה הלבנה</button><button data-v="col">הקולוניה</button><button data-v="crn">הכתר</button></span></span>
       <span><span class="ctl-label">מצב</span><span class="seg" data-ctl="bldState">
         <button data-v="normal" aria-pressed="true">רגיל</button><button data-v="damaged">פגוע</button></span></span>
-      <span id="setCtl"><span class="ctl-label">גרסה (לבנה)</span><span class="seg" data-ctl="bldSet">
-        <button data-v="B" aria-pressed="true">B</button><button data-v="A">A</button></span></span>
       <span><span class="ctl-label">זום</span><span class="seg" data-ctl="bldZoom">
         <button data-v="0.6">60%</button><button data-v="1" aria-pressed="true">100%</button></span></span>
     </div>
     <div class="field"><canvas id="bldField" height="520" aria-label="שדה מבחן למבנים"></canvas></div>
-    <h3>השוואה: גרסה A מול גרסה B (החלטה 1)</h3>
+    <h3>גרסה A נבחרה; גרסה B נשמרת כחלופה</h3>
     <div class="grid" id="wlCompare"></div>
   </section>
 
@@ -277,7 +275,7 @@ const HE = {
   portrait_bigmac: 'ביג-מק', portrait_killer: 'קילר', portrait_dendra: 'ד"ר דנדרה', portrait_plasma: 'סרן פלזמה', portrait_general4: 'האלוף ארבע', portrait_thymus: "ת'ימוס הזקן",
   portrait_aureus: 'אאוראוס הזהוב', portrait_aureus_mrsa: 'אאוראוס הבלתי-נשבר', portrait_pseudo: 'פסאודו הירוק', portrait_clostra: 'קלוסטרה', portrait_meningo: 'מנינגו',
   portrait_crown: 'הכתר', portrait_flu: 'פלו המשתנה', portrait_integrator: 'המשתלט', portrait_sleeper: 'הישן', portrait_lacto: 'לקטו', portrait_nurse: 'האח האחראי', portrait_doctor: 'ד"ר שחר',
-  expr_bigmac: 'ביג-מק', expr_killer: 'קילר', expr_general4: 'האלוף ארבע', expr_dendra: 'ד"ר דנדרה', expr_aureus: 'אאוראוס', expr_crown: 'הכתר · גרסה 1', expr_crown_alt: 'הכתר · גרסה 2',
+  expr_bigmac: 'ביג-מק', expr_killer: 'קילר', expr_general4: 'האלוף ארבע', expr_dendra: 'ד"ר דנדרה', expr_aureus: 'אאוראוס', expr_crown: 'הכתר (נבחרה)', expr_crown_alt: 'הכתר · חלופה', logo: 'לוגו HOST WARS',
   cine_01_fence: '1 · הגדר', cine_02_dive: '2 · הצלילה', cine_03_paratroopers: '3 · הנחיתה בפצע', cine_04_command: '4 · חדר הפיקוד', cine_05_launch: '5 · היציאה לקרב',
   cine_06_crown_lands: '6 · הכתר נוחת', cine_07_hospital: '7 · לילה בבית החולים', cine_08_vegetation: '8 · הארמון על המסתם', cine_09_storm: '9 · הסערה',
   cine_10_discharge: '10 · השחרור', cine_11_memory: '11 · ארכיון הזיכרון', cine_12_sequel: '12 · זן חדש', keyart_title: 'אמנות שער', ui_briefing_bg: 'רקע חדר הבריפינג',
@@ -388,12 +386,9 @@ async function drawUnits() {
 }
 
 // ---------------------------------------------------------- buildings
-function buildingIds(fac, st, set) {
+function buildingIds(fac, st) {
   const bases = Object.keys(M.assets).filter(k => k.startsWith('bld_' + fac + '_') && M.assets[k].state === 'normal');
-  return bases.map(b => {
-    if (fac === 'wl' && set === 'A') return st === 'damaged' ? b + '_dmg' : b + '_alt';
-    return st === 'damaged' && M.assets[b + '_dmg'] ? b + '_dmg' : b;
-  }).filter(id => M.assets[id]);
+  return bases.map(b => (st === 'damaged' && M.assets[b + '_dmg'] ? b + '_dmg' : b)).filter(id => M.assets[id]);
 }
 async function layoutBuildings(cv, ids, z, tileId, outlineColor) {
   const W = cv.parentElement.clientWidth; const pad = 20, gap = 18, labelH = 24;
@@ -422,8 +417,7 @@ async function layoutBuildings(cv, ids, z, tileId, outlineColor) {
   });
 }
 async function drawBuildings() {
-  document.getElementById('setCtl').hidden = state.bldFaction !== 'wl';
-  const ids = buildingIds(state.bldFaction, state.bldState, state.bldSet);
+  const ids = buildingIds(state.bldFaction, state.bldState);
   await layoutBuildings(document.getElementById('bldField'), ids, state.bldZoom, 'tile_tissue', css(FACTION_COLOR[state.bldFaction]));
 }
 function buildCompare() {
@@ -431,7 +425,7 @@ function buildCompare() {
   const bases = Object.keys(M.assets).filter(k => k.startsWith('bld_wl_') && M.assets[k].state === 'normal');
   for (const b of bases) {
     const cmp = el('div', { class: 'compare' });
-    for (const [tag, id] of [['A', b + '_alt'], ['B', b]]) {
+    for (const [tag, id] of [['A', b], ['B', b + '_alt']]) {
       const cv = el('canvas', { width: 240, height: 240, 'aria-label': he(b) + ' גרסה ' + tag });
       const cell = el('div', {}, [cv, el('span', { class: 'badge', text: tag })]);
       cmp.append(cell);
@@ -585,7 +579,8 @@ async function boot() {
     const add = (html, cls = '') => { const s = el('span', { class: 'stat ' + cls }); s.innerHTML = html; stats.append(s); };
     add(`<b>${Object.keys(M.assets).length}</b> נכסים`); add(`<b>${(kinds.unit || 0) + (kinds.hero || 0)}</b> יחידות וגיבורים`);
     add(`<b>${(kinds.building || 0)}</b> מבנים (כולל גרסאות)`); add(`<b>${kinds.fx || 0}</b> אפקטים`); add(`<b>${kinds.map || 0}</b> מפות`);
-    add(`<b>${pages.length}</b> אטלסים · ${vram.toFixed(0)}MiB בזיכרון גרפי אם טוענים הכל`); add('חסר: לוגו HOST WARS', 'warn');
+    add(`<b>${pages.length}</b> אטלסים · ${vram.toFixed(0)}MiB בזיכרון גרפי אם טוענים הכל`);
+    if (M.missing && M.missing.length) add('חסר: ' + M.missing.join(', '), 'warn'); else add('לא חסר שום נכס');
     wireControls();
     await setFxGround();
     buildCompare(); buildMaps(); buildTiles(); buildFx(); buildUi(); buildPeople(); buildCine();

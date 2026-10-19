@@ -259,6 +259,15 @@ for aid in ['ui_sidebar_wl', 'ui_sidebar_col', 'ui_sidebar_crn', 'ui_monitor_fra
     rel = save_webp(im, f'ui/{aid}.webp', 92)
     manifest['assets'][aid] = {'kind': 'ui', 'file': rel, 'w': im.width, 'h': im.height}
 
+# the logo is generated in code (tools/assets/logo), not drawn: copy the SVG and a raster
+LOGO = os.path.join(HERE, 'logo')
+if os.path.exists(os.path.join(LOGO, 'logo_1600.png')):
+    im = Image.open(os.path.join(LOGO, 'logo_1600.png')).convert('RGBA')
+    rel = save_webp(im, 'ui/logo.webp', 92)
+    os.makedirs(os.path.join(OUT, 'ui'), exist_ok=True)
+    with open(os.path.join(LOGO, 'logo.svg')) as fsrc, open(os.path.join(OUT, 'ui', 'logo.svg'), 'w') as fdst:
+        fdst.write(fsrc.read())
+    manifest['assets']['logo'] = {'kind': 'ui', 'file': rel, 'svg': 'ui/logo.svg', 'w': im.width, 'h': im.height}
 tick('ui')
 # ---------------------------------------------------------------- full images: maps, tiles, portraits, cinematics
 for aid in [k for k in SRC if k.startswith('map_')]:
@@ -308,8 +317,10 @@ for aid in [k for k in SRC if k.startswith('expr_')]:
     for k in range(4):
         cell = im.crop((round(k * cw), 0, round((k + 1) * cw), im.height))
         side = min(cell.width, cell.height)
-        cx, cy = cell.width / 2, cell.height / 2
-        sq = cell.crop((round(cx - side / 2), round(cy - side / 2), round(cx + side / 2), round(cy + side / 2)))
+        # keep more of the top: crowns, caps and hair sit above the face
+        x0 = (cell.width - side) / 2
+        y0 = (cell.height - side) * 0.3
+        sq = cell.crop((round(x0), round(y0), round(x0 + side), round(y0 + side)))
         files.append(save_webp(sq.resize((384, 384), Image.LANCZOS), f'portraits/expr/{aid}_{k}.webp', 88))
     manifest['assets'][aid] = {'kind': 'expressions', 'files': files, 'order': ['calm', 'happy', 'angry', 'shocked']}
 
@@ -360,7 +371,7 @@ for group, ids in groups.items():
         page_files.append({'image': rel, 'json': f'atlases/{group}_{p}.json', 'w': img.width, 'h': img.height, 'sprites': len(frames)})
     manifest['atlases'][group] = page_files
 
-manifest['missing'] = ['logo (HOST WARS title) — will be set in code']
+manifest['missing'] = [] if 'logo' in manifest['assets'] else ['logo']
 json.dump(manifest, open(os.path.join(OUT, 'manifest.json'), 'w'), ensure_ascii=False, indent=1)
 with open(os.path.join(OUT, 'pipeline_report.txt'), 'w') as f:
     for k, v in report:

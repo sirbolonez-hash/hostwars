@@ -34,7 +34,7 @@
    {
     "image": "atlases/buildings_wl_0.webp",
     "json": "atlases/buildings_wl_0.json",
-    "w": 1024,
+    "w": 2048,
     "h": 2048,
     "sprites": 32
    }
@@ -43,8 +43,8 @@
    {
     "image": "atlases/buildings_wl_alt_0.webp",
     "json": "atlases/buildings_wl_alt_0.json",
-    "w": 1024,
-    "h": 2048,
+    "w": 2048,
+    "h": 512,
     "sprites": 16
    }
   ],
@@ -1066,7 +1066,7 @@
    "kind": "building",
    "faction": "wl",
    "w": 173,
-   "h": 169,
+   "h": 168,
    "anchor": [
     0.5,
     0.7
@@ -1104,7 +1104,7 @@
    "kind": "building",
    "faction": "wl",
    "w": 173,
-   "h": 168,
+   "h": 169,
    "anchor": [
     0.5,
     0.7
@@ -1180,7 +1180,7 @@
    "kind": "building",
    "faction": "wl",
    "w": 130,
-   "h": 112,
+   "h": 124,
    "anchor": [
     0.5,
     0.7
@@ -1218,7 +1218,7 @@
    "kind": "building",
    "faction": "wl",
    "w": 130,
-   "h": 124,
+   "h": 112,
    "anchor": [
     0.5,
     0.7
@@ -1237,7 +1237,7 @@
    "kind": "building",
    "faction": "wl",
    "w": 130,
-   "h": 132,
+   "h": 139,
    "anchor": [
     0.5,
     0.7
@@ -1275,7 +1275,7 @@
    "kind": "building",
    "faction": "wl",
    "w": 130,
-   "h": 139,
+   "h": 132,
    "anchor": [
     0.5,
     0.7
@@ -1294,7 +1294,7 @@
    "kind": "building",
    "faction": "wl",
    "w": 130,
-   "h": 98,
+   "h": 115,
    "anchor": [
     0.5,
     0.7
@@ -1332,7 +1332,7 @@
    "kind": "building",
    "faction": "wl",
    "w": 130,
-   "h": 115,
+   "h": 98,
    "anchor": [
     0.5,
     0.7
@@ -1351,7 +1351,7 @@
    "kind": "building",
    "faction": "wl",
    "w": 86,
-   "h": 89,
+   "h": 90,
    "anchor": [
     0.5,
     0.7
@@ -1389,7 +1389,7 @@
    "kind": "building",
    "faction": "wl",
    "w": 86,
-   "h": 90,
+   "h": 89,
    "anchor": [
     0.5,
     0.7
@@ -1408,7 +1408,7 @@
    "kind": "building",
    "faction": "wl",
    "w": 86,
-   "h": 120,
+   "h": 132,
    "anchor": [
     0.5,
     0.7
@@ -1446,7 +1446,7 @@
    "kind": "building",
    "faction": "wl",
    "w": 86,
-   "h": 132,
+   "h": 120,
    "anchor": [
     0.5,
     0.7
@@ -1522,7 +1522,7 @@
    "kind": "building",
    "faction": "wl",
    "w": 130,
-   "h": 126,
+   "h": 134,
    "anchor": [
     0.5,
     0.7
@@ -1560,7 +1560,7 @@
    "kind": "building",
    "faction": "wl",
    "w": 130,
-   "h": 134,
+   "h": 126,
    "anchor": [
     0.5,
     0.7
@@ -1579,7 +1579,7 @@
    "kind": "building",
    "faction": "wl",
    "w": 130,
-   "h": 130,
+   "h": 133,
    "anchor": [
     0.5,
     0.7
@@ -1617,7 +1617,7 @@
    "kind": "building",
    "faction": "wl",
    "w": 130,
-   "h": 133,
+   "h": 130,
    "anchor": [
     0.5,
     0.7
@@ -1636,7 +1636,7 @@
    "kind": "building",
    "faction": "wl",
    "w": 130,
-   "h": 132,
+   "h": 159,
    "anchor": [
     0.5,
     0.7
@@ -1674,7 +1674,7 @@
    "kind": "building",
    "faction": "wl",
    "w": 130,
-   "h": 159,
+   "h": 132,
    "anchor": [
     0.5,
     0.7
@@ -1693,7 +1693,7 @@
    "kind": "building",
    "faction": "wl",
    "w": 86,
-   "h": 86,
+   "h": 98,
    "anchor": [
     0.5,
     0.7
@@ -1731,7 +1731,7 @@
    "kind": "building",
    "faction": "wl",
    "w": 86,
-   "h": 98,
+   "h": 86,
    "anchor": [
     0.5,
     0.7
@@ -1750,7 +1750,7 @@
    "kind": "building",
    "faction": "wl",
    "w": 86,
-   "h": 78,
+   "h": 88,
    "anchor": [
     0.5,
     0.7
@@ -1788,7 +1788,7 @@
    "kind": "building",
    "faction": "wl",
    "w": 86,
-   "h": 88,
+   "h": 78,
    "anchor": [
     0.5,
     0.7
@@ -1807,7 +1807,7 @@
    "kind": "building",
    "faction": "wl",
    "w": 86,
-   "h": 87,
+   "h": 106,
    "anchor": [
     0.5,
     0.7
@@ -1845,7 +1845,7 @@
    "kind": "building",
    "faction": "wl",
    "w": 86,
-   "h": 106,
+   "h": 87,
    "anchor": [
     0.5,
     0.7
@@ -1864,7 +1864,7 @@
    "kind": "building",
    "faction": "wl",
    "w": 86,
-   "h": 72,
+   "h": 70,
    "anchor": [
     0.5,
     0.7
@@ -1902,7 +1902,7 @@
    "kind": "building",
    "faction": "wl",
    "w": 86,
-   "h": 70,
+   "h": 72,
    "anchor": [
     0.5,
     0.7
@@ -1921,7 +1921,7 @@
    "kind": "building",
    "faction": "wl",
    "w": 130,
-   "h": 130,
+   "h": 164,
    "anchor": [
     0.5,
     0.7
@@ -1959,7 +1959,7 @@
    "kind": "building",
    "faction": "wl",
    "w": 130,
-   "h": 164,
+   "h": 130,
    "anchor": [
     0.5,
     0.7
@@ -4633,6 +4633,13 @@
    "w": 457,
    "h": 512
   },
+  "logo": {
+   "kind": "ui",
+   "file": "ui/logo.webp",
+   "svg": "ui/logo.svg",
+   "w": 1600,
+   "h": 398
+  },
   "map_m01_skin": {
    "kind": "map",
    "file": "maps/map_m01_skin.webp",
@@ -5253,7 +5260,5 @@
    "file": "reference/lineup_crn.webp"
   }
  },
- "missing": [
-  "logo (HOST WARS title) — will be set in code"
- ]
+ "missing": []
 }

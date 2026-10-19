@@ -29,3 +29,23 @@ Each entry: the problem, the options, the choice, what it costs, and what would 
 ## 2026-10-19 · Library versions
 - Choice: pixi.js 8.22.0, vite 7.3.7, typescript 5.9.3, vitest 4.1.12, pinned exactly. `.npmrc` sets `legacy-peer-deps` because npm 10 crashes resolving Vite's optional devtools peers.
 - Revisit if: a security fix or a needed feature lands in a newer version.
+
+## 2026-10-19 · Review decisions (Yakir)
+- White Line buildings: set A (pink and moss, with its drawn damaged states). Set B stays in the repo as `_alt`.
+- Unit sizes stay as they are.
+- Crown expressions: the "Virus Queen" sheet (Claude's pick: the crown is fully in frame and the calm face matches the portrait). The other sheet is `expr_crown_alt`.
+- Logo: English, built in code (below).
+
+## 2026-10-19 · Logo built from font outlines
+- Choice: Luckiest Guy (Apache-2.0, `@fontsource/luckiest-guy`) converted to SVG paths by `tools/assets/logo/make_logo.py`; the O is a drawn White Line cell, a Colony bacterium peeks from behind the H, a Crown gem virus wears a crown on the S. Rasterized with resvg.
+- Cost: changing the wording means rerunning the script, not editing text.
+- Revisit if: a Hebrew title is wanted; the same script can take a Hebrew font.
+
+## 2026-10-19 · Commands keep per-player order; saves include the queue
+- Problem: the save/resume test diverged because commands scheduled for later ticks lived only in the queue.
+- Choice: a save is the world plus the command queue. Each player's `seq` strictly increases at submission, as a network stream would guarantee; players may interleave in any order.
+- Revisit if: a transport ever reorders one player's commands; then the queue sorts on arrival instead of rejecting.
+
+## 2026-10-19 · No lymph outpost in the slice content yet
+- Problem: the architecture's expansion building (שלוחת לימפה) has no art.
+- Choice: left out of `content/` until gate 4. Proposal: reuse the lymph node art at about 75% size.

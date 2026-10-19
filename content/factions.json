@@ -1,0 +1,40 @@
+[
+ {
+  "id": "wl",
+  "hq": "bld_wl_lymphnode",
+  "start": [
+   {
+    "unit": "unit_wl_glut",
+    "count": 8
+   },
+   {
+    "unit": "unit_wl_monocyte",
+    "count": 1
+   }
+  ],
+  "basic": 350,
+  "advanced": 0,
+  "supplyCap": 120,
+  "basicName": "ATP",
+  "advancedName": "חומצות אמינו"
+ },
+ {
+  "id": "col",
+  "hq": "bld_col_biofilm_core",
+  "start": [
+   {
+    "unit": "unit_col_feeder",
+    "count": 8
+   },
+   {
+    "unit": "unit_col_flagellate",
+    "count": 1
+   }
+  ],
+  "basic": 350,
+  "advanced": 0,
+  "supplyCap": 120,
+  "basicName": "ATP",
+  "advancedName": "ברזל"
+ }
+]

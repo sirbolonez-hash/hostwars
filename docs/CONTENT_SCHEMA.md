@@ -39,3 +39,16 @@ Asset record fields by `kind`:
 | `expressions` | `files` [4], `order` ["calm", "happy", "angry", "shocked"] |
 
 Asset ids follow `<kind>_<faction>_<name>`, with factions `wl` (White Line), `col` (Colony), `crn` (Crown) and `neu` (neutral). A damaged building is `<id>_dmg`; the alternate White Line set is `<id>_alt`.
+
+## Game content (`content/`)
+
+| File | Holds |
+| --- | --- |
+| `content/units/slice.json` | unit definitions (`UnitDef` in `src/sim/content/types.ts`) |
+| `content/buildings/slice.json` | building definitions (`BuildingDef`) |
+| `content/weapons/slice.json` | weapon definitions (`WeaponDef`) |
+| `content/factions.json` | starting conditions per faction |
+
+The slice files are generated from `tools/content/slice_values.py`, which keeps the numbers in human units (seconds, tiles, tiles per second) next to the conversion. Edit the table there and rerun it; do not hand-edit the JSON.
+
+`src/sim/content/catalog.ts` validates everything before a match: integer types and ranges, unique ids, known weapons, tags and buildings, producers that list what they produce, an acyclic requirement graph, starting units that fit the HQ's supply, and (in tests) an asset for every unit and building.

@@ -1,0 +1,421 @@
+[
+ {
+  "id": "bld_wl_lymphnode",
+  "faction": "wl",
+  "role": "hq",
+  "cost": [
+   0,
+   0
+  ],
+  "buildTicks": 0,
+  "hp": 1500,
+  "armor": 2,
+  "footprint": [
+   4,
+   4
+  ],
+  "supplyProvided": 20,
+  "dropoff": true,
+  "produces": [
+   "unit_wl_glut"
+  ],
+  "requires": [],
+  "sight": 2560,
+  "critical": true,
+  "onResource": null,
+  "weapon": null,
+  "needsBiofilm": false
+ },
+ {
+  "id": "bld_wl_capillary",
+  "faction": "wl",
+  "role": "supply",
+  "cost": [
+   100,
+   0
+  ],
+  "buildTicks": 400,
+  "hp": 400,
+  "armor": 1,
+  "footprint": [
+   2,
+   2
+  ],
+  "supplyProvided": 12,
+  "dropoff": false,
+  "produces": [],
+  "requires": [
+   "bld_wl_lymphnode"
+  ],
+  "sight": 2048,
+  "critical": false,
+  "onResource": null,
+  "weapon": null,
+  "needsBiofilm": false
+ },
+ {
+  "id": "bld_wl_mitochondria",
+  "faction": "wl",
+  "role": "dropoff",
+  "cost": [
+   100,
+   0
+  ],
+  "buildTicks": 400,
+  "hp": 600,
+  "armor": 1,
+  "footprint": [
+   3,
+   2
+  ],
+  "supplyProvided": 0,
+  "dropoff": true,
+  "produces": [],
+  "requires": [
+   "bld_wl_lymphnode"
+  ],
+  "sight": 2048,
+  "critical": false,
+  "onResource": null,
+  "weapon": null,
+  "needsBiofilm": false
+ },
+ {
+  "id": "bld_wl_marrow",
+  "faction": "wl",
+  "role": "production",
+  "cost": [
+   150,
+   0
+  ],
+  "buildTicks": 600,
+  "hp": 900,
+  "armor": 1,
+  "footprint": [
+   3,
+   3
+  ],
+  "supplyProvided": 0,
+  "dropoff": false,
+  "produces": [
+   "unit_wl_neutrophil",
+   "unit_wl_monocyte",
+   "unit_wl_dendritic",
+   "unit_wl_platelets"
+  ],
+  "requires": [
+   "bld_wl_capillary"
+  ],
+  "sight": 2048,
+  "critical": true,
+  "onResource": null,
+  "weapon": null,
+  "needsBiofilm": false
+ },
+ {
+  "id": "bld_wl_spleen",
+  "faction": "wl",
+  "role": "production",
+  "cost": [
+   180,
+   0
+  ],
+  "buildTicks": 700,
+  "hp": 1000,
+  "armor": 1,
+  "footprint": [
+   3,
+   3
+  ],
+  "supplyProvided": 0,
+  "dropoff": false,
+  "produces": [
+   "unit_wl_eosinophil"
+  ],
+  "requires": [
+   "bld_wl_marrow"
+  ],
+  "sight": 2048,
+  "critical": true,
+  "onResource": null,
+  "weapon": null,
+  "needsBiofilm": false
+ },
+ {
+  "id": "bld_wl_aminopump",
+  "faction": "wl",
+  "role": "extractor",
+  "cost": [
+   75,
+   0
+  ],
+  "buildTicks": 400,
+  "hp": 450,
+  "armor": 1,
+  "footprint": [
+   2,
+   2
+  ],
+  "supplyProvided": 0,
+  "dropoff": false,
+  "produces": [],
+  "requires": [],
+  "sight": 2048,
+  "critical": false,
+  "onResource": "protein",
+  "weapon": null,
+  "needsBiofilm": false
+ },
+ {
+  "id": "bld_wl_mastcell",
+  "faction": "wl",
+  "role": "defense",
+  "cost": [
+   140,
+   0
+  ],
+  "buildTicks": 600,
+  "hp": 500,
+  "armor": 1,
+  "footprint": [
+   2,
+   2
+  ],
+  "supplyProvided": 0,
+  "dropoff": false,
+  "produces": [],
+  "requires": [
+   "bld_wl_marrow"
+  ],
+  "sight": 2048,
+  "critical": false,
+  "onResource": null,
+  "weapon": "w_histamine",
+  "needsBiofilm": false
+ },
+ {
+  "id": "bld_wl_germinal",
+  "faction": "wl",
+  "role": "tech",
+  "cost": [
+   250,
+   100
+  ],
+  "buildTicks": 1200,
+  "hp": 900,
+  "armor": 1,
+  "footprint": [
+   3,
+   3
+  ],
+  "supplyProvided": 0,
+  "dropoff": false,
+  "produces": [
+   "unit_wl_plasma"
+  ],
+  "requires": [
+   "bld_wl_spleen",
+   "antigen:any"
+  ],
+  "sight": 2048,
+  "critical": true,
+  "onResource": null,
+  "weapon": null,
+  "needsBiofilm": false
+ },
+ {
+  "id": "bld_col_biofilm_core",
+  "faction": "col",
+  "role": "hq",
+  "cost": [
+   0,
+   0
+  ],
+  "buildTicks": 0,
+  "hp": 1400,
+  "armor": 1,
+  "footprint": [
+   4,
+   4
+  ],
+  "supplyProvided": 20,
+  "dropoff": true,
+  "produces": [
+   "unit_col_feeder"
+  ],
+  "requires": [],
+  "sight": 2560,
+  "critical": true,
+  "onResource": null,
+  "weapon": null,
+  "needsBiofilm": false
+ },
+ {
+  "id": "bld_col_fermentation",
+  "faction": "col",
+  "role": "supply",
+  "cost": [
+   120,
+   0
+  ],
+  "buildTicks": 500,
+  "hp": 550,
+  "armor": 1,
+  "footprint": [
+   3,
+   2
+  ],
+  "supplyProvided": 10,
+  "dropoff": true,
+  "produces": [],
+  "requires": [
+   "bld_col_biofilm_core"
+  ],
+  "sight": 2048,
+  "critical": false,
+  "onResource": null,
+  "weapon": null,
+  "needsBiofilm": true
+ },
+ {
+  "id": "bld_col_fission",
+  "faction": "col",
+  "role": "production",
+  "cost": [
+   150,
+   0
+  ],
+  "buildTicks": 600,
+  "hp": 850,
+  "armor": 1,
+  "footprint": [
+   3,
+   3
+  ],
+  "supplyProvided": 0,
+  "dropoff": false,
+  "produces": [
+   "unit_col_coccus"
+  ],
+  "requires": [
+   "bld_col_biofilm_core"
+  ],
+  "sight": 2048,
+  "critical": true,
+  "onResource": null,
+  "weapon": null,
+  "needsBiofilm": true
+ },
+ {
+  "id": "bld_col_siderophore",
+  "faction": "col",
+  "role": "extractor",
+  "cost": [
+   75,
+   0
+  ],
+  "buildTicks": 400,
+  "hp": 450,
+  "armor": 1,
+  "footprint": [
+   2,
+   2
+  ],
+  "supplyProvided": 0,
+  "dropoff": false,
+  "produces": [],
+  "requires": [],
+  "sight": 2048,
+  "critical": false,
+  "onResource": "iron",
+  "weapon": null,
+  "needsBiofilm": false
+ },
+ {
+  "id": "bld_col_flagellum",
+  "faction": "col",
+  "role": "production",
+  "cost": [
+   180,
+   0
+  ],
+  "buildTicks": 700,
+  "hp": 950,
+  "armor": 1,
+  "footprint": [
+   3,
+   3
+  ],
+  "supplyProvided": 0,
+  "dropoff": false,
+  "produces": [
+   "unit_col_flagellate",
+   "unit_col_spirochete",
+   "unit_col_strep"
+  ],
+  "requires": [
+   "bld_col_fission"
+  ],
+  "sight": 2048,
+  "critical": true,
+  "onResource": null,
+  "weapon": null,
+  "needsBiofilm": true
+ },
+ {
+  "id": "bld_col_toxinspire",
+  "faction": "col",
+  "role": "defense",
+  "cost": [
+   130,
+   0
+  ],
+  "buildTicks": 600,
+  "hp": 480,
+  "armor": 1,
+  "footprint": [
+   2,
+   2
+  ],
+  "supplyProvided": 0,
+  "dropoff": false,
+  "produces": [],
+  "requires": [
+   "bld_col_fission"
+  ],
+  "sight": 2048,
+  "critical": false,
+  "onResource": null,
+  "weapon": "w_toxin_spray",
+  "needsBiofilm": true
+ },
+ {
+  "id": "bld_col_toxinfoundry",
+  "faction": "col",
+  "role": "tech",
+  "cost": [
+   250,
+   100
+  ],
+  "buildTicks": 1200,
+  "hp": 900,
+  "armor": 1,
+  "footprint": [
+   3,
+   3
+  ],
+  "supplyProvided": 0,
+  "dropoff": false,
+  "produces": [
+   "unit_col_toxin"
+  ],
+  "requires": [
+   "bld_col_flagellum"
+  ],
+  "sight": 2048,
+  "critical": true,
+  "onResource": null,
+  "weapon": null,
+  "needsBiofilm": true
+ }
+]
