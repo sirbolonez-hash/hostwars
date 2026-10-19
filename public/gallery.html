@@ -1,0 +1,600 @@
+<title>גלריית HOST WARS</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Assistant:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a working review desk. Sticky station bar on top, then one station per asset family,
+   each with its own controls and a test field drawn at real game scale. */
+:root {
+  --bg: #fbf1f0;          /* tissue blush */
+  --surface: #ffffff;
+  --sunk: #f4e4e3;
+  --ink: #2a1530;         /* plum */
+  --muted: #76596f;
+  --line: #ecd5d6;
+  --accent: #2c7be5;      /* White Line sky blue */
+  --accent-ink: #ffffff;
+  --gold: #d99a12;
+  --wl: #2c7be5;
+  --col: #6fa81c;
+  --crn: #9440d6;
+  --neu: #c2416b;
+  --warn: #c75a1d;
+  --ok: #2f8a4a;
+  --display: "Fredoka", "Assistant", "Arial Rounded MT Bold", system-ui, sans-serif;
+  --body: "Assistant", "Segoe UI", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #170d16; --surface: #22131f; --sunk: #2c1a28; --ink: #f6e8ef; --muted: #c2a4b8; --line: #3d2638;
+    --accent: #5aa0ff; --accent-ink: #0b1630; --gold: #f2bd4a; --wl: #5aa0ff; --col: #9bd34a; --crn: #b98af0; --neu: #ef7fa2;
+    --warn: #f08a4b; --ok: #5fc27c; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #170d16; --surface: #22131f; --sunk: #2c1a28; --ink: #f6e8ef; --muted: #c2a4b8; --line: #3d2638;
+  --accent: #5aa0ff; --accent-ink: #0b1630; --gold: #f2bd4a; --wl: #5aa0ff; --col: #9bd34a; --crn: #b98af0; --neu: #ef7fa2;
+  --warn: #f08a4b; --ok: #5fc27c; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: var(--body); font-size: 16px; line-height: 1.55; }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--surface); }
+.wrap { direction: rtl; max-width: 1240px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 0 64px; }
+h1, h2, h3 { font-family: var(--display); font-weight: 600; text-wrap: balance; margin: 0; letter-spacing: 0; }
+h1 { font-size: clamp(30px, 5vw, 44px); line-height: 1.1; }
+h2 { font-size: 26px; line-height: 1.2; }
+h3 { font-size: 18px; }
+p { margin: 0; max-width: 68ch; }
+code, .mono { font-family: var(--mono); font-size: 12.5px; direction: ltr; unicode-bidi: isolate; }
+
+header.top { padding-block: 32px 20px; display: grid; gap: 14px; }
+.eyebrow { font-family: var(--mono); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); direction: ltr; text-align: right; }
+.stats { display: flex; flex-wrap: wrap; gap: 8px; }
+.stat { background: var(--surface); border: 1px solid var(--line); border-radius: 999px; padding: 4px 12px; font-size: 14px; font-variant-numeric: tabular-nums; }
+.stat b { font-weight: 700; }
+.stat.warn { border-color: var(--warn); color: var(--warn); }
+
+nav.bar { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--surface); border-bottom: 1px solid var(--line); margin-inline: calc(-1 * max(16px, env(safe-area-inset-left, 0px))); }
+nav.bar .in { direction: rtl; display: flex; gap: 6px; overflow-x: auto; padding: 10px max(16px, env(safe-area-inset-right, 0px)); scrollbar-width: thin; }
+nav.bar a { flex: none; text-decoration: none; color: var(--ink); font-weight: 600; font-size: 14px; padding: 5px 12px; border-radius: 999px; background: var(--sunk); }
+nav.bar a:hover, nav.bar a:focus-visible { background: var(--accent); color: var(--accent-ink); outline: none; }
+
+section.station { padding-block: 40px 8px; display: grid; gap: 16px; scroll-margin-top: 64px; }
+.lead { color: var(--muted); }
+.controls { display: flex; flex-wrap: wrap; gap: 10px 18px; align-items: center; }
+.seg { display: inline-flex; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; background: var(--surface); }
+.seg button { font: 600 14px var(--body); border: 0; background: transparent; color: var(--ink); padding: 6px 12px; cursor: pointer; }
+.seg button + button { border-inline-start: 1px solid var(--line); }
+.seg button[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
+.seg button:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+.ctl-label { font-size: 13px; color: var(--muted); margin-inline-end: 6px; }
+
+.field { width: 100%; border-radius: 14px; overflow: hidden; border: 1px solid var(--line); background: var(--sunk); }
+.field canvas { display: block; width: 100%; }
+.ruler { font-size: 13px; color: var(--muted); }
+
+.decisions { background: var(--surface); border: 2px solid var(--gold); border-radius: 16px; padding: 18px 20px; display: grid; gap: 12px; }
+.decisions ol { margin: 0; padding-inline-start: 22px; display: grid; gap: 10px; }
+.decisions li { max-width: 80ch; }
+.decisions .rec { color: var(--ok); font-weight: 700; }
+
+.grid { display: grid; gap: 14px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 210px), 1fr)); }
+.grid.wide { grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr)); }
+.grid.small { grid-template-columns: repeat(auto-fill, minmax(min(100%, 150px), 1fr)); }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; display: grid; min-width: 0; }
+.card .cap { padding: 8px 10px 10px; display: grid; gap: 2px; min-width: 0; }
+.card .cap b { font-weight: 700; font-size: 15px; }
+.card .cap .mono { color: var(--muted); overflow-wrap: anywhere; }
+.card img, .card canvas { display: block; width: 100%; height: auto; background: var(--sunk); }
+.card button.open { all: unset; cursor: zoom-in; display: block; }
+.card button.open:focus-visible { outline: 3px solid var(--accent); outline-offset: -3px; }
+.tag { display: inline-block; font-size: 11.5px; font-weight: 700; padding: 1px 8px; border-radius: 999px; background: var(--sunk); color: var(--muted); }
+.tag.add { background: color-mix(in srgb, var(--gold) 20%, transparent); color: var(--gold); }
+.compare { display: grid; grid-template-columns: 1fr 1fr; }
+.compare > div { position: relative; }
+.compare .badge { position: absolute; top: 6px; inset-inline-start: 6px; font: 700 12px var(--body); background: var(--ink); color: var(--bg); border-radius: 6px; padding: 1px 7px; }
+.expr { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; padding: 4px; background: var(--sunk); }
+.expr img { border-radius: 8px; }
+.crop { overflow: auto; max-height: 420px; border-radius: 12px; border: 1px solid var(--line); background: var(--sunk); }
+.crop img { max-width: none; display: block; }
+.status { font-size: 14px; color: var(--muted); }
+.status.err { color: var(--warn); font-weight: 700; }
+dialog { border: 0; border-radius: 14px; padding: 0; max-width: min(96vw, 1240px); background: var(--surface); color: var(--ink); }
+dialog::backdrop { background: rgba(20, 8, 18, .72); }
+dialog img { display: block; max-width: 100%; height: auto; }
+dialog .bar2 { direction: rtl; display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 10px 14px; }
+dialog button { font: 600 14px var(--body); border: 1px solid var(--line); background: var(--sunk); color: var(--ink); border-radius: 8px; padding: 4px 12px; cursor: pointer; }
+footer { padding-block: 32px; color: var(--muted); font-size: 14px; }
+@media (max-width: 520px) { h2 { font-size: 22px; } .compare { grid-template-columns: 1fr; } }
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div class="eyebrow">HOST WARS · gate 0 · asset review</div>
+    <h1>הגרפיקה שלך, כמו שהיא תיראה במשחק</h1>
+    <p class="lead">כל 302 התמונות עברו את צינור העיבוד: ניקוי רקע, חיתוך, הקטנה לגודל המשחק, חיתוך פריימים ואריזה לאטלסים. כל מה שמופיע כאן נטען מאותם קבצים שהמשחק יטען.</p>
+    <div class="stats" id="stats"><span class="stat">טוען…</span></div>
+  </header>
+
+  <nav class="bar" aria-label="תחנות"><div class="in">
+    <a href="#decide">החלטות</a><a href="#units">כוחות</a><a href="#buildings">מבנים</a><a href="#world">עולם</a><a href="#maps">מפות</a>
+    <a href="#tiles">אריחים</a><a href="#fx">אפקטים</a><a href="#ui">ממשק</a><a href="#people">דמויות</a><a href="#cine">סינמטיקות</a>
+  </div></nav>
+
+  <section class="station" id="decide">
+    <div class="decisions">
+      <h2>ארבע החלטות שאני צריך ממך</h2>
+      <ol>
+        <li><b>מבני השורה הלבנה הגיעו בשתי גרסאות.</b> גרסה B (לבן, תכלת וזהב) תואמת את צבעי הפלג; גרסה A (ורוד עם טחב) היא זו שציירת לה גם מצבי &quot;פגוע&quot;. ההשוואה בתחנת המבנים.
+          <span class="rec">ההמלצה שלי: B, ואת מצב הפגיעה אצייר בקוד (סדקים, עשן, הבהוב)</span>, כדי שהמבנה לא ישנה צבע כשהוא נפגע.</li>
+        <li><b>גודל היחידות.</b> בקנה מידה 100% יחידת חי&quot;ר היא כ-62 פיקסלים, ומבנה מרכז כ-173. תסתכל בתחנת הכוחות: גדול מדי, קטן מדי, או בדיוק?</li>
+        <li><b>דף ההבעות של הכתר הגיע פעמיים.</b> שתי הגרסאות בתחנת הדמויות. איזו?</li>
+        <li><b>הלוגו &quot;HOST WARS&quot; חסר.</b> אני מציע לבנות אותו בקוד, בעברית ובאנגלית, מעל אמנות השער. מתאים?</li>
+      </ol>
+      <p class="lead">אפשר לענות בצ'אט במספרים, למשל: &quot;1 B, 2 בסדר, 3 הראשונה, 4 כן&quot;.</p>
+    </div>
+  </section>
+
+  <section class="station" id="units">
+    <h2>כוחות בקנה מידה של המשחק</h2>
+    <p class="lead">כל יחידה עומדת על הרקמה בגודל שלה במשחק, עם צל, טבעת בחירה בצבע הפלג, ומבנה המרכז של הפלג בראש השורה להשוואה. כל קו ברשת הוא אריח אחד (32 פיקסלים).</p>
+    <div class="controls">
+      <span><span class="ctl-label">פלג</span><span class="seg" data-ctl="unitFaction">
+        <button data-v="wl" aria-pressed="true">השורה הלבנה</button><button data-v="col">הקולוניה</button><button data-v="crn">הכתר</button><button data-v="neu">ניטרליים</button></span></span>
+      <span><span class="ctl-label">זום</span><span class="seg" data-ctl="unitZoom">
+        <button data-v="0.6">60%</button><button data-v="1" aria-pressed="true">100%</button><button data-v="1.5">150%</button></span></span>
+      <span><span class="ctl-label">קרקע</span><span class="seg" data-ctl="unitGround">
+        <button data-v="tile_tissue" aria-pressed="true">רקמה</button><button data-v="tile_blood">דם</button><button data-v="tile_bone">עצם</button><button data-v="tile_mucus">ריר</button></span></span>
+    </div>
+    <div class="field"><canvas id="unitField" height="420" aria-label="שדה מבחן ליחידות"></canvas></div>
+  </section>
+
+  <section class="station" id="buildings">
+    <h2>מבנים על רשת האריחים</h2>
+    <p class="lead">המלבן המקווקו מתחת לכל מבנה הוא השטח שהוא תופס במפה. הציור רחב ממנו קצת בכוונה (גגות, דגלים וצינורות), והחסימה במשחק נקבעת לפי המלבן.</p>
+    <div class="controls">
+      <span><span class="ctl-label">פלג</span><span class="seg" data-ctl="bldFaction">
+        <button data-v="wl" aria-pressed="true">השורה הלבנה</button><button data-v="col">הקולוניה</button><button data-v="crn">הכתר</button></span></span>
+      <span><span class="ctl-label">מצב</span><span class="seg" data-ctl="bldState">
+        <button data-v="normal" aria-pressed="true">רגיל</button><button data-v="damaged">פגוע</button></span></span>
+      <span id="setCtl"><span class="ctl-label">גרסה (לבנה)</span><span class="seg" data-ctl="bldSet">
+        <button data-v="B" aria-pressed="true">B</button><button data-v="A">A</button></span></span>
+      <span><span class="ctl-label">זום</span><span class="seg" data-ctl="bldZoom">
+        <button data-v="0.6">60%</button><button data-v="1" aria-pressed="true">100%</button></span></span>
+    </div>
+    <div class="field"><canvas id="bldField" height="520" aria-label="שדה מבחן למבנים"></canvas></div>
+    <h3>השוואה: גרסה A מול גרסה B (החלטה 1)</h3>
+    <div class="grid" id="wlCompare"></div>
+  </section>
+
+  <section class="station" id="world">
+    <h2>תאי המאכסן ומשאבים</h2>
+    <p class="lead">תאי המאכסן הם ה&quot;אזרחים&quot; של כל מפה. לתא האפיתל יש שלושה מצבים: בריא, נגוע ומתפוצץ.</p>
+    <div class="field"><canvas id="worldField" height="360" aria-label="תאי מאכסן ומשאבים"></canvas></div>
+  </section>
+
+  <section class="station" id="maps">
+    <h2>20 מפות המשימות</h2>
+    <p class="lead">הציור הוגדל פי 2 (3,344 על 1,882 פיקסלים, 104 על 58 אריחים). לחיצה פותחת תצוגה גדולה. בתיבות למטה, שלוש המפות של החתך הראשון בגודל אמיתי, כדי לבדוק שההגדלה לא מטשטשת.</p>
+    <div class="grid wide" id="mapGrid"></div>
+    <h3>חדות בגודל אמיתי</h3>
+    <div class="grid wide" id="mapCrops"></div>
+  </section>
+
+  <section class="station" id="tiles">
+    <h2>אריחי שטח</h2>
+    <p class="lead">כל אריח מוצג ארבע פעמים זה ליד זה. אם יש תפר, הוא ייראה כקו בצורת + באמצע. עשיתי לכל האריחים תיקון תפרים אוטומטי.</p>
+    <div class="grid small" id="tileGrid"></div>
+  </section>
+
+  <section class="station" id="fx">
+    <h2>אפקטים בתנועה</h2>
+    <p class="lead">54 אפקטים, 12 פריימים בשנייה. אפקט שמסומן &quot;זוהר&quot; מצויר כאור שמתווסף לקרקע; השאר מצוירים כאובייקט. בדוק במיוחד על קרקע בהירה (עצם): שם רואים שארית רקע שחור.</p>
+    <div class="controls">
+      <span><span class="ctl-label">קרקע</span><span class="seg" data-ctl="fxGround">
+        <button data-v="tile_tissue" aria-pressed="true">רקמה</button><button data-v="tile_blood">דם</button><button data-v="tile_bone">עצם</button><button data-v="tile_fog">כהה</button></span></span>
+      <span><span class="ctl-label">תנועה</span><span class="seg" data-ctl="fxPlay">
+        <button data-v="on" aria-pressed="true">מנגן</button><button data-v="off">עצור</button></span></span>
+    </div>
+    <div class="grid small" id="fxGrid"></div>
+  </section>
+
+  <section class="station" id="ui">
+    <h2>ממשק, אייקונים וסמלים</h2>
+    <div class="grid small" id="iconGrid"></div>
+    <div class="grid" id="uiGrid"></div>
+  </section>
+
+  <section class="station" id="people">
+    <h2>דמויות לבריפינגים</h2>
+    <div class="grid small" id="portraitGrid"></div>
+    <h3>דפי הבעות: רגוע, שמח, כועס, המום</h3>
+    <div class="grid wide" id="exprGrid"></div>
+  </section>
+
+  <section class="station" id="cine">
+    <h2>סינמטיקות, אמנות שער ורפרנסים</h2>
+    <div class="grid wide" id="cineGrid"></div>
+  </section>
+
+  <footer>נבנה מתוך <code>public/assets/manifest.json</code> של הפרויקט. אם משהו נראה לא נכון, כתוב לי את שם הנכס שמופיע מתחת לתמונה.</footer>
+</div>
+
+<dialog id="viewer"><div class="bar2"><b id="viewerTitle"></b><button id="viewerClose" type="button">סגור</button></div><img id="viewerImg" alt=""></dialog>
+
+<script>
+(() => {
+'use strict';
+const BASE = 'assets/';
+const HE = {
+  unit_wl_neutrophil: 'נויטרופיל', unit_wl_monocyte: 'מונוציט', unit_wl_bcell: 'תא B', unit_wl_platelets: 'טסיות', unit_wl_dendritic: 'דנדריט',
+  unit_wl_eosinophil: 'אאוזינופיל', unit_wl_nk: 'תא NK', unit_wl_cd4: 'CD4 עוזר', unit_wl_cd8: 'CD8 קוטל', unit_wl_treg: 'Treg', unit_wl_iga: 'שומר IgA',
+  unit_wl_glut: 'נשא GLUT', unit_wl_macrophage: "מקרופאג'", unit_wl_plasma: 'תא פלזמה', unit_wl_igm: 'טייסת IgM', unit_wl_giantcell: 'תא ענק',
+  hero_wl_bigmac: 'ביג-מק', hero_wl_killer: 'קילר', hero_wl_dendra: 'ד"ר דנדרה', hero_wl_plasma: 'סרן פלזמה', hero_wl_general4: 'האלוף ארבע',
+  unit_col_spore: 'נבג', unit_col_coccus: 'קוקוס', unit_col_bacillus: 'בצילוס', unit_col_bomber: 'מפציץ', unit_col_capsule: 'נושא קופסית',
+  unit_col_spirochete: 'ספירוכטה', unit_col_flagellate: 'דגלון', unit_col_clostridium: 'קלוסטרידיום', unit_col_pilus: 'פילוס', unit_col_feeder: 'מזין',
+  unit_col_strep: 'שרשרת', unit_col_toxin: 'מייצר רעלן', unit_col_mycobacterium: 'מיקובקטריום',
+  hero_col_aureus: 'אאוראוס הזהוב', hero_col_aureus_mrsa: 'אאוראוס הבלתי-נשבר', hero_col_pseudo: 'פסאודו הירוק', hero_col_clostra: 'קלוסטרה', hero_col_meningo: 'מנינגו',
+  unit_crn_nano: 'ננו-ויריונים', unit_crn_virion: 'ויריון', unit_crn_sleeper: 'ישן', unit_crn_spiker: 'קוצן', unit_crn_enveloped: 'עטוף', unit_crn_flu: 'פלו',
+  unit_crn_integrator: 'המשתלט', unit_crn_phage: "פאג'", unit_crn_trojan: 'סוס טרויאני', unit_crn_colossus: 'קולוסוס',
+  hero_crn_crown: 'הכתר', hero_crn_flu: 'פלו המשתנה', hero_crn_integrator: 'המשתלט (גיבור)', hero_crn_sleeper: 'הישן (גיבור)',
+  unit_neu_rbc: 'כדורית אדומה', unit_neu_lacto: 'לקטו', unit_neu_renegade: 'בוגד', unit_neu_microglia: 'מיקרוגליה', unit_neu_kupffer: 'תא קופפר',
+  bld_wl_lymphnode: 'צומת לימפה', bld_wl_capillary: 'צומת נימים', bld_wl_mitochondria: 'מפעל מיטוכונדריה', bld_wl_marrow: 'שלוחת מח עצם', bld_wl_spleen: 'מחסן הטחול',
+  bld_wl_aminopump: 'משאבת אמינו', bld_wl_cytokine: 'ממסר ציטוקינים', bld_wl_thymus: "אקדמיית הת'ימוס", bld_wl_germinal: 'מרכז נבט', bld_wl_arterial: 'נמל עורקי',
+  bld_wl_memory: 'ארכיון הזיכרון', bld_wl_mastcell: 'מגדל תא פיטום', bld_wl_macropost: "עמדת מקרופאג'", bld_wl_ferritin: 'מגדל פריטין', bld_wl_fibrinwall: 'חומת פיברין', bld_wl_complement: 'סוללת המשלים',
+  bld_col_biofilm_core: 'ליבת ביופילם', bld_col_fermentation: 'בור תסיסה', bld_col_fission: 'צבר חלוקה', bld_col_siderophore: 'מגדל סידרופור', bld_col_flagellum: 'קן הדגלונים',
+  bld_col_plasmid: 'כספת פלסמידים', bld_col_toxinfoundry: 'מטבחת רעלנים', bld_col_sporebank: 'בנק הנבגים', bld_col_toxinspire: 'מגדל רעלן', bld_col_capsulewall: 'חומת קופסית', bld_col_superantigen: 'כור הסופר-אנטיגן',
+  bld_crn_mothercapsid: 'קפסיד-אם', bld_crn_mothercapsid_deployed: 'קפסיד-אם פרוס', bld_crn_forge: 'מעבדת מוטציה', bld_crn_spikespire: 'צריח קוצים', bld_crn_neuralnest: 'קן עצבי', bld_crn_projector: 'מקרן ההדבקה',
+  bld_neu_epithelial: 'תא אפיתל', bld_neu_epithelial_infected: 'תא אפיתל נגוע', bld_neu_epithelial_burst: 'תא אפיתל מתפוצץ', bld_neu_hepatocyte: 'הפטוציט',
+  bld_neu_kidneycell: 'תא כליה', bld_neu_cardiomyocyte: 'תא שריר לב', bld_neu_neuron: 'נוירון',
+  res_glucose_large: 'שדה גלוקוז', res_glucose_small: 'גלוקוז שכמעט נגמר', res_protein: 'מרבץ חלבון', res_iron: 'מרבץ ברזל',
+  map_m01_skin: '1 · השריטה · עור האצבע', map_m02_subcutis: '2 · דלקת · כף היד', map_m03_lymphnode: '3 · הצומת · בלוטת לימפה', map_m04_vein: '4 · הנהר האדום · וריד',
+  map_m05_spleen: '5 · זיכרון · טחול', map_m06_nose: '6 · אפס · האף', map_m07_trachea: '7 · השיעול · קנה הנשימה', map_m08_lungs: '8 · זיהום-על · ריאות',
+  map_m09_smallintestine: '9 · חוק השכנים · מעי דק', map_m10_colon: '10 · המרד במעי · מעי גס', map_m11_liver: '11 · מבצר הכבד', map_m12_urinary: '12 · המעלה · דרכי השתן',
+  map_m13_heartvalve: '13 · השסתום · מסתם הלב', map_m14_marrow: '14 · המצור · מח העצם', map_m15_thymus: "15 · האקדמיה · ת'ימוס", map_m16_meninges: '16 · המחסום · קרום המוח',
+  map_m17_ganglion: '17 · רדומים · גנגליון', map_m18_systemic: '18 · סערת ציטוקינים · כל הגוף', map_m19_centralline: '19 · הקו המרכזי', map_m20_heart: '20 · המאכסן · הלב',
+  tile_tissue: 'רקמה', tile_blood: 'דם', tile_mucus: 'ריר', tile_biofilm: 'ביופילם', tile_pus: 'מוגלה', tile_villi: 'סיסי מעי', tile_acid: 'חומצה', tile_liver: 'כבד',
+  tile_plastic: 'פלסטיק', tile_neural: 'רקמת עצב', tile_bone: 'עצם', tile_keratin: 'קרטין', tile_alveolar: 'נאדיות', tile_lymph: 'לימפה', tile_fog: 'ערפל קרב',
+  fx_strep_whip: 'שוט שרשרת', fx_toxin_cloud: 'ענן רעלן', fx_spike_dart: 'חץ קוצים', fx_net_burst: 'רשת נטו', fx_phagocytosis: 'בליעה', fx_scan_ring: 'סריקת דנדריט',
+  fx_opsonize_tag: 'תיוג נוגדנים', fx_agglutination: 'הצמתה', fx_clot_seal: 'אטימת קריש', fx_granuloma_ring: 'גרנולומה', fx_interferon_wave: 'גל אינטרפרון', fx_il2_aura: 'הילת IL-2',
+  fx_fission: 'חלוקה', fx_pinkburst: 'פיצוץ ורוד (רזרבה)', fx_toxin_glob: 'גוש רעלן', fx_histamine_pulse: 'פולס היסטמין', fx_nk_strike: 'מכת NK', fx_quorum: 'חישת מניין',
+  fx_perforin: 'פרפורין', fx_eos_grenade: 'רימון גרגירים', fx_antibody_volley: 'מטח נוגדנים', fx_building_collapse: 'קריסת מבנה', fx_death_virus: 'מות וירוס',
+  fx_extravasation: 'יציאה מכלי דם', fx_death_bacteria: 'מות חיידק', fx_hijack: 'חטיפת תא', fx_lysis_burst: 'פיצוץ ליטי', fx_steroid: 'ערפל סטרואידים', fx_fever_haze: 'חום',
+  fx_iv_fluids: 'נוזלים IV', fx_heartbeat: 'פעימת לב', fx_iron_draw: 'שאיבת ברזל', fx_superantigen: 'סופר-אנטיגן', fx_conjugation: 'העברת פלסמיד', fx_integration: 'שילוב גנטי',
+  fx_atp_orbs: 'כדורי ATP', fx_urine_wave: 'גל שתן', fx_death_immune: 'מות תא חיסון', fx_glucose_harvest: 'כריית גלוקוז', fx_iv_line: 'קו עירוי', fx_cough: 'שיעול',
+  fx_antibiotic_strike: 'מכת אנטיביוטיקה', fx_endotoxin_blast: 'פיצוץ אנדוטוקסין', fx_vasopressor: 'וזופרסורים', fx_complement_strike: 'פגיעת המשלים', fx_surgical: 'ניקוז כירורגי',
+  fx_biofilm_spread: 'התפשטות ביופילם', fx_mass_infection: 'הדבקה המונית', fx_antiviral: 'רשת אנטי-ויראלית', fx_phage_drop: "הצנחת פאג'ים", fx_spore_form: 'הפיכה לנבג',
+  fx_ribosome_income: 'הכנסת ריבוזומים', fx_build_grow: 'צמיחת מבנה', fx_drift: 'סחיפה אנטיגנית',
+  ui_sidebar_wl: 'לוח צד · השורה הלבנה', ui_sidebar_col: 'לוח צד · הקולוניה', ui_sidebar_crn: 'לוח צד · הכתר', ui_monitor_frame: 'מוניטור המאכסן', ui_inflammation_bar: 'מד דלקת',
+  ui_campaign_map: 'מפת הקמפיין', emblem_wl: 'סמל השורה הלבנה', emblem_col: 'סמל הקולוניה', emblem_crn: 'סמל הכתר', brand_yak: 'תג YAK',
+  icon_atp: 'ATP', icon_oxygen: 'חמצן', icon_amino: 'חומצות אמינו', icon_iron: 'ברזל', icon_ribosome: 'ריבוזומים',
+  cursor_select: 'סמן בחירה', cursor_move: 'סמן תנועה', cursor_attack: 'סמן תקיפה', cursor_sample: 'סמן דגימה', cursor_hijack: 'סמן חטיפה', cursor_invalid: 'סמן אסור',
+  rank_1: 'דרגה 1', rank_2: 'דרגה 2', rank_3: 'דרגה 3',
+  order_antibiotic: 'אנטיביוטיקה רחבה', order_iv_fluids: 'נוזלים IV', order_antipyretic: 'אנטיפירטי', order_targeted_antibiotic: 'אנטיביוטיקה ממוקדת', order_antiviral: 'אנטי-ויראלי',
+  order_steroid: 'סטרואידים', order_vaccine: 'חיסון', order_vasopressor: 'וזופרסורים', order_surgical: 'ניקוז כירורגי', order_device_removal: 'הוצאת התקן', order_phage: "טיפול פאג'ים", order_vancomycin: 'ונקומיצין',
+  portrait_bigmac: 'ביג-מק', portrait_killer: 'קילר', portrait_dendra: 'ד"ר דנדרה', portrait_plasma: 'סרן פלזמה', portrait_general4: 'האלוף ארבע', portrait_thymus: "ת'ימוס הזקן",
+  portrait_aureus: 'אאוראוס הזהוב', portrait_aureus_mrsa: 'אאוראוס הבלתי-נשבר', portrait_pseudo: 'פסאודו הירוק', portrait_clostra: 'קלוסטרה', portrait_meningo: 'מנינגו',
+  portrait_crown: 'הכתר', portrait_flu: 'פלו המשתנה', portrait_integrator: 'המשתלט', portrait_sleeper: 'הישן', portrait_lacto: 'לקטו', portrait_nurse: 'האח האחראי', portrait_doctor: 'ד"ר שחר',
+  expr_bigmac: 'ביג-מק', expr_killer: 'קילר', expr_general4: 'האלוף ארבע', expr_dendra: 'ד"ר דנדרה', expr_aureus: 'אאוראוס', expr_crown: 'הכתר · גרסה 1', expr_crown_alt: 'הכתר · גרסה 2',
+  cine_01_fence: '1 · הגדר', cine_02_dive: '2 · הצלילה', cine_03_paratroopers: '3 · הנחיתה בפצע', cine_04_command: '4 · חדר הפיקוד', cine_05_launch: '5 · היציאה לקרב',
+  cine_06_crown_lands: '6 · הכתר נוחת', cine_07_hospital: '7 · לילה בבית החולים', cine_08_vegetation: '8 · הארמון על המסתם', cine_09_storm: '9 · הסערה',
+  cine_10_discharge: '10 · השחרור', cine_11_memory: '11 · ארכיון הזיכרון', cine_12_sequel: '12 · זן חדש', keyart_title: 'אמנות שער', ui_briefing_bg: 'רקע חדר הבריפינג',
+  lineup_wl: 'שורת הרכב · השורה הלבנה', lineup_col: 'שורת הרכב · הקולוניה', lineup_crn: 'שורת הרכב · הכתר'
+};
+const FACTION_COLOR = { wl: '--wl', col: '--col', crn: '--crn', neu: '--neu' };
+const HQ = { wl: 'bld_wl_lymphnode', col: 'bld_col_biofilm_core', crn: 'bld_crn_mothercapsid', neu: 'bld_neu_epithelial' };
+const state = { unitFaction: 'wl', unitZoom: 1, unitGround: 'tile_tissue', bldFaction: 'wl', bldState: 'normal', bldSet: 'B', bldZoom: 1, fxGround: 'tile_tissue', fxPlay: 'on' };
+const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+if (reduceMotion) state.fxPlay = 'off';
+
+let M = null;
+const frames = new Map();
+const images = new Map();
+const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const he = id => HE[id] || id;
+const el = (tag, attrs = {}, kids = []) => { const e = document.createElement(tag); for (const [k, v] of Object.entries(attrs)) { if (k === 'text') e.textContent = v; else e.setAttribute(k, v); } for (const c of kids) e.append(c); return e; };
+
+function loadImg(src) {
+  if (images.has(src)) return images.get(src);
+  const p = new Promise((res, rej) => { const i = new Image(); i.decoding = 'async'; i.onload = () => res(i); i.onerror = () => rej(new Error('לא נטען: ' + src)); i.src = src; });
+  images.set(src, p); return p;
+}
+
+function caption(id, extra) {
+  const cap = el('div', { class: 'cap' }, [el('b', { text: he(id) }), el('span', { class: 'mono', text: id })]);
+  if (extra) cap.append(extra);
+  return cap;
+}
+
+function setupCanvas(cv, cssW, cssH) {
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  cv.width = Math.round(cssW * dpr); cv.height = Math.round(cssH * dpr);
+  cv.style.height = cssH + 'px';
+  const ctx = cv.getContext('2d'); ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.imageSmoothingQuality = 'high';
+  return ctx;
+}
+
+async function ground(ctx, w, h, tileId, zoom, grid) {
+  const img = await loadImg(BASE + M.assets[tileId].file);
+  const pat = ctx.createPattern(img, 'repeat');
+  const m = new DOMMatrix(); m.scaleSelf(zoom * 0.5, zoom * 0.5); pat.setTransform(m);
+  ctx.fillStyle = pat; ctx.fillRect(0, 0, w, h);
+  if (grid) {
+    const step = M.tilePx * zoom; ctx.strokeStyle = 'rgba(40,10,30,0.10)'; ctx.lineWidth = 1; ctx.beginPath();
+    for (let x = 0; x <= w; x += step) { ctx.moveTo(x + .5, 0); ctx.lineTo(x + .5, h); }
+    for (let y = 0; y <= h; y += step) { ctx.moveTo(0, y + .5); ctx.lineTo(w, y + .5); }
+    ctx.stroke();
+  }
+}
+
+function drawFrame(ctx, name, dx, dy, dw, dh) {
+  const f = frames.get(name); if (!f) return false;
+  ctx.drawImage(f.img, f.x, f.y, f.w, f.h, dx, dy, dw, dh); return true;
+}
+
+function label(ctx, text, x, y, size = 13) {
+  ctx.save(); ctx.direction = 'rtl'; ctx.textAlign = 'center'; ctx.font = `700 ${size}px Assistant, sans-serif`;
+  ctx.lineWidth = 4; ctx.strokeStyle = 'rgba(255,255,255,0.85)'; ctx.strokeText(text, x, y);
+  ctx.fillStyle = '#2a1530'; ctx.fillText(text, x, y); ctx.restore();
+}
+
+// ---------------------------------------------------------- units
+function measure(text, size) {
+  const c = measure.ctx || (measure.ctx = document.createElement('canvas').getContext('2d'));
+  c.font = `700 ${size}px Assistant, sans-serif`; return c.measureText(text).width;
+}
+// Row-wrap layout, right to left. Each cell is as wide as its sprite or its label, whichever is wider.
+function rowLayout(items, W, pad, gap) {
+  const rows = []; let row = [], used = pad;
+  for (const it of items) { if (row.length && used + it.cw + gap > W - pad) { rows.push(row); row = []; used = pad; } row.push(it); used += it.cw + gap; }
+  if (row.length) rows.push(row);
+  return rows;
+}
+async function drawUnits() {
+  const cv = document.getElementById('unitField'); const W = cv.parentElement.clientWidth; const z = state.unitZoom; const fac = state.unitFaction;
+  const ids = Object.keys(M.assets).filter(k => (k.startsWith('unit_' + fac + '_') || k.startsWith('hero_' + fac + '_')))
+    .sort((a, b) => (a.startsWith('hero') - b.startsWith('hero')) || (M.assets[a].h - M.assets[b].h));
+  const pad = 20, gap = 14, labelH = 24;
+  const hqItem = { id: HQ[fac], a: M.assets[HQ[fac]], hq: true };
+  const items = [hqItem, ...ids.map(id => ({ id, a: M.assets[id] }))].map(it => {
+    const text = it.hq ? he(it.id) + ' (להשוואה)' : he(it.id);
+    return { ...it, text, cw: Math.max(it.a.w * z, measure(text, 12.5) + 10), h: it.a.h * z };
+  });
+  const rows = rowLayout(items, W, pad, gap);
+  const rowH = rows.map(r => Math.max(...r.map(i => i.h)) + labelH + 14);
+  const H = rowH.reduce((s, v) => s + v, 0) + pad * 2;
+  const ctx = setupCanvas(cv, W, H);
+  await ground(ctx, W, H, state.unitGround, z, true);
+  const color = css(FACTION_COLOR[fac]);
+  let y = pad;
+  rows.forEach((r, ri) => {
+    let x = W - pad; const base = y + Math.max(...r.map(i => i.h));
+    for (const it of r) {
+      const cx = x - it.cw / 2, a = it.a, dw = a.w * z, dh = a.h * z;
+      if (it.hq) {
+        drawFrame(ctx, it.id, cx - dw / 2, base - dh, dw, dh);
+      } else {
+        ctx.save(); ctx.fillStyle = 'rgba(30,5,20,0.22)'; ctx.beginPath(); ctx.ellipse(cx, base, dw * 0.36, Math.max(4, dw * 0.1), 0, 0, Math.PI * 2); ctx.fill(); ctx.restore();
+        ctx.save(); ctx.strokeStyle = color; ctx.lineWidth = 2; ctx.globalAlpha = 0.9; ctx.beginPath(); ctx.ellipse(cx, base, a.radius * z * 1.25, a.radius * z * 0.45, 0, 0, Math.PI * 2); ctx.stroke(); ctx.restore();
+        drawFrame(ctx, it.id, cx - dw / 2, base - dh * a.anchor[1], dw, dh);
+      }
+      label(ctx, it.text, cx, base + 19, 12.5);
+      x -= it.cw + gap;
+    }
+    y += rowH[ri];
+  });
+}
+
+// ---------------------------------------------------------- buildings
+function buildingIds(fac, st, set) {
+  const bases = Object.keys(M.assets).filter(k => k.startsWith('bld_' + fac + '_') && M.assets[k].state === 'normal');
+  return bases.map(b => {
+    if (fac === 'wl' && set === 'A') return st === 'damaged' ? b + '_dmg' : b + '_alt';
+    return st === 'damaged' && M.assets[b + '_dmg'] ? b + '_dmg' : b;
+  }).filter(id => M.assets[id]);
+}
+async function layoutBuildings(cv, ids, z, tileId, outlineColor) {
+  const W = cv.parentElement.clientWidth; const pad = 20, gap = 18, labelH = 24;
+  const items = ids.map(id => { const text = he(id.replace(/_(dmg|alt)$/, '')); return { id, a: M.assets[id], text, cw: Math.max(M.assets[id].w * z, measure(text, 12.5) + 10), h: M.assets[id].h * z }; });
+  const rows = rowLayout(items, W, pad, gap);
+  const rowH = rows.map(r => Math.max(...r.map(i => i.h)) + labelH + 18 * z);
+  const H = rowH.reduce((s, v) => s + v, 0) + pad * 2;
+  const ctx = setupCanvas(cv, W, H);
+  await ground(ctx, W, H, tileId, z, true);
+  let y = pad;
+  rows.forEach((r, ri) => {
+    let x = W - pad; const rowTop = y, tallest = Math.max(...r.map(i => i.h));
+    for (const it of r) {
+      const a = it.a, dw = a.w * z, dh = a.h * z, cx = x - it.cw / 2;
+      const top = rowTop + (tallest - dh), anchorY = top + dh * a.anchor[1];
+      if (a.footprint) {
+        const fw = a.footprint[0] * M.tilePx * z, fh = a.footprint[1] * M.tilePx * z;
+        ctx.save(); ctx.setLineDash([5, 4]); ctx.strokeStyle = outlineColor; ctx.lineWidth = 1.5; ctx.fillStyle = 'rgba(255,255,255,0.18)';
+        ctx.fillRect(cx - fw / 2, anchorY - fh / 2, fw, fh); ctx.strokeRect(cx - fw / 2 + .5, anchorY - fh / 2 + .5, fw, fh); ctx.restore();
+      }
+      drawFrame(ctx, it.id, cx - dw / 2, top, dw, dh);
+      label(ctx, it.text, cx, rowTop + tallest + 19, 12.5);
+      x -= it.cw + gap;
+    }
+    y += rowH[ri];
+  });
+}
+async function drawBuildings() {
+  document.getElementById('setCtl').hidden = state.bldFaction !== 'wl';
+  const ids = buildingIds(state.bldFaction, state.bldState, state.bldSet);
+  await layoutBuildings(document.getElementById('bldField'), ids, state.bldZoom, 'tile_tissue', css(FACTION_COLOR[state.bldFaction]));
+}
+function buildCompare() {
+  const box = document.getElementById('wlCompare');
+  const bases = Object.keys(M.assets).filter(k => k.startsWith('bld_wl_') && M.assets[k].state === 'normal');
+  for (const b of bases) {
+    const cmp = el('div', { class: 'compare' });
+    for (const [tag, id] of [['A', b + '_alt'], ['B', b]]) {
+      const cv = el('canvas', { width: 240, height: 240, 'aria-label': he(b) + ' גרסה ' + tag });
+      const cell = el('div', {}, [cv, el('span', { class: 'badge', text: tag })]);
+      cmp.append(cell);
+      const ctx = cv.getContext('2d'); ctx.imageSmoothingQuality = 'high';
+      const f = frames.get(id); if (f) { const s = Math.min(220 / f.w, 220 / f.h); ctx.drawImage(f.img, f.x, f.y, f.w, f.h, (240 - f.w * s) / 2, (240 - f.h * s) / 2, f.w * s, f.h * s); }
+    }
+    box.append(el('div', { class: 'card' }, [cmp, caption(b)]));
+  }
+}
+
+// ---------------------------------------------------------- world
+async function drawWorld() {
+  const ids = ['bld_neu_epithelial', 'bld_neu_epithelial_infected', 'bld_neu_epithelial_burst', 'bld_neu_hepatocyte', 'bld_neu_kidneycell', 'bld_neu_cardiomyocyte', 'bld_neu_neuron',
+               'res_glucose_large', 'res_glucose_small', 'res_protein', 'res_iron'];
+  await layoutBuildings(document.getElementById('worldField'), ids, 1, 'tile_tissue', css('--neu'));
+}
+
+// ---------------------------------------------------------- maps, tiles, images
+function openViewer(src, title) {
+  const d = document.getElementById('viewer'); document.getElementById('viewerImg').src = src; document.getElementById('viewerImg').alt = title;
+  document.getElementById('viewerTitle').textContent = title; if (d.showModal) d.showModal(); else d.setAttribute('open', '');
+}
+document.getElementById('viewerClose').addEventListener('click', () => document.getElementById('viewer').close());
+document.getElementById('viewer').addEventListener('click', e => { if (e.target.id === 'viewer') e.target.close(); });
+
+function imgCard(id, src, opts = {}) {
+  const img = el('img', { src, alt: he(id), loading: 'lazy', decoding: 'async' });
+  let media = img;
+  if (opts.zoomSrc) { media = el('button', { class: 'open', type: 'button', 'aria-label': 'הגדל: ' + he(id) }, [img]); media.addEventListener('click', () => openViewer(opts.zoomSrc, he(id))); }
+  return el('div', { class: 'card' }, [media, caption(id, opts.extra)]);
+}
+function buildMaps() {
+  const g = document.getElementById('mapGrid');
+  const ids = Object.keys(M.assets).filter(k => k.startsWith('map_')).sort();
+  for (const id of ids) g.append(imgCard(id, BASE + M.assets[id].preview, { zoomSrc: BASE + M.assets[id].preview }));
+  const c = document.getElementById('mapCrops');
+  for (const id of ['map_m01_skin', 'map_m02_subcutis', 'map_m03_lymphnode']) {
+    const box = el('div', { class: 'crop' }); const img = el('img', { src: BASE + M.assets[id].file, alt: he(id) + ' בגודל אמיתי', loading: 'lazy' });
+    img.addEventListener('load', () => { box.scrollLeft = (img.naturalWidth - box.clientWidth) / -2; box.scrollTop = (img.naturalHeight - box.clientHeight) / 2; }, { once: true });
+    box.append(img); c.append(el('div', { class: 'card' }, [box, caption(id, el('span', { class: 'lead', text: 'גלול בתוך התיבה' }))]));
+  }
+}
+async function buildTiles() {
+  const g = document.getElementById('tileGrid');
+  for (const id of Object.keys(M.assets).filter(k => k.startsWith('tile_')).sort()) {
+    const cv = el('canvas', { width: 256, height: 256, 'aria-label': he(id) + ' ארבע פעמים' }); g.append(el('div', { class: 'card' }, [cv, caption(id)]));
+    loadImg(BASE + M.assets[id].file).then(img => { const ctx = cv.getContext('2d'); for (let i = 0; i < 2; i++) for (let j = 0; j < 2; j++) ctx.drawImage(img, i * 128, j * 128, 128, 128); });
+  }
+}
+
+// ---------------------------------------------------------- fx
+const fxCards = [];
+let fxGroundImg = null;
+function buildFx() {
+  const g = document.getElementById('fxGrid');
+  const ids = Object.keys(M.assets).filter(k => M.assets[k].kind === 'fx').sort((a, b) => he(a).localeCompare(he(b), 'he'));
+  for (const id of ids) {
+    const a = M.assets[id];
+    const cv = el('canvas', { width: 300, height: 260, 'aria-label': 'אפקט ' + he(id) });
+    const tags = el('span', {}, [el('span', { class: 'tag' + (a.blend === 'add' ? ' add' : ''), text: a.blend === 'add' ? 'זוהר' : 'אובייקט' }), document.createTextNode(' '), el('span', { class: 'tag', text: a.frames.length + ' פריימים' })]);
+    const card = el('div', { class: 'card' }, [cv, caption(id, tags)]); g.append(card);
+    fxCards.push({ id, a, cv, ctx: cv.getContext('2d'), visible: false, last: -1 });
+  }
+  const io = new IntersectionObserver(es => { for (const e of es) { const c = fxCards.find(c => c.cv === e.target); if (c) c.visible = e.isIntersecting; } }, { rootMargin: '200px' });
+  fxCards.forEach(c => io.observe(c.cv));
+}
+async function setFxGround() { fxGroundImg = await loadImg(BASE + M.assets[state.fxGround].file); fxCards.forEach(c => { c.last = -1; }); }
+function paintFx(c, k) {
+  const { ctx, cv, a } = c; const W = cv.width, H = cv.height;
+  ctx.globalCompositeOperation = 'source-over';
+  if (fxGroundImg) { const p = ctx.createPattern(fxGroundImg, 'repeat'); p.setTransform(new DOMMatrix().scaleSelf(0.5, 0.5)); ctx.fillStyle = p; ctx.fillRect(0, 0, W, H); }
+  const f = frames.get(a.frames[k]); if (!f) return;
+  const s = Math.min((W - 20) / f.w, (H - 20) / f.h, 1.6);
+  ctx.globalCompositeOperation = a.blend === 'add' ? 'lighter' : 'source-over';
+  ctx.imageSmoothingQuality = 'high';
+  ctx.drawImage(f.img, f.x, f.y, f.w, f.h, (W - f.w * s) / 2, (H - f.h * s) / 2, f.w * s, f.h * s);
+  ctx.globalCompositeOperation = 'source-over';
+}
+function fxLoop(t) {
+  for (const c of fxCards) {
+    if (!c.visible && c.last !== -1) continue;
+    const n = c.a.frames.length; const k = state.fxPlay === 'on' ? Math.floor(t / (1000 / c.a.fps)) % n : Math.floor(n / 2);
+    if (k !== c.last) { paintFx(c, k); c.last = k; }
+  }
+  requestAnimationFrame(fxLoop);
+}
+
+// ---------------------------------------------------------- ui, people, cine
+function buildUi() {
+  const ig = document.getElementById('iconGrid');
+  const ids = Object.keys(M.assets).filter(k => M.assets[k].kind === 'icon');
+  for (const id of ids) {
+    const cv = el('canvas', { width: 160, height: 120, 'aria-label': he(id) }); const ctx = cv.getContext('2d'); ctx.imageSmoothingQuality = 'high';
+    const f = frames.get(id); if (f) { const s = Math.min(96 / f.w, 96 / f.h); ctx.drawImage(f.img, f.x, f.y, f.w, f.h, (160 - f.w * s) / 2, (120 - f.h * s) / 2, f.w * s, f.h * s); }
+    ig.append(el('div', { class: 'card' }, [cv, caption(id)]));
+  }
+  const ug = document.getElementById('uiGrid');
+  for (const id of Object.keys(M.assets).filter(k => M.assets[k].kind === 'ui' && M.assets[k].file && !k.endsWith('briefing_bg'))) ug.append(imgCard(id, BASE + M.assets[id].file, { zoomSrc: BASE + M.assets[id].file }));
+}
+function buildPeople() {
+  const pg = document.getElementById('portraitGrid');
+  for (const id of Object.keys(M.assets).filter(k => k.startsWith('portrait_'))) pg.append(imgCard(id, BASE + M.assets[id].file, { zoomSrc: BASE + M.assets[id].file }));
+  const eg = document.getElementById('exprGrid');
+  for (const id of Object.keys(M.assets).filter(k => k.startsWith('expr_')).sort()) {
+    const strip = el('div', { class: 'expr' }, M.assets[id].files.map(f => el('img', { src: BASE + f, alt: '', loading: 'lazy' })));
+    eg.append(el('div', { class: 'card' }, [strip, caption(id)]));
+  }
+}
+function buildCine() {
+  const g = document.getElementById('cineGrid');
+  const ids = ['keyart_title', ...Object.keys(M.assets).filter(k => k.startsWith('cine_')).sort(), 'ui_briefing_bg', 'lineup_wl', 'lineup_col', 'lineup_crn'];
+  for (const id of ids) { const a = M.assets[id]; if (a) g.append(imgCard(id, BASE + a.file, { zoomSrc: BASE + a.file })); }
+}
+
+// ---------------------------------------------------------- controls
+function wireControls() {
+  document.querySelectorAll('.seg').forEach(seg => {
+    const key = seg.dataset.ctl;
+    seg.querySelectorAll('button').forEach(b => {
+      b.type = 'button';
+      if (String(state[key]) === b.dataset.v) seg.querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', String(x === b)));
+      b.addEventListener('click', async () => {
+        seg.querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', String(x === b)));
+        state[key] = /Zoom/.test(key) ? Number(b.dataset.v) : b.dataset.v;
+        if (key.startsWith('unit')) drawUnits();
+        else if (key.startsWith('bld')) drawBuildings();
+        else if (key === 'fxGround') setFxGround();
+        else if (key === 'fxPlay') fxCards.forEach(c => { c.last = -1; });
+      });
+    });
+  });
+  let t = null; addEventListener('resize', () => { clearTimeout(t); t = setTimeout(() => { drawUnits(); drawBuildings(); drawWorld(); }, 150); });
+}
+
+// ---------------------------------------------------------- boot
+async function boot() {
+  const stats = document.getElementById('stats');
+  try {
+    M = await (await fetch(BASE + 'manifest.json')).json();
+    const pages = Object.values(M.atlases).flat();
+    let done = 0;
+    stats.innerHTML = ''; const prog = el('span', { class: 'stat', text: 'טוען אטלסים 0/' + pages.length }); stats.append(prog);
+    await Promise.all(pages.map(async p => {
+      const [j, img] = await Promise.all([fetch(BASE + p.json).then(r => r.json()), loadImg(BASE + p.image)]);
+      for (const [k, f] of Object.entries(j.frames)) frames.set(k, { img, ...f.frame });
+      done++; prog.textContent = 'טוען אטלסים ' + done + '/' + pages.length;
+    }));
+    const kinds = {}; for (const a of Object.values(M.assets)) kinds[a.kind] = (kinds[a.kind] || 0) + 1;
+    const vram = pages.reduce((s, p) => s + p.w * p.h * 4, 0) / 1048576;
+    stats.innerHTML = '';
+    const add = (html, cls = '') => { const s = el('span', { class: 'stat ' + cls }); s.innerHTML = html; stats.append(s); };
+    add(`<b>${Object.keys(M.assets).length}</b> נכסים`); add(`<b>${(kinds.unit || 0) + (kinds.hero || 0)}</b> יחידות וגיבורים`);
+    add(`<b>${(kinds.building || 0)}</b> מבנים (כולל גרסאות)`); add(`<b>${kinds.fx || 0}</b> אפקטים`); add(`<b>${kinds.map || 0}</b> מפות`);
+    add(`<b>${pages.length}</b> אטלסים · ${vram.toFixed(0)}MiB בזיכרון גרפי אם טוענים הכל`); add('חסר: לוגו HOST WARS', 'warn');
+    wireControls();
+    await setFxGround();
+    buildCompare(); buildMaps(); buildTiles(); buildFx(); buildUi(); buildPeople(); buildCine();
+    await Promise.all([drawUnits(), drawBuildings(), drawWorld()]);
+    requestAnimationFrame(fxLoop);
+  } catch (err) {
+    stats.innerHTML = ''; stats.append(el('span', { class: 'stat warn', text: 'הטעינה נכשלה: ' + err.message }));
+  }
+}
+document.fonts && document.fonts.ready ? document.fonts.ready.then(boot) : boot();
+})();
+</script>

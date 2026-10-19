@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>HOST WARS</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600&family=Assistant:wght@400;700&display=swap">
+  <style>
+    html, body { margin: 0; height: 100%; background: #1c0f1a; color: #f6e8ef; font-family: Assistant, system-ui, sans-serif; overflow: hidden; }
+    #stage { position: fixed; inset: 0; }
+    #hud { position: fixed; top: 12px; right: 12px; background: rgba(28, 15, 26, .82); border-radius: 12px; padding: 10px 14px; font-size: 14px; line-height: 1.5; max-width: min(420px, calc(100vw - 24px)); }
+    #hud h1 { font: 600 20px Fredoka, Assistant, sans-serif; margin: 0 0 4px; }
+    #hud .mono { font-family: ui-monospace, Menlo, monospace; font-size: 12px; direction: ltr; unicode-bidi: isolate; }
+    #hud button { font: 700 14px Assistant, sans-serif; border: 0; border-radius: 8px; padding: 6px 12px; margin-top: 6px; background: #5aa0ff; color: #0b1630; cursor: pointer; }
+    #hud button:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+  </style>
+</head>
+<body>
+  <div id="stage"></div>
+  <div id="hud">
+    <h1>HOST WARS · שער 0</h1>
+    <div id="status">טוען…</div>
+    <div class="mono" id="gpu"></div>
+    <div class="mono" id="fps"></div>
+    <button id="stress" type="button">בדיקת עומס: 200 יחידות</button>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>

@@ -1,0 +1,1512 @@
+{
+ "bld_col_biofilm_core": {
+  "source": "New_folder__4_/New folder (4)/ChatGPT Image Oct 18, 2026, 06_36_56 PM-1.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "bld_col_biofilm_core_dmg": {
+  "source": "New_folder__4_/New folder (4)/ChatGPT Image Oct 18, 2026, 06_37_34 PM-1.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "bld_col_capsulewall": {
+  "source": "New_folder__4_/New folder (4)/ChatGPT Image Oct 18, 2026, 06_37_09 PM-10.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "bld_col_capsulewall_dmg": {
+  "source": "New_folder__4_/New folder (4)/ChatGPT Image Oct 18, 2026, 06_37_45 PM-9.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "bld_col_fermentation": {
+  "source": "New_folder__4_/New folder (4)/ChatGPT Image Oct 18, 2026, 06_36_58 PM-2.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "bld_col_fermentation_dmg": {
+  "source": "New_folder__4_/New folder (4)/ChatGPT Image Oct 18, 2026, 06_37_35 PM-2.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "bld_col_fission": {
+  "source": "New_folder__4_/New folder (4)/ChatGPT Image Oct 18, 2026, 06_36_59 PM-3.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "bld_col_fission_dmg": {
+  "source": "New_folder__4_/New folder (4)/ChatGPT Image Oct 18, 2026, 06_37_36 PM-3.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "bld_col_flagellum": {
+  "source": "New_folder__4_/New folder (4)/ChatGPT Image Oct 18, 2026, 06_37_02 PM-5.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "bld_col_flagellum_dmg": {
+  "source": "New_folder__4_/New folder (4)/ChatGPT Image Oct 18, 2026, 06_37_39 PM-5.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "bld_col_plasmid": {
+  "source": "New_folder__4_/New folder (4)/ChatGPT Image Oct 18, 2026, 06_37_04 PM-6.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "bld_col_plasmid_dmg": {
+  "source": "New_folder__4_/New folder (4)/ChatGPT Image Oct 18, 2026, 06_37_46 PM-10.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "bld_col_siderophore": {
+  "source": "New_folder__4_/New folder (4)/ChatGPT Image Oct 18, 2026, 06_37_01 PM-4.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "bld_col_siderophore_dmg": {
+  "source": "New_folder__4_/New folder (4)/ChatGPT Image Oct 18, 2026, 06_37_38 PM-4.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "bld_col_sporebank": {
+  "source": "New_folder__4_/New folder (4)/ChatGPT Image Oct 18, 2026, 06_37_07 PM-8.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "bld_col_sporebank_dmg": {
+  "source": "New_folder__4_/New folder (4)/ChatGPT Image Oct 18, 2026, 06_37_43 PM-8.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "bld_col_superantigen": {
+  "source": "New_folder__7_/New folder (7)/Golden Bio-Reactor Fortress.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "bld_col_superantigen_dmg": {
+  "source": "New_folder__7_/New folder (7)/Gooey Golden Reactor Boss.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "bld_col_toxinfoundry": {
+  "source": "New_folder__4_/New folder (4)/ChatGPT Image Oct 18, 2026, 06_37_05 PM-7.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "bld_col_toxinfoundry_dmg": {
+  "source": "New_folder__4_/New folder (4)/ChatGPT Image Oct 18, 2026, 06_37_42 PM-7.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "bld_col_toxinspire": {
+  "source": "New_folder__4_/New folder (4)/ChatGPT Image Oct 18, 2026, 06_37_08 PM-9.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "bld_col_toxinspire_dmg": {
+  "source": "New_folder__4_/New folder (4)/ChatGPT Image Oct 18, 2026, 06_37_40 PM-6.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "bld_crn_forge": {
+  "source": "New_folder__4_/New folder (4)/ChatGPT Image Oct 18, 2026, 06_37_21 PM-3.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "bld_crn_forge_dmg": {
+  "source": "New_folder/New folder/ChatGPT Image Oct 18, 2026, 06_37_52 PM-3.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "bld_crn_mothercapsid": {
+  "source": "New_folder__4_/New folder (4)/ChatGPT Image Oct 18, 2026, 06_37_18 PM-1.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "bld_crn_mothercapsid_deployed": {
+  "source": "New_folder__4_/New folder (4)/ChatGPT Image Oct 18, 2026, 06_37_19 PM-2.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "bld_crn_mothercapsid_deployed_dmg": {
+  "source": "New_folder/New folder/ChatGPT Image Oct 18, 2026, 06_37_52 PM-2.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "bld_crn_mothercapsid_dmg": {
+  "source": "New_folder/New folder/ChatGPT Image Oct 18, 2026, 06_37_50 PM-1.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "bld_crn_neuralnest": {
+  "source": "New_folder__4_/New folder (4)/ChatGPT Image Oct 18, 2026, 06_37_24 PM-5.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "bld_crn_neuralnest_dmg": {
+  "source": "New_folder/New folder/ChatGPT Image Oct 18, 2026, 06_37_56 PM-5.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "bld_crn_projector": {
+  "source": "New_folder__4_/New folder (4)/ChatGPT Image Oct 18, 2026, 06_37_26 PM-6.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "bld_crn_projector_dmg": {
+  "source": "New_folder/New folder/ChatGPT Image Oct 18, 2026, 06_37_57 PM-6.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "bld_crn_spikespire": {
+  "source": "New_folder__4_/New folder (4)/ChatGPT Image Oct 18, 2026, 06_37_23 PM-4.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "bld_crn_spikespire_dmg": {
+  "source": "New_folder/New folder/ChatGPT Image Oct 18, 2026, 06_37_54 PM-4.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "bld_neu_cardiomyocyte": {
+  "source": "New_folder/New folder/ChatGPT Image Oct 18, 2026, 06_38_13 PM-6.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "bld_neu_cardiomyocyte_dmg": {
+  "source": "New_folder__5_/New folder (5)/ChatGPT Image Oct 18, 2026, 06_38_24 PM-6.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "bld_neu_epithelial": {
+  "source": "New_folder/New folder/ChatGPT Image Oct 18, 2026, 06_38_06 PM-1.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "bld_neu_epithelial_burst": {
+  "source": "New_folder/New folder/ChatGPT Image Oct 18, 2026, 06_38_09 PM-3.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "bld_neu_epithelial_burst_dmg": {
+  "source": "New_folder__5_/New folder (5)/ChatGPT Image Oct 18, 2026, 06_38_20 PM-3.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "bld_neu_epithelial_dmg": {
+  "source": "New_folder/New folder/ChatGPT Image Oct 18, 2026, 06_38_17 PM-1.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "bld_neu_epithelial_infected": {
+  "source": "New_folder/New folder/ChatGPT Image Oct 18, 2026, 06_38_07 PM-2.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "bld_neu_epithelial_infected_dmg": {
+  "source": "New_folder/New folder/ChatGPT Image Oct 18, 2026, 06_38_18 PM-2.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "bld_neu_hepatocyte": {
+  "source": "New_folder/New folder/ChatGPT Image Oct 18, 2026, 06_38_10 PM-4.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "bld_neu_hepatocyte_dmg": {
+  "source": "New_folder__5_/New folder (5)/ChatGPT Image Oct 18, 2026, 06_38_21 PM-4.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "bld_neu_kidneycell": {
+  "source": "New_folder/New folder/ChatGPT Image Oct 18, 2026, 06_38_12 PM-5.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "bld_neu_kidneycell_dmg": {
+  "source": "New_folder__5_/New folder (5)/ChatGPT Image Oct 18, 2026, 06_38_22 PM-5.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "bld_neu_neuron": {
+  "source": "New_folder/New folder/ChatGPT Image Oct 18, 2026, 06_38_14 PM-7.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "bld_neu_neuron_dmg": {
+  "source": "New_folder__5_/New folder (5)/ChatGPT Image Oct 18, 2026, 06_38_25 PM-7.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "bld_wl_aminopump": {
+  "source": "New_folder__3_/New folder (3)/ChatGPT Image Oct 18, 2026, 06_36_27 PM-6.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "bld_wl_aminopump_alt": {
+  "source": "New_folder__2_/New folder (2)/ChatGPT Image Oct 18, 2026, 06_35_34 PM-6.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "bld_wl_aminopump_dmg": {
+  "source": "New_folder__3_/New folder (3)/ChatGPT Image Oct 18, 2026, 06_35_45 PM-6.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "bld_wl_arterial": {
+  "source": "New_folder__4_/New folder (4)/ChatGPT Image Oct 18, 2026, 06_36_32 PM-10.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "bld_wl_arterial_alt": {
+  "source": "New_folder__3_/New folder (3)/ChatGPT Image Oct 18, 2026, 06_35_55 PM-4.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "bld_wl_arterial_dmg": {
+  "source": "New_folder__3_/New folder (3)/ChatGPT Image Oct 18, 2026, 06_36_09 PM-4.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "bld_wl_capillary": {
+  "source": "New_folder__3_/New folder (3)/ChatGPT Image Oct 18, 2026, 06_36_22 PM-2.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "bld_wl_capillary_alt": {
+  "source": "New_folder__2_/New folder (2)/ChatGPT Image Oct 18, 2026, 06_35_28 PM-2.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "bld_wl_capillary_dmg": {
+  "source": "New_folder__2_/New folder (2)/ChatGPT Image Oct 18, 2026, 06_35_38 PM-2.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "bld_wl_complement": {
+  "source": "New_folder__4_/New folder (4)/ChatGPT Image Oct 18, 2026, 06_36_42 PM-6.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "bld_wl_complement_alt": {
+  "source": "New_folder__3_/New folder (3)/ChatGPT Image Oct 18, 2026, 06_36_03 PM-10.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "bld_wl_complement_dmg": {
+  "source": "New_folder__3_/New folder (3)/ChatGPT Image Oct 18, 2026, 06_36_18 PM-10.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "bld_wl_cytokine": {
+  "source": "New_folder__3_/New folder (3)/ChatGPT Image Oct 18, 2026, 06_36_28 PM-7.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "bld_wl_cytokine_alt": {
+  "source": "New_folder__3_/New folder (3)/ChatGPT Image Oct 18, 2026, 06_35_50 PM-1.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "bld_wl_cytokine_dmg": {
+  "source": "New_folder__3_/New folder (3)/ChatGPT Image Oct 18, 2026, 06_36_05 PM-1.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "bld_wl_ferritin": {
+  "source": "New_folder__4_/New folder (4)/ChatGPT Image Oct 18, 2026, 06_36_39 PM-4.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "bld_wl_ferritin_alt": {
+  "source": "New_folder__3_/New folder (3)/ChatGPT Image Oct 18, 2026, 06_36_00 PM-8.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "bld_wl_ferritin_dmg": {
+  "source": "New_folder__3_/New folder (3)/ChatGPT Image Oct 18, 2026, 06_36_15 PM-8.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "bld_wl_fibrinwall": {
+  "source": "New_folder__4_/New folder (4)/ChatGPT Image Oct 18, 2026, 06_36_41 PM-5.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "bld_wl_fibrinwall_alt": {
+  "source": "New_folder__3_/New folder (3)/ChatGPT Image Oct 18, 2026, 06_36_02 PM-9.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "bld_wl_fibrinwall_dmg": {
+  "source": "New_folder__3_/New folder (3)/ChatGPT Image Oct 18, 2026, 06_36_17 PM-9.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "bld_wl_germinal": {
+  "source": "New_folder__3_/New folder (3)/ChatGPT Image Oct 18, 2026, 06_36_31 PM-9.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "bld_wl_germinal_alt": {
+  "source": "New_folder__3_/New folder (3)/ChatGPT Image Oct 18, 2026, 06_35_52 PM-3.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "bld_wl_germinal_dmg": {
+  "source": "New_folder__3_/New folder (3)/ChatGPT Image Oct 18, 2026, 06_36_08 PM-3.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "bld_wl_lymphnode": {
+  "source": "New_folder__3_/New folder (3)/ChatGPT Image Oct 18, 2026, 06_36_20 PM-1.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "bld_wl_lymphnode_alt": {
+  "source": "New_folder__2_/New folder (2)/ChatGPT Image Oct 18, 2026, 06_35_27 PM-1.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "bld_wl_lymphnode_dmg": {
+  "source": "New_folder__2_/New folder (2)/ChatGPT Image Oct 18, 2026, 06_35_37 PM-1.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "bld_wl_macropost": {
+  "source": "New_folder__4_/New folder (4)/ChatGPT Image Oct 18, 2026, 06_36_38 PM-3.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "bld_wl_macropost_alt": {
+  "source": "New_folder__3_/New folder (3)/ChatGPT Image Oct 18, 2026, 06_35_59 PM-7.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "bld_wl_macropost_dmg": {
+  "source": "New_folder__3_/New folder (3)/ChatGPT Image Oct 18, 2026, 06_36_14 PM-7.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "bld_wl_marrow": {
+  "source": "New_folder__3_/New folder (3)/ChatGPT Image Oct 18, 2026, 06_36_24 PM-4.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "bld_wl_marrow_alt": {
+  "source": "New_folder__2_/New folder (2)/ChatGPT Image Oct 18, 2026, 06_35_31 PM-4.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "bld_wl_marrow_dmg": {
+  "source": "New_folder__3_/New folder (3)/ChatGPT Image Oct 18, 2026, 06_35_42 PM-4.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "bld_wl_mastcell": {
+  "source": "New_folder__4_/New folder (4)/ChatGPT Image Oct 18, 2026, 06_36_36 PM-2.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "bld_wl_mastcell_alt": {
+  "source": "New_folder__3_/New folder (3)/ChatGPT Image Oct 18, 2026, 06_35_58 PM-6.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "bld_wl_mastcell_dmg": {
+  "source": "New_folder__3_/New folder (3)/ChatGPT Image Oct 18, 2026, 06_36_12 PM-6.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "bld_wl_memory": {
+  "source": "New_folder__4_/New folder (4)/ChatGPT Image Oct 18, 2026, 06_36_35 PM-1.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "bld_wl_memory_alt": {
+  "source": "New_folder__3_/New folder (3)/ChatGPT Image Oct 18, 2026, 06_35_56 PM-5.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "bld_wl_memory_dmg": {
+  "source": "New_folder__3_/New folder (3)/ChatGPT Image Oct 18, 2026, 06_36_11 PM-5.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "bld_wl_mitochondria": {
+  "source": "New_folder__3_/New folder (3)/ChatGPT Image Oct 18, 2026, 06_36_23 PM-3.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "bld_wl_mitochondria_alt": {
+  "source": "New_folder__2_/New folder (2)/ChatGPT Image Oct 18, 2026, 06_35_30 PM-3.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "bld_wl_mitochondria_dmg": {
+  "source": "New_folder__3_/New folder (3)/ChatGPT Image Oct 18, 2026, 06_35_40 PM-3.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "bld_wl_spleen": {
+  "source": "New_folder__3_/New folder (3)/ChatGPT Image Oct 18, 2026, 06_36_26 PM-5.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "bld_wl_spleen_alt": {
+  "source": "New_folder__2_/New folder (2)/ChatGPT Image Oct 18, 2026, 06_35_32 PM-5.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "bld_wl_spleen_dmg": {
+  "source": "New_folder__3_/New folder (3)/ChatGPT Image Oct 18, 2026, 06_35_43 PM-5.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "bld_wl_thymus": {
+  "source": "New_folder__3_/New folder (3)/ChatGPT Image Oct 18, 2026, 06_36_30 PM-8.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "bld_wl_thymus_alt": {
+  "source": "New_folder__3_/New folder (3)/ChatGPT Image Oct 18, 2026, 06_35_51 PM-2.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "bld_wl_thymus_dmg": {
+  "source": "New_folder__3_/New folder (3)/ChatGPT Image Oct 18, 2026, 06_36_06 PM-2.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "brand_yak": {
+  "source": "New_folder__7_/New folder (7)/Smiling Portrait with Retro YAK Sticker.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "cine_01_fence": {
+  "source": "New_folder__7_/New folder (7)/Sunset Construction Glove Snagged on Barbed Wire.png",
+  "w": 1672,
+  "h": 941
+ },
+ "cine_02_dive": {
+  "source": "New_folder__6_/New folder (6)/Cinematic Dive Into the Bloodstream.png",
+  "w": 1672,
+  "h": 941
+ },
+ "cine_03_paratroopers": {
+  "source": "New_folder__6_/New folder (6)/Crowned Germs Invade the Wound.png",
+  "w": 1672,
+  "h": 941
+ },
+ "cine_04_command": {
+  "source": "New_folder__7_/New folder (7)/Immune Command Center Briefing.png",
+  "w": 1672,
+  "h": 941
+ },
+ "cine_05_launch": {
+  "source": "New_folder__7_/New folder (7)/Immune Cell Army Charge.png",
+  "w": 1672,
+  "h": 941
+ },
+ "cine_06_crown_lands": {
+  "source": "New_folder__5_/New folder (5)/Candy Virus King#U2019s Crystal Landing.png",
+  "w": 1672,
+  "h": 941
+ },
+ "cine_07_hospital": {
+  "source": "New_folder__6_/New folder (6)/Cozy Moonlit Hospital Sleep_Scene.png",
+  "w": 1672,
+  "h": 941
+ },
+ "cine_08_vegetation": {
+  "source": "New_folder__7_/New folder (7)/Golden Germ King#U2019s Heartbound Fortress.png",
+  "w": 1672,
+  "h": 941
+ },
+ "cine_09_storm": {
+  "source": "New_folder/New folder/Chaotic Bloodstream Vortex_ Immune Cells vs. Viruses.png",
+  "w": 1672,
+  "h": 941
+ },
+ "cine_10_discharge": {
+  "source": "New_folder__7_/New folder (7)/Sunrise Hospital Farewell.png",
+  "w": 1672,
+  "h": 941
+ },
+ "cine_11_memory": {
+  "source": "New_folder__7_/New folder (7)/Whimsical Immune Cell Archive.png",
+  "w": 1672,
+  "h": 941
+ },
+ "cine_12_sequel": {
+  "source": "New_folder__6_/New folder (6)/Glimmering Alien Eye in Slime.png",
+  "w": 1672,
+  "h": 941
+ },
+ "emblem_col": {
+  "source": "New_folder/New folder/ChatGPT Image Oct 18, 2026, 06_33_28 PM-4.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "emblem_crn": {
+  "source": "New_folder/New folder/ChatGPT Image Oct 18, 2026, 06_33_29 PM-5.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "emblem_wl": {
+  "source": "New_folder/New folder/ChatGPT Image Oct 18, 2026, 06_33_27 PM-3.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "expr_aureus": {
+  "source": "New_folder__6_/New folder (6)/Four Golden Royal Emotions.png",
+  "w": 2172,
+  "h": 724
+ },
+ "expr_bigmac": {
+  "source": "New_folder__5_/New folder (5)/Glossy Blob Chef Expression Lineup.png",
+  "w": 1774,
+  "h": 887
+ },
+ "expr_crown": {
+  "source": "New_folder__7_/New folder (7)/Regal Gem-Crowned Monster Expression Sheet.png",
+  "w": 2172,
+  "h": 724
+ },
+ "expr_crown_alt": {
+  "source": "New_folder__6_/New folder (6)/Four Faces of the Virus Queen.png",
+  "w": 2172,
+  "h": 724
+ },
+ "expr_dendra": {
+  "source": "New_folder__7_/New folder (7)/Whimsical Neuron Scientist Expression Sheet.png",
+  "w": 2172,
+  "h": 724
+ },
+ "expr_general4": {
+  "source": "New_folder__6_/New folder (6)/General Jelly Expression Sheet.png",
+  "w": 2172,
+  "h": 724
+ },
+ "expr_killer": {
+  "source": "New_folder__6_/New folder (6)/Four Faces of a Crystal Masked Hero.png",
+  "w": 2508,
+  "h": 627
+ },
+ "fx_agglutination": {
+  "source": "New_folder__6_/New folder (6)/ChatGPT Image Oct 18, 2026, 06_40_34 PM-5.png",
+  "w": 2172,
+  "h": 724
+ },
+ "fx_antibiotic_strike": {
+  "source": "New_folder__7_/New folder (7)/Neon Capsule Impact Sequence.png",
+  "w": 2172,
+  "h": 724
+ },
+ "fx_antibody_volley": {
+  "source": "New_folder__7_/New folder (7)/#U05e8#U05e6#U05e3 #U05e7#U05dc#U05d9#U05e2#U05d9 #U05e0#U05d5#U05d2#U05d3#U05e0#U05d9#U05dd #U05e7#U05e1#U05d5#U05de#U05d9#U05dd #U0441#U0438#U044f #U0441#U0438#U044f.png",
+  "w": 2172,
+  "h": 724
+ },
+ "fx_antiviral": {
+  "source": "New_folder__7_/New folder (7)/Neon Virus Net Capture Sequence.png",
+  "w": 2172,
+  "h": 724
+ },
+ "fx_atp_orbs": {
+  "source": "New_folder__7_/New folder (7)/Golden Orb Energy Burst Sprite Sheet.png",
+  "w": 2172,
+  "h": 724
+ },
+ "fx_biofilm_spread": {
+  "source": "New_folder__7_/New folder (7)/Neon Slime Spread Animation.png",
+  "w": 2172,
+  "h": 724
+ },
+ "fx_build_grow": {
+  "source": "New_folder__7_/New folder (7)/Slime House Evolution Sequence.png",
+  "w": 2171,
+  "h": 724
+ },
+ "fx_building_collapse": {
+  "source": "New_folder__6_/New folder (6)/Candy Tower Collapse Animation Frames.png",
+  "w": 2172,
+  "h": 724
+ },
+ "fx_clot_seal": {
+  "source": "New_folder__6_/New folder (6)/ChatGPT Image Oct 18, 2026, 06_40_35 PM-6.png",
+  "w": 2172,
+  "h": 724
+ },
+ "fx_complement_strike": {
+  "source": "New_folder__7_/New folder (7)/Neon Ring Slam Impact Sequence.png",
+  "w": 2172,
+  "h": 724
+ },
+ "fx_conjugation": {
+  "source": "New_folder__7_/New folder (7)/Glossy Neon Blob DNA Transfer Sprite Sheet.png",
+  "w": 2172,
+  "h": 724
+ },
+ "fx_cough": {
+  "source": "New_folder__7_/New folder (7)/Minty Wind Blast Sprite Sheet.png",
+  "w": 2172,
+  "h": 724
+ },
+ "fx_death_bacteria": {
+  "source": "New_folder__6_/New folder (6)/Cute Bacterium Burst Sequence.png",
+  "w": 2203,
+  "h": 714
+ },
+ "fx_death_immune": {
+  "source": "New_folder__7_/New folder (7)/Gooey Creature Dissolving Into Sparkles.png",
+  "w": 2172,
+  "h": 724
+ },
+ "fx_death_virus": {
+  "source": "New_folder/New folder/Candy Virus Shatter Animation.png",
+  "w": 2172,
+  "h": 724
+ },
+ "fx_drift": {
+  "source": "New_folder__7_/New folder (7)/Virus Color Transformation Sequence.png",
+  "w": 2172,
+  "h": 724
+ },
+ "fx_endotoxin_blast": {
+  "source": "New_folder__7_/New folder (7)/Neon Germ Explosion Sprite Sequence.png",
+  "w": 2172,
+  "h": 724
+ },
+ "fx_eos_grenade": {
+  "source": "New_folder__7_/New folder (7)/#U05e8#U05e6#U05e3 #U05e4#U05d9#U05e6#U05d5#U05e5 #U05db#U05ea#U05d5#U05dd #U05de#U05e6#U05d5#U05d9#U05e8.png",
+  "w": 2172,
+  "h": 724
+ },
+ "fx_extravasation": {
+  "source": "New_folder__6_/New folder (6)/Chibi Cell Bursts Through Barrier.png",
+  "w": 2172,
+  "h": 724
+ },
+ "fx_fever_haze": {
+  "source": "New_folder__6_/New folder (6)/Eight-Frame Cartoon Heatwave Sprite Sheet.png",
+  "w": 2172,
+  "h": 724
+ },
+ "fx_fission": {
+  "source": "New_folder__6_/New folder (6)/ChatGPT Image Oct 18, 2026, 06_40_44 PM-10.png",
+  "w": 2172,
+  "h": 724
+ },
+ "fx_glucose_harvest": {
+  "source": "New_folder__7_/New folder (7)/Magical Crystal Collector Sequence.png",
+  "w": 2172,
+  "h": 724
+ },
+ "fx_granuloma_ring": {
+  "source": "New_folder__6_/New folder (6)/ChatGPT Image Oct 18, 2026, 06_40_38 PM-7.png",
+  "w": 2172,
+  "h": 724
+ },
+ "fx_heartbeat": {
+  "source": "New_folder__6_/New folder (6)/Eight-Frame Neon Heartbeat Pulse Sequence.png",
+  "w": 2172,
+  "h": 724
+ },
+ "fx_hijack": {
+  "source": "New_folder__6_/New folder (6)/Cute Cell Infection Sequence.png",
+  "w": 2113,
+  "h": 744
+ },
+ "fx_histamine_pulse": {
+  "source": "New_folder__7_/New folder (7)/#U05e8#U05e6#U05e3 #U05d4#U05ea#U05e4#U05d5#U05e6#U05e6#U05d5#U05ea #U05d0#U05e0#U05e8#U05d2#U05d9#U05d4 #U05d5#U05e8#U05d5#U05d3#U05d4.png",
+  "w": 2172,
+  "h": 724
+ },
+ "fx_il2_aura": {
+  "source": "New_folder__6_/New folder (6)/ChatGPT Image Oct 18, 2026, 06_40_42 PM-9.png",
+  "w": 2172,
+  "h": 724
+ },
+ "fx_integration": {
+  "source": "New_folder__7_/New folder (7)/Glowing DNA Invades a Cell Sprite Sheet.png",
+  "w": 2113,
+  "h": 744
+ },
+ "fx_interferon_wave": {
+  "source": "New_folder__6_/New folder (6)/ChatGPT Image Oct 18, 2026, 06_40_41 PM-8.png",
+  "w": 2172,
+  "h": 724
+ },
+ "fx_iron_draw": {
+  "source": "New_folder__6_/New folder (6)/Eight-Stage Magical Straw Suction Sequence.png",
+  "w": 1916,
+  "h": 821
+ },
+ "fx_iv_fluids": {
+  "source": "New_folder__6_/New folder (6)/Eight-Frame Cartoon Water Splash Animation.png",
+  "w": 2172,
+  "h": 724
+ },
+ "fx_iv_line": {
+  "source": "New_folder__7_/New folder (7)/Magical IV Drip Animation Strip.png",
+  "w": 2172,
+  "h": 724
+ },
+ "fx_lysis_burst": {
+  "source": "New_folder__6_/New folder (6)/Cute Virus Burst Animation Frames.png",
+  "w": 2172,
+  "h": 724
+ },
+ "fx_mass_infection": {
+  "source": "New_folder__7_/New folder (7)/Neon Virus Energy Burst Frames.png",
+  "w": 2172,
+  "h": 724
+ },
+ "fx_net_burst": {
+  "source": "New_folder__6_/New folder (6)/ChatGPT Image Oct 18, 2026, 06_40_30 PM-1.png",
+  "w": 2172,
+  "h": 724
+ },
+ "fx_nk_strike": {
+  "source": "New_folder__7_/New folder (7)/#U05e8#U05e6#U05e3 #U05de#U05ea#U05e7#U05e4#U05ea #U05e1#U05d4#U05e8 #U05e7#U05e1#U05d5#U05de#U05d4.png",
+  "w": 2508,
+  "h": 627
+ },
+ "fx_opsonize_tag": {
+  "source": "New_folder__6_/New folder (6)/ChatGPT Image Oct 18, 2026, 06_40_33 PM-4.png",
+  "w": 2172,
+  "h": 724
+ },
+ "fx_perforin": {
+  "source": "New_folder__7_/New folder (7)/#U05e8#U05e6#U05e3 #U05e4#U05d2#U05d9#U05e2#U05ea #U05de#U05d6#U05e8#U05e7 #U05d6#U05d5#U05d4#U05e8.png",
+  "w": 2172,
+  "h": 724
+ },
+ "fx_phage_drop": {
+  "source": "New_folder__7_/New folder (7)/Parachuting Phage Robot Landing Sequence.png",
+  "w": 2172,
+  "h": 724
+ },
+ "fx_phagocytosis": {
+  "source": "New_folder__6_/New folder (6)/ChatGPT Image Oct 18, 2026, 06_40_31 PM-2.png",
+  "w": 2172,
+  "h": 724
+ },
+ "fx_pinkburst_and_toxin_glob": {
+  "source": "New_folder__7_/New folder (7)/#U05d2#U05d9#U05dc#U05d9#U05d5#U05df #U05d0#U05e4#U05e7#U05d8#U05d9#U05dd #U05d6#U05d5#U05d4#U05e8#U05d9#U05dd_ #U05e4#U05d9#U05e6#U05d5#U05e5 #U05d5#U05e8#U05e4#U05e9.png",
+  "w": 2172,
+  "h": 724
+ },
+ "fx_quorum": {
+  "source": "New_folder__7_/New folder (7)/#U05e8#U05e6#U05e3 #U05e1#U05e0#U05db#U05e8#U05d5#U05df #U05e0#U05d9#U05d0#U05d5#U05e0#U05d9 #U05e9#U05dc #U05d7#U05d9#U05d9#U05d3#U05e7#U05d9#U05dd.png",
+  "w": 2172,
+  "h": 724
+ },
+ "fx_ribosome_income": {
+  "source": "New_folder__7_/New folder (7)/Sick Cell Purple Sparkle Animation Strip.png",
+  "w": 2172,
+  "h": 724
+ },
+ "fx_scan_ring": {
+  "source": "New_folder__6_/New folder (6)/ChatGPT Image Oct 18, 2026, 06_40_32 PM-3.png",
+  "w": 2172,
+  "h": 724
+ },
+ "fx_spike_dart": {
+  "source": "New_folder__6_/New folder (6)/ChatGPT Image Oct 18, 2026, 06_39_55 PM-3.png",
+  "w": 2172,
+  "h": 724
+ },
+ "fx_spore_form": {
+  "source": "New_folder__7_/New folder (7)/Purple Bacterium#U2019s Dreamy Spore Transformation.png",
+  "w": 2172,
+  "h": 724
+ },
+ "fx_steroid": {
+  "source": "New_folder__6_/New folder (6)/Dreamy Sleep Mist Animation Strip.png",
+  "w": 2172,
+  "h": 724
+ },
+ "fx_strep_whip": {
+  "source": "New_folder__6_/New folder (6)/ChatGPT Image Oct 18, 2026, 06_39_52 PM-1.png",
+  "w": 2172,
+  "h": 724
+ },
+ "fx_superantigen": {
+  "source": "New_folder__6_/New folder (6)/Fiery Energy Burst Sprite Sheet.png",
+  "w": 2172,
+  "h": 724
+ },
+ "fx_surgical": {
+  "source": "New_folder__7_/New folder (7)/Neon Slime Laser Split Sequence.png",
+  "w": 2172,
+  "h": 724
+ },
+ "fx_toxin_cloud": {
+  "source": "New_folder__6_/New folder (6)/ChatGPT Image Oct 18, 2026, 06_39_53 PM-2.png",
+  "w": 2172,
+  "h": 724
+ },
+ "fx_urine_wave": {
+  "source": "New_folder__7_/New folder (7)/Golden Wave Splash Animation Frames.png",
+  "w": 2172,
+  "h": 724
+ },
+ "fx_vasopressor": {
+  "source": "New_folder__7_/New folder (7)/Neon Pulse Wave Sequence.png",
+  "w": 2172,
+  "h": 724
+ },
+ "hero_col_aureus": {
+  "source": "New_folder__2_/New folder (2)/ChatGPT Image Oct 18, 2026, 06_34_40 PM-5.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "hero_col_aureus_mrsa": {
+  "source": "New_folder__2_/New folder (2)/ChatGPT Image Oct 18, 2026, 06_34_41 PM-6.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "hero_col_clostra": {
+  "source": "New_folder__2_/New folder (2)/ChatGPT Image Oct 18, 2026, 06_34_43 PM-8.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "hero_col_meningo": {
+  "source": "New_folder__2_/New folder (2)/ChatGPT Image Oct 18, 2026, 06_34_44 PM-9.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "hero_col_pseudo": {
+  "source": "New_folder__2_/New folder (2)/ChatGPT Image Oct 18, 2026, 06_34_42 PM-7.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "hero_crn_crown": {
+  "source": "New_folder__2_/New folder (2)/ChatGPT Image Oct 18, 2026, 06_35_14 PM-3.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "hero_crn_flu": {
+  "source": "New_folder__2_/New folder (2)/ChatGPT Image Oct 18, 2026, 06_35_16 PM-4.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "hero_crn_integrator": {
+  "source": "New_folder__2_/New folder (2)/ChatGPT Image Oct 18, 2026, 06_35_10 PM-1.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "hero_crn_sleeper": {
+  "source": "New_folder__2_/New folder (2)/ChatGPT Image Oct 18, 2026, 06_35_13 PM-2.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "hero_wl_bigmac": {
+  "source": "New_folder/New folder/ChatGPT Image Oct 18, 2026, 06_34_09 PM-1.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "hero_wl_dendra": {
+  "source": "New_folder/New folder/ChatGPT Image Oct 18, 2026, 06_34_11 PM-3.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "hero_wl_general4": {
+  "source": "New_folder/New folder/ChatGPT Image Oct 18, 2026, 06_34_14 PM-5.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "hero_wl_killer": {
+  "source": "New_folder/New folder/ChatGPT Image Oct 18, 2026, 06_34_09 PM-2.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "hero_wl_plasma": {
+  "source": "New_folder/New folder/ChatGPT Image Oct 18, 2026, 06_34_12 PM-4.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "keyart_title": {
+  "source": "New_folder/New folder/ChatGPT Image Oct 18, 2026, 06_33_26 PM-2.png",
+  "w": 1672,
+  "h": 941
+ },
+ "lineup_col": {
+  "source": "New_folder/New folder/ChatGPT Image Oct 18, 2026, 06_33_32 PM-2.png",
+  "w": 2172,
+  "h": 724
+ },
+ "lineup_crn": {
+  "source": "New_folder/New folder/ChatGPT Image Oct 18, 2026, 06_33_33 PM-3.png",
+  "w": 2172,
+  "h": 724
+ },
+ "lineup_wl": {
+  "source": "New_folder/New folder/ChatGPT Image Oct 18, 2026, 06_33_31 PM-1.png",
+  "w": 2172,
+  "h": 724
+ },
+ "map_m01_skin": {
+  "source": "New_folder__7_/New folder (7)/Whimsical Skin Landscape Diorama.png",
+  "w": 1672,
+  "h": 941
+ },
+ "map_m02_subcutis": {
+  "source": "New_folder__5_/New folder (5)/ChatGPT Image Oct 18, 2026, 06_38_38 PM-1.png",
+  "w": 1672,
+  "h": 941
+ },
+ "map_m03_lymphnode": {
+  "source": "New_folder__5_/New folder (5)/ChatGPT Image Oct 18, 2026, 06_38_39 PM-2.png",
+  "w": 1672,
+  "h": 941
+ },
+ "map_m04_vein": {
+  "source": "New_folder__5_/New folder (5)/ChatGPT Image Oct 18, 2026, 06_38_48 PM-1.png",
+  "w": 1672,
+  "h": 941
+ },
+ "map_m05_spleen": {
+  "source": "New_folder__5_/New folder (5)/ChatGPT Image Oct 18, 2026, 06_38_49 PM-2.png",
+  "w": 1672,
+  "h": 941
+ },
+ "map_m06_nose": {
+  "source": "New_folder__5_/New folder (5)/ChatGPT Image Oct 18, 2026, 06_38_52 PM-3.png",
+  "w": 1672,
+  "h": 941
+ },
+ "map_m07_trachea": {
+  "source": "New_folder__5_/New folder (5)/ChatGPT Image Oct 18, 2026, 06_38_53 PM-4.png",
+  "w": 1672,
+  "h": 941
+ },
+ "map_m08_lungs": {
+  "source": "New_folder__5_/New folder (5)/ChatGPT Image Oct 18, 2026, 06_38_55 PM-5.png",
+  "w": 1672,
+  "h": 941
+ },
+ "map_m09_smallintestine": {
+  "source": "New_folder__5_/New folder (5)/ChatGPT Image Oct 18, 2026, 06_38_56 PM-6.png",
+  "w": 1672,
+  "h": 941
+ },
+ "map_m10_colon": {
+  "source": "New_folder__5_/New folder (5)/ChatGPT Image Oct 18, 2026, 06_38_58 PM-7.png",
+  "w": 1672,
+  "h": 941
+ },
+ "map_m11_liver": {
+  "source": "New_folder__5_/New folder (5)/ChatGPT Image Oct 18, 2026, 06_39_00 PM-1.png",
+  "w": 1672,
+  "h": 941
+ },
+ "map_m12_urinary": {
+  "source": "New_folder__5_/New folder (5)/ChatGPT Image Oct 18, 2026, 06_39_01 PM-2.png",
+  "w": 1672,
+  "h": 941
+ },
+ "map_m13_heartvalve": {
+  "source": "New_folder__5_/New folder (5)/ChatGPT Image Oct 18, 2026, 06_39_02 PM-3.png",
+  "w": 1672,
+  "h": 941
+ },
+ "map_m14_marrow": {
+  "source": "New_folder__5_/New folder (5)/ChatGPT Image Oct 18, 2026, 06_39_04 PM-4.png",
+  "w": 1672,
+  "h": 941
+ },
+ "map_m15_thymus": {
+  "source": "New_folder__5_/New folder (5)/ChatGPT Image Oct 18, 2026, 06_39_05 PM-5.png",
+  "w": 1672,
+  "h": 941
+ },
+ "map_m16_meninges": {
+  "source": "New_folder__5_/New folder (5)/ChatGPT Image Oct 18, 2026, 06_39_06 PM-6.png",
+  "w": 1672,
+  "h": 941
+ },
+ "map_m17_ganglion": {
+  "source": "New_folder__5_/New folder (5)/ChatGPT Image Oct 18, 2026, 06_39_07 PM-7.png",
+  "w": 1672,
+  "h": 941
+ },
+ "map_m18_systemic": {
+  "source": "New_folder__5_/New folder (5)/ChatGPT Image Oct 18, 2026, 06_39_14 PM-1.png",
+  "w": 1672,
+  "h": 941
+ },
+ "map_m19_centralline": {
+  "source": "New_folder__5_/New folder (5)/ChatGPT Image Oct 18, 2026, 06_39_15 PM-2.png",
+  "w": 1672,
+  "h": 941
+ },
+ "map_m20_heart": {
+  "source": "New_folder__5_/New folder (5)/ChatGPT Image Oct 18, 2026, 06_39_17 PM-3.png",
+  "w": 1672,
+  "h": 941
+ },
+ "portrait_aureus": {
+  "source": "New_folder__7_/New folder (7)/Golden Grape Royalty.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "portrait_aureus_mrsa": {
+  "source": "New_folder__7_/New folder (7)/Molten Grape Warlord Portrait.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "portrait_bigmac": {
+  "source": "New_folder__7_/New folder (7)/Heroic Immune Cell Champion.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "portrait_clostra": {
+  "source": "New_folder__7_/New folder (7)/Mischievous Spore in Toxic Mist.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "portrait_crown": {
+  "source": "New_folder__7_/New folder (7)/The Regal Purple Virus King.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "portrait_dendra": {
+  "source": "New_folder__6_/New folder (6)/Cheerful Neuron Scientist with Specimen Jar.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "portrait_doctor": {
+  "source": "New_folder__6_/New folder (6)/Confident Doctor in a Glowing Clinic.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "portrait_flu": {
+  "source": "New_folder__7_/New folder (7)/Mischievous Jester Virus Mascot.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "portrait_general4": {
+  "source": "New_folder__7_/New folder (7)/Regal Puff General Portrait.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "portrait_integrator": {
+  "source": "New_folder__7_/New folder (7)/Hooded Viral Mage#U2019s Neon Grin.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "portrait_killer": {
+  "source": "New_folder__7_/New folder (7)/Glossy Pearl Ninja Mascot.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "portrait_lacto": {
+  "source": "New_folder__7_/New folder (7)/Smug Slug Farmer in the Sunshine.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "portrait_meningo": {
+  "source": "New_folder__7_/New folder (7)/Glossy Gel Warriors in Crimson Armor.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "portrait_nurse": {
+  "source": "New_folder__7_/New folder (7)/Playful Cartoon Doctor in the ICU.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "portrait_plasma": {
+  "source": "New_folder__7_/New folder (7)/Plasma Captain#U2019s Glowing Blaster.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "portrait_pseudo": {
+  "source": "New_folder__7_/New folder (7)/Slime Contractor#U2019s Mischievous Grin.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "portrait_sleeper": {
+  "source": "New_folder__7_/New folder (7)/Sleepy Virus Snuggled in Neuron Blanket.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "portrait_thymus": {
+  "source": "New_folder__7_/New folder (7)/Wise Thymus Scholar Portrait.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "res_glucose_large": {
+  "source": "New_folder__5_/New folder (5)/ChatGPT Image Oct 18, 2026, 06_38_25 PM-1.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "res_glucose_small": {
+  "source": "New_folder__5_/New folder (5)/ChatGPT Image Oct 18, 2026, 06_38_26 PM-2.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "res_iron": {
+  "source": "New_folder__5_/New folder (5)/ChatGPT Image Oct 18, 2026, 06_38_28 PM-4.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "res_protein": {
+  "source": "New_folder__5_/New folder (5)/ChatGPT Image Oct 18, 2026, 06_38_27 PM-3.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "tile_acid": {
+  "source": "New_folder__5_/New folder (5)/ChatGPT Image Oct 18, 2026, 06_39_29 PM-6.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "tile_alveolar": {
+  "source": "New_folder__6_/New folder (6)/ChatGPT Image Oct 18, 2026, 06_39_33 PM-9.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "tile_biofilm": {
+  "source": "New_folder__5_/New folder (5)/ChatGPT Image Oct 18, 2026, 06_39_27 PM-4.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "tile_blood": {
+  "source": "New_folder__5_/New folder (5)/ChatGPT Image Oct 18, 2026, 06_39_24 PM-2.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "tile_bone": {
+  "source": "New_folder__6_/New folder (6)/ChatGPT Image Oct 18, 2026, 06_39_32 PM-8.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "tile_fog": {
+  "source": "New_folder__6_/New folder (6)/ChatGPT Image Oct 18, 2026, 06_39_35 PM-6.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "tile_keratin": {
+  "source": "New_folder__6_/New folder (6)/ChatGPT Image Oct 18, 2026, 06_39_33 PM-4.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "tile_liver": {
+  "source": "New_folder__5_/New folder (5)/ChatGPT Image Oct 18, 2026, 06_39_30 PM-2.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "tile_lymph": {
+  "source": "New_folder__6_/New folder (6)/ChatGPT Image Oct 18, 2026, 06_39_34 PM-5.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "tile_mucus": {
+  "source": "New_folder__5_/New folder (5)/ChatGPT Image Oct 18, 2026, 06_39_25 PM-3.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "tile_neural": {
+  "source": "New_folder__5_/New folder (5)/ChatGPT Image Oct 18, 2026, 06_39_32 PM-3.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "tile_plastic": {
+  "source": "New_folder__5_/New folder (5)/ChatGPT Image Oct 18, 2026, 06_39_31 PM-7.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "tile_pus": {
+  "source": "New_folder__5_/New folder (5)/ChatGPT Image Oct 18, 2026, 06_39_28 PM-5.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "tile_tissue": {
+  "source": "New_folder__5_/New folder (5)/ChatGPT Image Oct 18, 2026, 06_39_22 PM-1.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "tile_villi": {
+  "source": "New_folder__5_/New folder (5)/ChatGPT Image Oct 18, 2026, 06_39_29 PM-1.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "ui_briefing_bg": {
+  "source": "New_folder__7_/New folder (7)/Organic Immune System Command Center.png",
+  "w": 1672,
+  "h": 941
+ },
+ "ui_campaign_map": {
+  "source": "New_folder__7_/New folder (7)/Neon Anatomy Game Map.png",
+  "w": 1536,
+  "h": 1024
+ },
+ "ui_cursors": {
+  "source": "New_folder__7_/New folder (7)/Glossy Cartoon Game Icon Asset Sheet.png",
+  "w": 2172,
+  "h": 724
+ },
+ "ui_doctor_orders": {
+  "source": "New_folder__7_/New folder (7)/Glossy Cartoon Medical Ability Icons.png",
+  "w": 1448,
+  "h": 1086
+ },
+ "ui_inflammation_bar": {
+  "source": "New_folder__7_/New folder (7)/Overheated Cartoon Heat Meter.png",
+  "w": 2172,
+  "h": 724
+ },
+ "ui_monitor_frame": {
+  "source": "New_folder__7_/New folder (7)/Kawaii Medical Monitor HUD.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "ui_rank_badges": {
+  "source": "New_folder__7_/New folder (7)/Glossy Star Medal Badge Set.png",
+  "w": 2172,
+  "h": 724
+ },
+ "ui_resource_icons": {
+  "source": "New_folder__7_/New folder (7)/Glossy Cartoon Resource Icon Collection.png",
+  "w": 2172,
+  "h": 724
+ },
+ "ui_sidebar_col": {
+  "source": "New_folder__7_/New folder (7)/Gooey Industrial Inventory Panel.png",
+  "w": 1086,
+  "h": 1448
+ },
+ "ui_sidebar_crn": {
+  "source": "New_folder__7_/New folder (7)/Regal Crystal Game UI Panel.png",
+  "w": 1024,
+  "h": 1536
+ },
+ "ui_sidebar_wl": {
+  "source": "New_folder__5_/New folder (5)/Glossy Antibody Inventory UI Panel.png",
+  "w": 1024,
+  "h": 1536
+ },
+ "unit_col_bacillus": {
+  "source": "New_folder/New folder/ChatGPT Image Oct 18, 2026, 06_34_26 PM-3.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "unit_col_bomber": {
+  "source": "New_folder/New folder/ChatGPT Image Oct 18, 2026, 06_34_27 PM-4.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "unit_col_capsule": {
+  "source": "New_folder/New folder/ChatGPT Image Oct 18, 2026, 06_34_28 PM-5.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "unit_col_clostridium": {
+  "source": "New_folder__2_/New folder (2)/ChatGPT Image Oct 18, 2026, 06_34_31 PM-8.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "unit_col_coccus": {
+  "source": "New_folder/New folder/ChatGPT Image Oct 18, 2026, 06_34_25 PM-2.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "unit_col_feeder": {
+  "source": "New_folder__2_/New folder (2)/ChatGPT Image Oct 18, 2026, 06_34_36 PM-1.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "unit_col_flagellate": {
+  "source": "New_folder__2_/New folder (2)/ChatGPT Image Oct 18, 2026, 06_34_30 PM-7.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "unit_col_mycobacterium": {
+  "source": "New_folder__2_/New folder (2)/ChatGPT Image Oct 18, 2026, 06_34_39 PM-4.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "unit_col_pilus": {
+  "source": "New_folder__2_/New folder (2)/ChatGPT Image Oct 18, 2026, 06_34_32 PM-9.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "unit_col_spirochete": {
+  "source": "New_folder/New folder/ChatGPT Image Oct 18, 2026, 06_34_29 PM-6.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "unit_col_spore": {
+  "source": "New_folder/New folder/ChatGPT Image Oct 18, 2026, 06_34_24 PM-1.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "unit_col_strep": {
+  "source": "New_folder__2_/New folder (2)/ChatGPT Image Oct 18, 2026, 06_34_37 PM-2.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "unit_col_toxin": {
+  "source": "New_folder__2_/New folder (2)/ChatGPT Image Oct 18, 2026, 06_34_38 PM-3.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "unit_crn_colossus": {
+  "source": "New_folder__2_/New folder (2)/ChatGPT Image Oct 18, 2026, 06_35_03 PM-10.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "unit_crn_enveloped": {
+  "source": "New_folder__2_/New folder (2)/ChatGPT Image Oct 18, 2026, 06_34_58 PM-5.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "unit_crn_flu": {
+  "source": "New_folder__2_/New folder (2)/ChatGPT Image Oct 18, 2026, 06_34_59 PM-6.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "unit_crn_integrator": {
+  "source": "New_folder__2_/New folder (2)/ChatGPT Image Oct 18, 2026, 06_35_00 PM-7.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "unit_crn_nano": {
+  "source": "New_folder__2_/New folder (2)/ChatGPT Image Oct 18, 2026, 06_34_53 PM-1.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "unit_crn_phage": {
+  "source": "New_folder__2_/New folder (2)/ChatGPT Image Oct 18, 2026, 06_35_01 PM-8.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "unit_crn_sleeper": {
+  "source": "New_folder__2_/New folder (2)/ChatGPT Image Oct 18, 2026, 06_34_55 PM-3.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "unit_crn_spiker": {
+  "source": "New_folder__2_/New folder (2)/ChatGPT Image Oct 18, 2026, 06_34_56 PM-4.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "unit_crn_trojan": {
+  "source": "New_folder__2_/New folder (2)/ChatGPT Image Oct 18, 2026, 06_35_02 PM-9.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "unit_crn_virion": {
+  "source": "New_folder__2_/New folder (2)/ChatGPT Image Oct 18, 2026, 06_34_54 PM-2.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "unit_neu_kupffer": {
+  "source": "New_folder__2_/New folder (2)/ChatGPT Image Oct 18, 2026, 06_35_24 PM-5.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "unit_neu_lacto": {
+  "source": "New_folder__2_/New folder (2)/ChatGPT Image Oct 18, 2026, 06_35_20 PM-2.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "unit_neu_microglia": {
+  "source": "New_folder__2_/New folder (2)/ChatGPT Image Oct 18, 2026, 06_35_23 PM-4.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "unit_neu_rbc": {
+  "source": "New_folder__2_/New folder (2)/ChatGPT Image Oct 18, 2026, 06_35_18 PM-1.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "unit_neu_renegade": {
+  "source": "New_folder__2_/New folder (2)/ChatGPT Image Oct 18, 2026, 06_35_21 PM-3.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "unit_wl_bcell": {
+  "source": "New_folder/New folder/ChatGPT Image Oct 18, 2026, 06_33_44 PM-3.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "unit_wl_cd4": {
+  "source": "New_folder/New folder/ChatGPT Image Oct 18, 2026, 06_33_49 PM-8.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "unit_wl_cd8": {
+  "source": "New_folder/New folder/ChatGPT Image Oct 18, 2026, 06_33_55 PM-1.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "unit_wl_dendritic": {
+  "source": "New_folder/New folder/ChatGPT Image Oct 18, 2026, 06_33_46 PM-5.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "unit_wl_eosinophil": {
+  "source": "New_folder/New folder/ChatGPT Image Oct 18, 2026, 06_33_47 PM-6.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "unit_wl_giantcell": {
+  "source": "New_folder/New folder/ChatGPT Image Oct 18, 2026, 06_34_04 PM-8.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "unit_wl_glut": {
+  "source": "New_folder/New folder/ChatGPT Image Oct 18, 2026, 06_34_01 PM-6.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "unit_wl_iga": {
+  "source": "New_folder/New folder/ChatGPT Image Oct 18, 2026, 06_33_58 PM-3.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "unit_wl_igm": {
+  "source": "New_folder/New folder/ChatGPT Image Oct 18, 2026, 06_34_02 PM-7.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "unit_wl_macrophage": {
+  "source": "New_folder/New folder/ChatGPT Image Oct 18, 2026, 06_33_59 PM-4.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "unit_wl_monocyte": {
+  "source": "New_folder/New folder/ChatGPT Image Oct 18, 2026, 06_33_43 PM-2.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "unit_wl_neutrophil": {
+  "source": "New_folder/New folder/ChatGPT Image Oct 18, 2026, 06_33_42 PM-1.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "unit_wl_nk": {
+  "source": "New_folder/New folder/ChatGPT Image Oct 18, 2026, 06_33_48 PM-7.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "unit_wl_plasma": {
+  "source": "New_folder/New folder/ChatGPT Image Oct 18, 2026, 06_34_00 PM-5.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "unit_wl_platelets": {
+  "source": "New_folder/New folder/ChatGPT Image Oct 18, 2026, 06_33_45 PM-4.png",
+  "w": 1254,
+  "h": 1254
+ },
+ "unit_wl_treg": {
+  "source": "New_folder/New folder/ChatGPT Image Oct 18, 2026, 06_33_57 PM-2.png",
+  "w": 1254,
+  "h": 1254
+ }
+}

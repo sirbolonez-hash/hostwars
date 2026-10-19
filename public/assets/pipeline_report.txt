@@ -1,0 +1,69 @@
+fx_strep_whip: 10 raw runs -> 8 frames
+fx_toxin_cloud: 9 raw runs -> 8 frames
+fx_spike_dart: 8 raw runs -> 8 frames
+fx_net_burst: 7 raw runs -> 7 frames
+fx_phagocytosis: 8 raw runs -> 8 frames
+fx_scan_ring: 8 raw runs -> 8 frames
+fx_opsonize_tag: 8 raw runs -> 8 frames
+fx_agglutination: 8 raw runs -> 8 frames
+fx_clot_seal: 8 raw runs -> 8 frames
+fx_granuloma_ring: 8 raw runs -> 8 frames
+fx_interferon_wave: 5 raw runs -> 7 frames
+fx_il2_aura: 8 raw runs -> 8 frames
+fx_fission: 8 raw runs -> 8 frames
+fx_pinkburst: 8 raw runs -> 8 frames
+fx_toxin_glob: 8 raw runs -> 8 frames
+fx_histamine_pulse: 7 raw runs -> 8 frames
+fx_nk_strike: 7 raw runs -> 8 frames
+fx_quorum: 8 raw runs -> 8 frames
+fx_perforin: 6 raw runs -> 8 frames
+fx_eos_grenade: 9 raw runs -> 8 frames
+fx_antibody_volley: 8 raw runs -> 8 frames
+fx_building_collapse: 5 raw runs -> 8 frames
+fx_death_virus: 8 raw runs -> 8 frames
+fx_extravasation: 7 raw runs -> 8 frames
+fx_death_bacteria: 5 raw runs -> 8 frames
+fx_hijack: 8 raw runs -> 8 frames
+fx_lysis_burst: 8 raw runs -> 8 frames
+fx_steroid: 4 raw runs -> 8 frames
+fx_fever_haze: 8 raw runs -> 8 frames
+fx_iv_fluids: 5 raw runs -> 8 frames
+fx_heartbeat: 6 raw runs -> 8 frames
+fx_iron_draw: 6 raw runs -> 8 frames
+fx_superantigen: 6 raw runs -> 8 frames
+fx_conjugation: 11 raw runs -> 8 frames
+fx_integration: 8 raw runs -> 8 frames
+fx_atp_orbs: 8 raw runs -> 8 frames
+fx_urine_wave: 4 raw runs -> 8 frames
+fx_death_immune: 8 raw runs -> 8 frames
+fx_glucose_harvest: 7 raw runs -> 8 frames
+fx_iv_line: 8 raw runs -> 8 frames
+fx_cough: 2 raw runs -> 8 frames
+fx_antibiotic_strike: 8 raw runs -> 8 frames
+fx_endotoxin_blast: 8 raw runs -> 8 frames
+fx_vasopressor: 5 raw runs -> 8 frames
+fx_complement_strike: 3 raw runs -> 8 frames
+fx_surgical: 8 raw runs -> 8 frames
+fx_biofilm_spread: 5 raw runs -> 8 frames
+fx_mass_infection: 5 raw runs -> 8 frames
+fx_antiviral: 8 raw runs -> 8 frames
+fx_phage_drop: 8 raw runs -> 8 frames
+fx_spore_form: 8 raw runs -> 8 frames
+fx_ribosome_income: 8 raw runs -> 8 frames
+fx_build_grow: 8 raw runs -> 8 frames
+fx_drift: 8 raw runs -> 8 frames
+tile_acid: seam error 7.4 -> 5.4
+tile_alveolar: seam error 11.2 -> 7.3
+tile_biofilm: seam error 6.2 -> 5.3
+tile_blood: seam error 4.8 -> 5.3
+tile_bone: seam error 3.8 -> 3.7
+tile_fog: seam error 2.5 -> 1.6
+tile_keratin: seam error 5.4 -> 4.4
+tile_liver: seam error 4.5 -> 5.1
+tile_lymph: seam error 5.6 -> 5.8
+tile_mucus: seam error 4.7 -> 3.8
+tile_neural: seam error 8.4 -> 6.9
+tile_plastic: seam error 1.8 -> 1.5
+tile_pus: seam error 3.2 -> 2.6
+tile_tissue: seam error 3.1 -> 2.3
+tile_villi: seam error 4.5 -> 3.4

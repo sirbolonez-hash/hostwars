@@ -1,0 +1,5259 @@
+{
+ "version": 1,
+ "tilePx": 32,
+ "texScale": 2,
+ "atlases": {
+  "units_wl": [
+   {
+    "image": "atlases/units_wl_0.webp",
+    "json": "atlases/units_wl_0.json",
+    "w": 1024,
+    "h": 1024,
+    "sprites": 21
+   }
+  ],
+  "units_col": [
+   {
+    "image": "atlases/units_col_0.webp",
+    "json": "atlases/units_col_0.json",
+    "w": 1024,
+    "h": 512,
+    "sprites": 18
+   }
+  ],
+  "units_crn": [
+   {
+    "image": "atlases/units_crn_0.webp",
+    "json": "atlases/units_crn_0.json",
+    "w": 1024,
+    "h": 512,
+    "sprites": 19
+   }
+  ],
+  "buildings_wl": [
+   {
+    "image": "atlases/buildings_wl_0.webp",
+    "json": "atlases/buildings_wl_0.json",
+    "w": 1024,
+    "h": 2048,
+    "sprites": 32
+   }
+  ],
+  "buildings_wl_alt": [
+   {
+    "image": "atlases/buildings_wl_alt_0.webp",
+    "json": "atlases/buildings_wl_alt_0.json",
+    "w": 1024,
+    "h": 2048,
+    "sprites": 16
+   }
+  ],
+  "buildings_col": [
+   {
+    "image": "atlases/buildings_col_0.webp",
+    "json": "atlases/buildings_col_0.json",
+    "w": 1024,
+    "h": 2048,
+    "sprites": 22
+   }
+  ],
+  "buildings_crn": [
+   {
+    "image": "atlases/buildings_crn_0.webp",
+    "json": "atlases/buildings_crn_0.json",
+    "w": 1024,
+    "h": 2048,
+    "sprites": 12
+   }
+  ],
+  "world_neutral": [
+   {
+    "image": "atlases/world_neutral_0.webp",
+    "json": "atlases/world_neutral_0.json",
+    "w": 1024,
+    "h": 1024,
+    "sprites": 18
+   }
+  ],
+  "icons": [
+   {
+    "image": "atlases/icons_0.webp",
+    "json": "atlases/icons_0.json",
+    "w": 1024,
+    "h": 512,
+    "sprites": 26
+   }
+  ],
+  "fx_a": [
+   {
+    "image": "atlases/fx_a_0.webp",
+    "json": "atlases/fx_a_0.json",
+    "w": 2048,
+    "h": 2048,
+    "sprites": 124
+   },
+   {
+    "image": "atlases/fx_a_1.webp",
+    "json": "atlases/fx_a_1.json",
+    "w": 2048,
+    "h": 512,
+    "sprites": 20
+   }
+  ],
+  "fx_b": [
+   {
+    "image": "atlases/fx_b_0.webp",
+    "json": "atlases/fx_b_0.json",
+    "w": 2048,
+    "h": 2048,
+    "sprites": 130
+   },
+   {
+    "image": "atlases/fx_b_1.webp",
+    "json": "atlases/fx_b_1.json",
+    "w": 2048,
+    "h": 256,
+    "sprites": 12
+   }
+  ],
+  "fx_c": [
+   {
+    "image": "atlases/fx_c_0.webp",
+    "json": "atlases/fx_c_0.json",
+    "w": 2048,
+    "h": 2048,
+    "sprites": 117
+   },
+   {
+    "image": "atlases/fx_c_1.webp",
+    "json": "atlases/fx_c_1.json",
+    "w": 2048,
+    "h": 512,
+    "sprites": 27
+   }
+  ]
+ },
+ "assets": {
+  "unit_wl_neutrophil": {
+   "kind": "unit",
+   "faction": "wl",
+   "w": 46,
+   "h": 42,
+   "anchor": [
+    0.5,
+    0.94
+   ],
+   "radius": 14,
+   "facing": "left",
+   "flipForRight": true,
+   "atlas": [
+    "units_wl_0"
+   ]
+  },
+  "unit_wl_monocyte": {
+   "kind": "unit",
+   "faction": "wl",
+   "w": 46,
+   "h": 46,
+   "anchor": [
+    0.5,
+    0.94
+   ],
+   "radius": 14,
+   "facing": "left",
+   "flipForRight": true,
+   "atlas": [
+    "units_wl_0"
+   ]
+  },
+  "unit_wl_bcell": {
+   "kind": "unit",
+   "faction": "wl",
+   "w": 46,
+   "h": 42,
+   "anchor": [
+    0.5,
+    0.94
+   ],
+   "radius": 14,
+   "facing": "left",
+   "flipForRight": true,
+   "atlas": [
+    "units_wl_0"
+   ]
+  },
+  "unit_wl_platelets": {
+   "kind": "unit",
+   "faction": "wl",
+   "w": 46,
+   "h": 28,
+   "anchor": [
+    0.5,
+    0.94
+   ],
+   "radius": 14,
+   "facing": "left",
+   "flipForRight": true,
+   "atlas": [
+    "units_wl_0"
+   ]
+  },
+  "unit_wl_dendritic": {
+   "kind": "unit",
+   "faction": "wl",
+   "w": 62,
+   "h": 57,
+   "anchor": [
+    0.5,
+    0.94
+   ],
+   "radius": 19,
+   "facing": "left",
+   "flipForRight": true,
+   "atlas": [
+    "units_wl_0"
+   ]
+  },
+  "unit_wl_eosinophil": {
+   "kind": "unit",
+   "faction": "wl",
+   "w": 62,
+   "h": 61,
+   "anchor": [
+    0.5,
+    0.94
+   ],
+   "radius": 19,
+   "facing": "left",
+   "flipForRight": true,
+   "atlas": [
+    "units_wl_0"
+   ]
+  },
+  "unit_wl_nk": {
+   "kind": "unit",
+   "faction": "wl",
+   "w": 62,
+   "h": 59,
+   "anchor": [
+    0.5,
+    0.94
+   ],
+   "radius": 19,
+   "facing": "left",
+   "flipForRight": true,
+   "atlas": [
+    "units_wl_0"
+   ]
+  },
+  "unit_wl_cd4": {
+   "kind": "unit",
+   "faction": "wl",
+   "w": 62,
+   "h": 57,
+   "anchor": [
+    0.5,
+    0.94
+   ],
+   "radius": 19,
+   "facing": "left",
+   "flipForRight": true,
+   "atlas": [
+    "units_wl_0"
+   ]
+  },
+  "unit_wl_cd8": {
+   "kind": "unit",
+   "faction": "wl",
+   "w": 62,
+   "h": 50,
+   "anchor": [
+    0.5,
+    0.94
+   ],
+   "radius": 19,
+   "facing": "left",
+   "flipForRight": true,
+   "atlas": [
+    "units_wl_0"
+   ]
+  },
+  "unit_wl_treg": {
+   "kind": "unit",
+   "faction": "wl",
+   "w": 62,
+   "h": 58,
+   "anchor": [
+    0.5,
+    0.94
+   ],
+   "radius": 19,
+   "facing": "left",
+   "flipForRight": true,
+   "atlas": [
+    "units_wl_0"
+   ]
+  },
+  "unit_wl_iga": {
+   "kind": "unit",
+   "faction": "wl",
+   "w": 62,
+   "h": 56,
+   "anchor": [
+    0.5,
+    0.94
+   ],
+   "radius": 19,
+   "facing": "left",
+   "flipForRight": true,
+   "atlas": [
+    "units_wl_0"
+   ]
+  },
+  "unit_wl_glut": {
+   "kind": "unit",
+   "faction": "wl",
+   "w": 62,
+   "h": 51,
+   "anchor": [
+    0.5,
+    0.94
+   ],
+   "radius": 19,
+   "facing": "left",
+   "flipForRight": true,
+   "atlas": [
+    "units_wl_0"
+   ]
+  },
+  "unit_wl_macrophage": {
+   "kind": "unit",
+   "faction": "wl",
+   "w": 88,
+   "h": 82,
+   "anchor": [
+    0.5,
+    0.94
+   ],
+   "radius": 26,
+   "facing": "left",
+   "flipForRight": true,
+   "atlas": [
+    "units_wl_0"
+   ]
+  },
+  "unit_wl_plasma": {
+   "kind": "unit",
+   "faction": "wl",
+   "w": 83,
+   "h": 88,
+   "anchor": [
+    0.5,
+    0.94
+   ],
+   "radius": 26,
+   "facing": "left",
+   "flipForRight": true,
+   "atlas": [
+    "units_wl_0"
+   ]
+  },
+  "unit_wl_igm": {
+   "kind": "unit",
+   "faction": "wl",
+   "w": 88,
+   "h": 88,
+   "anchor": [
+    0.5,
+    0.94
+   ],
+   "radius": 26,
+   "facing": "left",
+   "flipForRight": true,
+   "atlas": [
+    "units_wl_0"
+   ]
+  },
+  "unit_wl_giantcell": {
+   "kind": "unit",
+   "faction": "wl",
+   "w": 120,
+   "h": 113,
+   "anchor": [
+    0.5,
+    0.94
+   ],
+   "radius": 36,
+   "facing": "left",
+   "flipForRight": true,
+   "atlas": [
+    "units_wl_0"
+   ]
+  },
+  "hero_wl_bigmac": {
+   "kind": "hero",
+   "faction": "wl",
+   "w": 94,
+   "h": 96,
+   "anchor": [
+    0.5,
+    0.94
+   ],
+   "radius": 29,
+   "facing": "left",
+   "flipForRight": true,
+   "atlas": [
+    "units_wl_0"
+   ]
+  },
+  "hero_wl_killer": {
+   "kind": "hero",
+   "faction": "wl",
+   "w": 96,
+   "h": 86,
+   "anchor": [
+    0.5,
+    0.94
+   ],
+   "radius": 29,
+   "facing": "left",
+   "flipForRight": true,
+   "atlas": [
+    "units_wl_0"
+   ]
+  },
+  "hero_wl_dendra": {
+   "kind": "hero",
+   "faction": "wl",
+   "w": 92,
+   "h": 96,
+   "anchor": [
+    0.5,
+    0.94
+   ],
+   "radius": 29,
+   "facing": "left",
+   "flipForRight": true,
+   "atlas": [
+    "units_wl_0"
+   ]
+  },
+  "hero_wl_plasma": {
+   "kind": "hero",
+   "faction": "wl",
+   "w": 96,
+   "h": 91,
+   "anchor": [
+    0.5,
+    0.94
+   ],
+   "radius": 29,
+   "facing": "left",
+   "flipForRight": true,
+   "atlas": [
+    "units_wl_0"
+   ]
+  },
+  "hero_wl_general4": {
+   "kind": "hero",
+   "faction": "wl",
+   "w": 104,
+   "h": 104,
+   "anchor": [
+    0.5,
+    0.94
+   ],
+   "radius": 31,
+   "facing": "left",
+   "flipForRight": true,
+   "atlas": [
+    "units_wl_0"
+   ]
+  },
+  "unit_col_spore": {
+   "kind": "unit",
+   "faction": "col",
+   "w": 36,
+   "h": 32,
+   "anchor": [
+    0.5,
+    0.94
+   ],
+   "radius": 11,
+   "facing": "left",
+   "flipForRight": true,
+   "atlas": [
+    "units_col_0"
+   ]
+  },
+  "unit_col_coccus": {
+   "kind": "unit",
+   "faction": "col",
+   "w": 46,
+   "h": 44,
+   "anchor": [
+    0.5,
+    0.94
+   ],
+   "radius": 14,
+   "facing": "left",
+   "flipForRight": true,
+   "atlas": [
+    "units_col_0"
+   ]
+  },
+  "unit_col_bacillus": {
+   "kind": "unit",
+   "faction": "col",
+   "w": 52,
+   "h": 62,
+   "anchor": [
+    0.5,
+    0.94
+   ],
+   "radius": 19,
+   "facing": "left",
+   "flipForRight": true,
+   "atlas": [
+    "units_col_0"
+   ]
+  },
+  "unit_col_bomber": {
+   "kind": "unit",
+   "faction": "col",
+   "w": 56,
+   "h": 62,
+   "anchor": [
+    0.5,
+    0.94
+   ],
+   "radius": 19,
+   "facing": "left",
+   "flipForRight": true,
+   "atlas": [
+    "units_col_0"
+   ]
+  },
+  "unit_col_capsule": {
+   "kind": "unit",
+   "faction": "col",
+   "w": 62,
+   "h": 56,
+   "anchor": [
+    0.5,
+    0.94
+   ],
+   "radius": 19,
+   "facing": "left",
+   "flipForRight": true,
+   "atlas": [
+    "units_col_0"
+   ]
+  },
+  "unit_col_spirochete": {
+   "kind": "unit",
+   "faction": "col",
+   "w": 62,
+   "h": 58,
+   "anchor": [
+    0.5,
+    0.94
+   ],
+   "radius": 19,
+   "facing": "left",
+   "flipForRight": true,
+   "atlas": [
+    "units_col_0"
+   ]
+  },
+  "unit_col_flagellate": {
+   "kind": "unit",
+   "faction": "col",
+   "w": 62,
+   "h": 62,
+   "anchor": [
+    0.5,
+    0.94
+   ],
+   "radius": 19,
+   "facing": "left",
+   "flipForRight": true,
+   "atlas": [
+    "units_col_0"
+   ]
+  },
+  "unit_col_clostridium": {
+   "kind": "unit",
+   "faction": "col",
+   "w": 52,
+   "h": 62,
+   "anchor": [
+    0.5,
+    0.94
+   ],
+   "radius": 19,
+   "facing": "left",
+   "flipForRight": true,
+   "atlas": [
+    "units_col_0"
+   ]
+  },
+  "unit_col_pilus": {
+   "kind": "unit",
+   "faction": "col",
+   "w": 62,
+   "h": 59,
+   "anchor": [
+    0.5,
+    0.94
+   ],
+   "radius": 19,
+   "facing": "left",
+   "flipForRight": true,
+   "atlas": [
+    "units_col_0"
+   ]
+  },
+  "unit_col_feeder": {
+   "kind": "unit",
+   "faction": "col",
+   "w": 54,
+   "h": 62,
+   "anchor": [
+    0.5,
+    0.94
+   ],
+   "radius": 19,
+   "facing": "left",
+   "flipForRight": true,
+   "atlas": [
+    "units_col_0"
+   ]
+  },
+  "unit_col_strep": {
+   "kind": "unit",
+   "faction": "col",
+   "w": 88,
+   "h": 78,
+   "anchor": [
+    0.5,
+    0.94
+   ],
+   "radius": 26,
+   "facing": "left",
+   "flipForRight": true,
+   "atlas": [
+    "units_col_0"
+   ]
+  },
+  "unit_col_toxin": {
+   "kind": "unit",
+   "faction": "col",
+   "w": 86,
+   "h": 88,
+   "anchor": [
+    0.5,
+    0.94
+   ],
+   "radius": 26,
+   "facing": "left",
+   "flipForRight": true,
+   "atlas": [
+    "units_col_0"
+   ]
+  },
+  "unit_col_mycobacterium": {
+   "kind": "unit",
+   "faction": "col",
+   "w": 85,
+   "h": 120,
+   "anchor": [
+    0.5,
+    0.94
+   ],
+   "radius": 36,
+   "facing": "left",
+   "flipForRight": true,
+   "atlas": [
+    "units_col_0"
+   ]
+  },
+  "hero_col_aureus": {
+   "kind": "hero",
+   "faction": "col",
+   "w": 69,
+   "h": 96,
+   "anchor": [
+    0.5,
+    0.94
+   ],
+   "radius": 29,
+   "facing": "left",
+   "flipForRight": true,
+   "atlas": [
+    "units_col_0"
+   ]
+  },
+  "hero_col_aureus_mrsa": {
+   "kind": "hero",
+   "faction": "col",
+   "w": 88,
+   "h": 96,
+   "anchor": [
+    0.5,
+    0.94
+   ],
+   "radius": 29,
+   "facing": "left",
+   "flipForRight": true,
+   "atlas": [
+    "units_col_0"
+   ]
+  },
+  "hero_col_pseudo": {
+   "kind": "hero",
+   "faction": "col",
+   "w": 96,
+   "h": 96,
+   "anchor": [
+    0.5,
+    0.94
+   ],
+   "radius": 29,
+   "facing": "left",
+   "flipForRight": true,
+   "atlas": [
+    "units_col_0"
+   ]
+  },
+  "hero_col_clostra": {
+   "kind": "hero",
+   "faction": "col",
+   "w": 87,
+   "h": 96,
+   "anchor": [
+    0.5,
+    0.94
+   ],
+   "radius": 29,
+   "facing": "left",
+   "flipForRight": true,
+   "atlas": [
+    "units_col_0"
+   ]
+  },
+  "hero_col_meningo": {
+   "kind": "hero",
+   "faction": "col",
+   "w": 96,
+   "h": 87,
+   "anchor": [
+    0.5,
+    0.94
+   ],
+   "radius": 29,
+   "facing": "left",
+   "flipForRight": true,
+   "atlas": [
+    "units_col_0"
+   ]
+  },
+  "unit_crn_nano": {
+   "kind": "unit",
+   "faction": "crn",
+   "w": 46,
+   "h": 45,
+   "anchor": [
+    0.5,
+    0.94
+   ],
+   "radius": 14,
+   "facing": "left",
+   "flipForRight": true,
+   "atlas": [
+    "units_crn_0"
+   ]
+  },
+  "unit_crn_virion": {
+   "kind": "unit",
+   "faction": "crn",
+   "w": 46,
+   "h": 46,
+   "anchor": [
+    0.5,
+    0.94
+   ],
+   "radius": 14,
+   "facing": "left",
+   "flipForRight": true,
+   "atlas": [
+    "units_crn_0"
+   ]
+  },
+  "unit_crn_sleeper": {
+   "kind": "unit",
+   "faction": "crn",
+   "w": 60,
+   "h": 62,
+   "anchor": [
+    0.5,
+    0.94
+   ],
+   "radius": 19,
+   "facing": "left",
+   "flipForRight": true,
+   "atlas": [
+    "units_crn_0"
+   ]
+  },
+  "unit_crn_spiker": {
+   "kind": "unit",
+   "faction": "crn",
+   "w": 54,
+   "h": 62,
+   "anchor": [
+    0.5,
+    0.94
+   ],
+   "radius": 19,
+   "facing": "left",
+   "flipForRight": true,
+   "atlas": [
+    "units_crn_0"
+   ]
+  },
+  "unit_crn_enveloped": {
+   "kind": "unit",
+   "faction": "crn",
+   "w": 50,
+   "h": 62,
+   "anchor": [
+    0.5,
+    0.94
+   ],
+   "radius": 19,
+   "facing": "left",
+   "flipForRight": true,
+   "atlas": [
+    "units_crn_0"
+   ]
+  },
+  "unit_crn_flu": {
+   "kind": "unit",
+   "faction": "crn",
+   "w": 60,
+   "h": 62,
+   "anchor": [
+    0.5,
+    0.94
+   ],
+   "radius": 19,
+   "facing": "left",
+   "flipForRight": true,
+   "atlas": [
+    "units_crn_0"
+   ]
+  },
+  "unit_crn_integrator": {
+   "kind": "unit",
+   "faction": "crn",
+   "w": 54,
+   "h": 62,
+   "anchor": [
+    0.5,
+    0.94
+   ],
+   "radius": 19,
+   "facing": "left",
+   "flipForRight": true,
+   "atlas": [
+    "units_crn_0"
+   ]
+  },
+  "unit_crn_phage": {
+   "kind": "unit",
+   "faction": "crn",
+   "w": 46,
+   "h": 62,
+   "anchor": [
+    0.5,
+    0.94
+   ],
+   "radius": 19,
+   "facing": "left",
+   "flipForRight": true,
+   "atlas": [
+    "units_crn_0"
+   ]
+  },
+  "unit_crn_trojan": {
+   "kind": "unit",
+   "faction": "crn",
+   "w": 72,
+   "h": 88,
+   "anchor": [
+    0.5,
+    0.94
+   ],
+   "radius": 26,
+   "facing": "left",
+   "flipForRight": true,
+   "atlas": [
+    "units_crn_0"
+   ]
+  },
+  "unit_crn_colossus": {
+   "kind": "unit",
+   "faction": "crn",
+   "w": 120,
+   "h": 120,
+   "anchor": [
+    0.5,
+    0.94
+   ],
+   "radius": 36,
+   "facing": "left",
+   "flipForRight": true,
+   "atlas": [
+    "units_crn_0"
+   ]
+  },
+  "hero_crn_crown": {
+   "kind": "hero",
+   "faction": "crn",
+   "w": 86,
+   "h": 96,
+   "anchor": [
+    0.5,
+    0.94
+   ],
+   "radius": 29,
+   "facing": "left",
+   "flipForRight": true,
+   "atlas": [
+    "units_crn_0"
+   ]
+  },
+  "hero_crn_flu": {
+   "kind": "hero",
+   "faction": "crn",
+   "w": 92,
+   "h": 96,
+   "anchor": [
+    0.5,
+    0.94
+   ],
+   "radius": 29,
+   "facing": "left",
+   "flipForRight": true,
+   "atlas": [
+    "units_crn_0"
+   ]
+  },
+  "hero_crn_integrator": {
+   "kind": "hero",
+   "faction": "crn",
+   "w": 84,
+   "h": 96,
+   "anchor": [
+    0.5,
+    0.94
+   ],
+   "radius": 29,
+   "facing": "left",
+   "flipForRight": true,
+   "atlas": [
+    "units_crn_0"
+   ]
+  },
+  "hero_crn_sleeper": {
+   "kind": "hero",
+   "faction": "crn",
+   "w": 90,
+   "h": 96,
+   "anchor": [
+    0.5,
+    0.94
+   ],
+   "radius": 29,
+   "facing": "left",
+   "flipForRight": true,
+   "atlas": [
+    "units_crn_0"
+   ]
+  },
+  "unit_neu_rbc": {
+   "kind": "unit",
+   "faction": "neu",
+   "w": 48,
+   "h": 44,
+   "anchor": [
+    0.5,
+    0.94
+   ],
+   "radius": 14,
+   "facing": "left",
+   "flipForRight": true,
+   "atlas": [
+    "units_crn_0"
+   ]
+  },
+  "unit_neu_lacto": {
+   "kind": "unit",
+   "faction": "neu",
+   "w": 46,
+   "h": 62,
+   "anchor": [
+    0.5,
+    0.94
+   ],
+   "radius": 19,
+   "facing": "left",
+   "flipForRight": true,
+   "atlas": [
+    "units_crn_0"
+   ]
+  },
+  "unit_neu_renegade": {
+   "kind": "unit",
+   "faction": "neu",
+   "w": 62,
+   "h": 60,
+   "anchor": [
+    0.5,
+    0.94
+   ],
+   "radius": 19,
+   "facing": "left",
+   "flipForRight": true,
+   "atlas": [
+    "units_crn_0"
+   ]
+  },
+  "unit_neu_microglia": {
+   "kind": "unit",
+   "faction": "neu",
+   "w": 62,
+   "h": 62,
+   "anchor": [
+    0.5,
+    0.94
+   ],
+   "radius": 19,
+   "facing": "left",
+   "flipForRight": true,
+   "atlas": [
+    "units_crn_0"
+   ]
+  },
+  "unit_neu_kupffer": {
+   "kind": "unit",
+   "faction": "neu",
+   "w": 88,
+   "h": 86,
+   "anchor": [
+    0.5,
+    0.94
+   ],
+   "radius": 26,
+   "facing": "left",
+   "flipForRight": true,
+   "atlas": [
+    "units_crn_0"
+   ]
+  },
+  "bld_wl_lymphnode": {
+   "kind": "building",
+   "faction": "wl",
+   "w": 173,
+   "h": 169,
+   "anchor": [
+    0.5,
+    0.7
+   ],
+   "footprint": [
+    4,
+    4
+   ],
+   "variantOf": null,
+   "state": "normal",
+   "atlas": [
+    "buildings_wl_0"
+   ]
+  },
+  "bld_wl_lymphnode_dmg": {
+   "kind": "building",
+   "faction": "wl",
+   "w": 173,
+   "h": 168,
+   "anchor": [
+    0.5,
+    0.7
+   ],
+   "footprint": [
+    4,
+    4
+   ],
+   "variantOf": "bld_wl_lymphnode",
+   "state": "damaged",
+   "atlas": [
+    "buildings_wl_0"
+   ]
+  },
+  "bld_wl_lymphnode_alt": {
+   "kind": "building",
+   "faction": "wl",
+   "w": 173,
+   "h": 168,
+   "anchor": [
+    0.5,
+    0.7
+   ],
+   "footprint": [
+    4,
+    4
+   ],
+   "variantOf": "bld_wl_lymphnode",
+   "state": "alternate",
+   "atlas": [
+    "buildings_wl_alt_0"
+   ]
+  },
+  "bld_wl_capillary": {
+   "kind": "building",
+   "faction": "wl",
+   "w": 86,
+   "h": 90,
+   "anchor": [
+    0.5,
+    0.7
+   ],
+   "footprint": [
+    2,
+    2
+   ],
+   "variantOf": null,
+   "state": "normal",
+   "atlas": [
+    "buildings_wl_0"
+   ]
+  },
+  "bld_wl_capillary_dmg": {
+   "kind": "building",
+   "faction": "wl",
+   "w": 86,
+   "h": 90,
+   "anchor": [
+    0.5,
+    0.7
+   ],
+   "footprint": [
+    2,
+    2
+   ],
+   "variantOf": "bld_wl_capillary",
+   "state": "damaged",
+   "atlas": [
+    "buildings_wl_0"
+   ]
+  },
+  "bld_wl_capillary_alt": {
+   "kind": "building",
+   "faction": "wl",
+   "w": 86,
+   "h": 90,
+   "anchor": [
+    0.5,
+    0.7
+   ],
+   "footprint": [
+    2,
+    2
+   ],
+   "variantOf": "bld_wl_capillary",
+   "state": "alternate",
+   "atlas": [
+    "buildings_wl_alt_0"
+   ]
+  },
+  "bld_wl_mitochondria": {
+   "kind": "building",
+   "faction": "wl",
+   "w": 130,
+   "h": 112,
+   "anchor": [
+    0.5,
+    0.7
+   ],
+   "footprint": [
+    3,
+    2
+   ],
+   "variantOf": null,
+   "state": "normal",
+   "atlas": [
+    "buildings_wl_0"
+   ]
+  },
+  "bld_wl_mitochondria_dmg": {
+   "kind": "building",
+   "faction": "wl",
+   "w": 130,
+   "h": 124,
+   "anchor": [
+    0.5,
+    0.7
+   ],
+   "footprint": [
+    3,
+    2
+   ],
+   "variantOf": "bld_wl_mitochondria",
+   "state": "damaged",
+   "atlas": [
+    "buildings_wl_0"
+   ]
+  },
+  "bld_wl_mitochondria_alt": {
+   "kind": "building",
+   "faction": "wl",
+   "w": 130,
+   "h": 124,
+   "anchor": [
+    0.5,
+    0.7
+   ],
+   "footprint": [
+    3,
+    2
+   ],
+   "variantOf": "bld_wl_mitochondria",
+   "state": "alternate",
+   "atlas": [
+    "buildings_wl_alt_0"
+   ]
+  },
+  "bld_wl_marrow": {
+   "kind": "building",
+   "faction": "wl",
+   "w": 130,
+   "h": 132,
+   "anchor": [
+    0.5,
+    0.7
+   ],
+   "footprint": [
+    3,
+    3
+   ],
+   "variantOf": null,
+   "state": "normal",
+   "atlas": [
+    "buildings_wl_0"
+   ]
+  },
+  "bld_wl_marrow_dmg": {
+   "kind": "building",
+   "faction": "wl",
+   "w": 130,
+   "h": 142,
+   "anchor": [
+    0.5,
+    0.7
+   ],
+   "footprint": [
+    3,
+    3
+   ],
+   "variantOf": "bld_wl_marrow",
+   "state": "damaged",
+   "atlas": [
+    "buildings_wl_0"
+   ]
+  },
+  "bld_wl_marrow_alt": {
+   "kind": "building",
+   "faction": "wl",
+   "w": 130,
+   "h": 139,
+   "anchor": [
+    0.5,
+    0.7
+   ],
+   "footprint": [
+    3,
+    3
+   ],
+   "variantOf": "bld_wl_marrow",
+   "state": "alternate",
+   "atlas": [
+    "buildings_wl_alt_0"
+   ]
+  },
+  "bld_wl_spleen": {
+   "kind": "building",
+   "faction": "wl",
+   "w": 130,
+   "h": 98,
+   "anchor": [
+    0.5,
+    0.7
+   ],
+   "footprint": [
+    3,
+    3
+   ],
+   "variantOf": null,
+   "state": "normal",
+   "atlas": [
+    "buildings_wl_0"
+   ]
+  },
+  "bld_wl_spleen_dmg": {
+   "kind": "building",
+   "faction": "wl",
+   "w": 130,
+   "h": 119,
+   "anchor": [
+    0.5,
+    0.7
+   ],
+   "footprint": [
+    3,
+    3
+   ],
+   "variantOf": "bld_wl_spleen",
+   "state": "damaged",
+   "atlas": [
+    "buildings_wl_0"
+   ]
+  },
+  "bld_wl_spleen_alt": {
+   "kind": "building",
+   "faction": "wl",
+   "w": 130,
+   "h": 115,
+   "anchor": [
+    0.5,
+    0.7
+   ],
+   "footprint": [
+    3,
+    3
+   ],
+   "variantOf": "bld_wl_spleen",
+   "state": "alternate",
+   "atlas": [
+    "buildings_wl_alt_0"
+   ]
+  },
+  "bld_wl_aminopump": {
+   "kind": "building",
+   "faction": "wl",
+   "w": 86,
+   "h": 89,
+   "anchor": [
+    0.5,
+    0.7
+   ],
+   "footprint": [
+    2,
+    2
+   ],
+   "variantOf": null,
+   "state": "normal",
+   "atlas": [
+    "buildings_wl_0"
+   ]
+  },
+  "bld_wl_aminopump_dmg": {
+   "kind": "building",
+   "faction": "wl",
+   "w": 86,
+   "h": 88,
+   "anchor": [
+    0.5,
+    0.7
+   ],
+   "footprint": [
+    2,
+    2
+   ],
+   "variantOf": "bld_wl_aminopump",
+   "state": "damaged",
+   "atlas": [
+    "buildings_wl_0"
+   ]
+  },
+  "bld_wl_aminopump_alt": {
+   "kind": "building",
+   "faction": "wl",
+   "w": 86,
+   "h": 90,
+   "anchor": [
+    0.5,
+    0.7
+   ],
+   "footprint": [
+    2,
+    2
+   ],
+   "variantOf": "bld_wl_aminopump",
+   "state": "alternate",
+   "atlas": [
+    "buildings_wl_alt_0"
+   ]
+  },
+  "bld_wl_cytokine": {
+   "kind": "building",
+   "faction": "wl",
+   "w": 86,
+   "h": 120,
+   "anchor": [
+    0.5,
+    0.7
+   ],
+   "footprint": [
+    2,
+    2
+   ],
+   "variantOf": null,
+   "state": "normal",
+   "atlas": [
+    "buildings_wl_0"
+   ]
+  },
+  "bld_wl_cytokine_dmg": {
+   "kind": "building",
+   "faction": "wl",
+   "w": 86,
+   "h": 110,
+   "anchor": [
+    0.5,
+    0.7
+   ],
+   "footprint": [
+    2,
+    2
+   ],
+   "variantOf": "bld_wl_cytokine",
+   "state": "damaged",
+   "atlas": [
+    "buildings_wl_0"
+   ]
+  },
+  "bld_wl_cytokine_alt": {
+   "kind": "building",
+   "faction": "wl",
+   "w": 86,
+   "h": 132,
+   "anchor": [
+    0.5,
+    0.7
+   ],
+   "footprint": [
+    2,
+    2
+   ],
+   "variantOf": "bld_wl_cytokine",
+   "state": "alternate",
+   "atlas": [
+    "buildings_wl_alt_0"
+   ]
+  },
+  "bld_wl_thymus": {
+   "kind": "building",
+   "faction": "wl",
+   "w": 130,
+   "h": 130,
+   "anchor": [
+    0.5,
+    0.7
+   ],
+   "footprint": [
+    3,
+    3
+   ],
+   "variantOf": null,
+   "state": "normal",
+   "atlas": [
+    "buildings_wl_0"
+   ]
+  },
+  "bld_wl_thymus_dmg": {
+   "kind": "building",
+   "faction": "wl",
+   "w": 130,
+   "h": 124,
+   "anchor": [
+    0.5,
+    0.7
+   ],
+   "footprint": [
+    3,
+    3
+   ],
+   "variantOf": "bld_wl_thymus",
+   "state": "damaged",
+   "atlas": [
+    "buildings_wl_0"
+   ]
+  },
+  "bld_wl_thymus_alt": {
+   "kind": "building",
+   "faction": "wl",
+   "w": 130,
+   "h": 130,
+   "anchor": [
+    0.5,
+    0.7
+   ],
+   "footprint": [
+    3,
+    3
+   ],
+   "variantOf": "bld_wl_thymus",
+   "state": "alternate",
+   "atlas": [
+    "buildings_wl_alt_0"
+   ]
+  },
+  "bld_wl_germinal": {
+   "kind": "building",
+   "faction": "wl",
+   "w": 130,
+   "h": 126,
+   "anchor": [
+    0.5,
+    0.7
+   ],
+   "footprint": [
+    3,
+    3
+   ],
+   "variantOf": null,
+   "state": "normal",
+   "atlas": [
+    "buildings_wl_0"
+   ]
+  },
+  "bld_wl_germinal_dmg": {
+   "kind": "building",
+   "faction": "wl",
+   "w": 130,
+   "h": 132,
+   "anchor": [
+    0.5,
+    0.7
+   ],
+   "footprint": [
+    3,
+    3
+   ],
+   "variantOf": "bld_wl_germinal",
+   "state": "damaged",
+   "atlas": [
+    "buildings_wl_0"
+   ]
+  },
+  "bld_wl_germinal_alt": {
+   "kind": "building",
+   "faction": "wl",
+   "w": 130,
+   "h": 134,
+   "anchor": [
+    0.5,
+    0.7
+   ],
+   "footprint": [
+    3,
+    3
+   ],
+   "variantOf": "bld_wl_germinal",
+   "state": "alternate",
+   "atlas": [
+    "buildings_wl_alt_0"
+   ]
+  },
+  "bld_wl_arterial": {
+   "kind": "building",
+   "faction": "wl",
+   "w": 130,
+   "h": 130,
+   "anchor": [
+    0.5,
+    0.7
+   ],
+   "footprint": [
+    3,
+    3
+   ],
+   "variantOf": null,
+   "state": "normal",
+   "atlas": [
+    "buildings_wl_0"
+   ]
+  },
+  "bld_wl_arterial_dmg": {
+   "kind": "building",
+   "faction": "wl",
+   "w": 130,
+   "h": 128,
+   "anchor": [
+    0.5,
+    0.7
+   ],
+   "footprint": [
+    3,
+    3
+   ],
+   "variantOf": "bld_wl_arterial",
+   "state": "damaged",
+   "atlas": [
+    "buildings_wl_0"
+   ]
+  },
+  "bld_wl_arterial_alt": {
+   "kind": "building",
+   "faction": "wl",
+   "w": 130,
+   "h": 133,
+   "anchor": [
+    0.5,
+    0.7
+   ],
+   "footprint": [
+    3,
+    3
+   ],
+   "variantOf": "bld_wl_arterial",
+   "state": "alternate",
+   "atlas": [
+    "buildings_wl_alt_0"
+   ]
+  },
+  "bld_wl_memory": {
+   "kind": "building",
+   "faction": "wl",
+   "w": 130,
+   "h": 132,
+   "anchor": [
+    0.5,
+    0.7
+   ],
+   "footprint": [
+    3,
+    3
+   ],
+   "variantOf": null,
+   "state": "normal",
+   "atlas": [
+    "buildings_wl_0"
+   ]
+  },
+  "bld_wl_memory_dmg": {
+   "kind": "building",
+   "faction": "wl",
+   "w": 130,
+   "h": 164,
+   "anchor": [
+    0.5,
+    0.7
+   ],
+   "footprint": [
+    3,
+    3
+   ],
+   "variantOf": "bld_wl_memory",
+   "state": "damaged",
+   "atlas": [
+    "buildings_wl_0"
+   ]
+  },
+  "bld_wl_memory_alt": {
+   "kind": "building",
+   "faction": "wl",
+   "w": 130,
+   "h": 159,
+   "anchor": [
+    0.5,
+    0.7
+   ],
+   "footprint": [
+    3,
+    3
+   ],
+   "variantOf": "bld_wl_memory",
+   "state": "alternate",
+   "atlas": [
+    "buildings_wl_alt_0"
+   ]
+  },
+  "bld_wl_mastcell": {
+   "kind": "building",
+   "faction": "wl",
+   "w": 86,
+   "h": 86,
+   "anchor": [
+    0.5,
+    0.7
+   ],
+   "footprint": [
+    2,
+    2
+   ],
+   "variantOf": null,
+   "state": "normal",
+   "atlas": [
+    "buildings_wl_0"
+   ]
+  },
+  "bld_wl_mastcell_dmg": {
+   "kind": "building",
+   "faction": "wl",
+   "w": 86,
+   "h": 94,
+   "anchor": [
+    0.5,
+    0.7
+   ],
+   "footprint": [
+    2,
+    2
+   ],
+   "variantOf": "bld_wl_mastcell",
+   "state": "damaged",
+   "atlas": [
+    "buildings_wl_0"
+   ]
+  },
+  "bld_wl_mastcell_alt": {
+   "kind": "building",
+   "faction": "wl",
+   "w": 86,
+   "h": 98,
+   "anchor": [
+    0.5,
+    0.7
+   ],
+   "footprint": [
+    2,
+    2
+   ],
+   "variantOf": "bld_wl_mastcell",
+   "state": "alternate",
+   "atlas": [
+    "buildings_wl_alt_0"
+   ]
+  },
+  "bld_wl_macropost": {
+   "kind": "building",
+   "faction": "wl",
+   "w": 86,
+   "h": 78,
+   "anchor": [
+    0.5,
+    0.7
+   ],
+   "footprint": [
+    2,
+    2
+   ],
+   "variantOf": null,
+   "state": "normal",
+   "atlas": [
+    "buildings_wl_0"
+   ]
+  },
+  "bld_wl_macropost_dmg": {
+   "kind": "building",
+   "faction": "wl",
+   "w": 86,
+   "h": 81,
+   "anchor": [
+    0.5,
+    0.7
+   ],
+   "footprint": [
+    2,
+    2
+   ],
+   "variantOf": "bld_wl_macropost",
+   "state": "damaged",
+   "atlas": [
+    "buildings_wl_0"
+   ]
+  },
+  "bld_wl_macropost_alt": {
+   "kind": "building",
+   "faction": "wl",
+   "w": 86,
+   "h": 88,
+   "anchor": [
+    0.5,
+    0.7
+   ],
+   "footprint": [
+    2,
+    2
+   ],
+   "variantOf": "bld_wl_macropost",
+   "state": "alternate",
+   "atlas": [
+    "buildings_wl_alt_0"
+   ]
+  },
+  "bld_wl_ferritin": {
+   "kind": "building",
+   "faction": "wl",
+   "w": 86,
+   "h": 87,
+   "anchor": [
+    0.5,
+    0.7
+   ],
+   "footprint": [
+    2,
+    2
+   ],
+   "variantOf": null,
+   "state": "normal",
+   "atlas": [
+    "buildings_wl_0"
+   ]
+  },
+  "bld_wl_ferritin_dmg": {
+   "kind": "building",
+   "faction": "wl",
+   "w": 86,
+   "h": 98,
+   "anchor": [
+    0.5,
+    0.7
+   ],
+   "footprint": [
+    2,
+    2
+   ],
+   "variantOf": "bld_wl_ferritin",
+   "state": "damaged",
+   "atlas": [
+    "buildings_wl_0"
+   ]
+  },
+  "bld_wl_ferritin_alt": {
+   "kind": "building",
+   "faction": "wl",
+   "w": 86,
+   "h": 106,
+   "anchor": [
+    0.5,
+    0.7
+   ],
+   "footprint": [
+    2,
+    2
+   ],
+   "variantOf": "bld_wl_ferritin",
+   "state": "alternate",
+   "atlas": [
+    "buildings_wl_alt_0"
+   ]
+  },
+  "bld_wl_fibrinwall": {
+   "kind": "building",
+   "faction": "wl",
+   "w": 86,
+   "h": 72,
+   "anchor": [
+    0.5,
+    0.7
+   ],
+   "footprint": [
+    2,
+    1
+   ],
+   "variantOf": null,
+   "state": "normal",
+   "atlas": [
+    "buildings_wl_0"
+   ]
+  },
+  "bld_wl_fibrinwall_dmg": {
+   "kind": "building",
+   "faction": "wl",
+   "w": 86,
+   "h": 72,
+   "anchor": [
+    0.5,
+    0.7
+   ],
+   "footprint": [
+    2,
+    1
+   ],
+   "variantOf": "bld_wl_fibrinwall",
+   "state": "damaged",
+   "atlas": [
+    "buildings_wl_0"
+   ]
+  },
+  "bld_wl_fibrinwall_alt": {
+   "kind": "building",
+   "faction": "wl",
+   "w": 86,
+   "h": 70,
+   "anchor": [
+    0.5,
+    0.7
+   ],
+   "footprint": [
+    2,
+    1
+   ],
+   "variantOf": "bld_wl_fibrinwall",
+   "state": "alternate",
+   "atlas": [
+    "buildings_wl_alt_0"
+   ]
+  },
+  "bld_wl_complement": {
+   "kind": "building",
+   "faction": "wl",
+   "w": 130,
+   "h": 130,
+   "anchor": [
+    0.5,
+    0.7
+   ],
+   "footprint": [
+    3,
+    3
+   ],
+   "variantOf": null,
+   "state": "normal",
+   "atlas": [
+    "buildings_wl_0"
+   ]
+  },
+  "bld_wl_complement_dmg": {
+   "kind": "building",
+   "faction": "wl",
+   "w": 130,
+   "h": 161,
+   "anchor": [
+    0.5,
+    0.7
+   ],
+   "footprint": [
+    3,
+    3
+   ],
+   "variantOf": "bld_wl_complement",
+   "state": "damaged",
+   "atlas": [
+    "buildings_wl_0"
+   ]
+  },
+  "bld_wl_complement_alt": {
+   "kind": "building",
+   "faction": "wl",
+   "w": 130,
+   "h": 164,
+   "anchor": [
+    0.5,
+    0.7
+   ],
+   "footprint": [
+    3,
+    3
+   ],
+   "variantOf": "bld_wl_complement",
+   "state": "alternate",
+   "atlas": [
+    "buildings_wl_alt_0"
+   ]
+  },
+  "bld_col_biofilm_core": {
+   "kind": "building",
+   "faction": "col",
+   "w": 173,
+   "h": 172,
+   "anchor": [
+    0.5,
+    0.7
+   ],
+   "footprint": [
+    4,
+    4
+   ],
+   "variantOf": null,
+   "state": "normal",
+   "atlas": [
+    "buildings_col_0"
+   ]
+  },
+  "bld_col_biofilm_core_dmg": {
+   "kind": "building",
+   "faction": "col",
+   "w": 173,
+   "h": 170,
+   "anchor": [
+    0.5,
+    0.7
+   ],
+   "footprint": [
+    4,
+    4
+   ],
+   "variantOf": "bld_col_biofilm_core",
+   "state": "damaged",
+   "atlas": [
+    "buildings_col_0"
+   ]
+  },
+  "bld_col_fermentation": {
+   "kind": "building",
+   "faction": "col",
+   "w": 130,
+   "h": 129,
+   "anchor": [
+    0.5,
+    0.7
+   ],
+   "footprint": [
+    3,
+    2
+   ],
+   "variantOf": null,
+   "state": "normal",
+   "atlas": [
+    "buildings_col_0"
+   ]
+  },
+  "bld_col_fermentation_dmg": {
+   "kind": "building",
+   "faction": "col",
+   "w": 130,
+   "h": 128,
+   "anchor": [
+    0.5,
+    0.7
+   ],
+   "footprint": [
+    3,
+    2
+   ],
+   "variantOf": "bld_col_fermentation",
+   "state": "damaged",
+   "atlas": [
+    "buildings_col_0"
+   ]
+  },
+  "bld_col_fission": {
+   "kind": "building",
+   "faction": "col",
+   "w": 130,
+   "h": 126,
+   "anchor": [
+    0.5,
+    0.7
+   ],
+   "footprint": [
+    3,
+    3
+   ],
+   "variantOf": null,
+   "state": "normal",
+   "atlas": [
+    "buildings_col_0"
+   ]
+  },
+  "bld_col_fission_dmg": {
+   "kind": "building",
+   "faction": "col",
+   "w": 130,
+   "h": 127,
+   "anchor": [
+    0.5,
+    0.7
+   ],
+   "footprint": [
+    3,
+    3
+   ],
+   "variantOf": "bld_col_fission",
+   "state": "damaged",
+   "atlas": [
+    "buildings_col_0"
+   ]
+  },
+  "bld_col_siderophore": {
+   "kind": "building",
+   "faction": "col",
+   "w": 86,
+   "h": 116,
+   "anchor": [
+    0.5,
+    0.7
+   ],
+   "footprint": [
+    2,
+    2
+   ],
+   "variantOf": null,
+   "state": "normal",
+   "atlas": [
+    "buildings_col_0"
+   ]
+  },
+  "bld_col_siderophore_dmg": {
+   "kind": "building",
+   "faction": "col",
+   "w": 86,
+   "h": 115,
+   "anchor": [
+    0.5,
+    0.7
+   ],
+   "footprint": [
+    2,
+    2
+   ],
+   "variantOf": "bld_col_siderophore",
+   "state": "damaged",
+   "atlas": [
+    "buildings_col_0"
+   ]
+  },
+  "bld_col_flagellum": {
+   "kind": "building",
+   "faction": "col",
+   "w": 130,
+   "h": 110,
+   "anchor": [
+    0.5,
+    0.7
+   ],
+   "footprint": [
+    3,
+    3
+   ],
+   "variantOf": null,
+   "state": "normal",
+   "atlas": [
+    "buildings_col_0"
+   ]
+  },
+  "bld_col_flagellum_dmg": {
+   "kind": "building",
+   "faction": "col",
+   "w": 130,
+   "h": 114,
+   "anchor": [
+    0.5,
+    0.7
+   ],
+   "footprint": [
+    3,
+    3
+   ],
+   "variantOf": "bld_col_flagellum",
+   "state": "damaged",
+   "atlas": [
+    "buildings_col_0"
+   ]
+  },
+  "bld_col_plasmid": {
+   "kind": "building",
+   "faction": "col",
+   "w": 130,
+   "h": 127,
+   "anchor": [
+    0.5,
+    0.7
+   ],
+   "footprint": [
+    3,
+    3
+   ],
+   "variantOf": null,
+   "state": "normal",
+   "atlas": [
+    "buildings_col_0"
+   ]
+  },
+  "bld_col_plasmid_dmg": {
+   "kind": "building",
+   "faction": "col",
+   "w": 130,
+   "h": 126,
+   "anchor": [
+    0.5,
+    0.7
+   ],
+   "footprint": [
+    3,
+    3
+   ],
+   "variantOf": "bld_col_plasmid",
+   "state": "damaged",
+   "atlas": [
+    "buildings_col_0"
+   ]
+  },
+  "bld_col_toxinfoundry": {
+   "kind": "building",
+   "faction": "col",
+   "w": 130,
+   "h": 131,
+   "anchor": [
+    0.5,
+    0.7
+   ],
+   "footprint": [
+    3,
+    3
+   ],
+   "variantOf": null,
+   "state": "normal",
+   "atlas": [
+    "buildings_col_0"
+   ]
+  },
+  "bld_col_toxinfoundry_dmg": {
+   "kind": "building",
+   "faction": "col",
+   "w": 130,
+   "h": 131,
+   "anchor": [
+    0.5,
+    0.7
+   ],
+   "footprint": [
+    3,
+    3
+   ],
+   "variantOf": "bld_col_toxinfoundry",
+   "state": "damaged",
+   "atlas": [
+    "buildings_col_0"
+   ]
+  },
+  "bld_col_sporebank": {
+   "kind": "building",
+   "faction": "col",
+   "w": 130,
+   "h": 128,
+   "anchor": [
+    0.5,
+    0.7
+   ],
+   "footprint": [
+    3,
+    3
+   ],
+   "variantOf": null,
+   "state": "normal",
+   "atlas": [
+    "buildings_col_0"
+   ]
+  },
+  "bld_col_sporebank_dmg": {
+   "kind": "building",
+   "faction": "col",
+   "w": 130,
+   "h": 129,
+   "anchor": [
+    0.5,
+    0.7
+   ],
+   "footprint": [
+    3,
+    3
+   ],
+   "variantOf": "bld_col_sporebank",
+   "state": "damaged",
+   "atlas": [
+    "buildings_col_0"
+   ]
+  },
+  "bld_col_toxinspire": {
+   "kind": "building",
+   "faction": "col",
+   "w": 86,
+   "h": 102,
+   "anchor": [
+    0.5,
+    0.7
+   ],
+   "footprint": [
+    2,
+    2
+   ],
+   "variantOf": null,
+   "state": "normal",
+   "atlas": [
+    "buildings_col_0"
+   ]
+  },
+  "bld_col_toxinspire_dmg": {
+   "kind": "building",
+   "faction": "col",
+   "w": 86,
+   "h": 107,
+   "anchor": [
+    0.5,
+    0.7
+   ],
+   "footprint": [
+    2,
+    2
+   ],
+   "variantOf": "bld_col_toxinspire",
+   "state": "damaged",
+   "atlas": [
+    "buildings_col_0"
+   ]
+  },
+  "bld_col_capsulewall": {
+   "kind": "building",
+   "faction": "col",
+   "w": 86,
+   "h": 78,
+   "anchor": [
+    0.5,
+    0.7
+   ],
+   "footprint": [
+    2,
+    1
+   ],
+   "variantOf": null,
+   "state": "normal",
+   "atlas": [
+    "buildings_col_0"
+   ]
+  },
+  "bld_col_capsulewall_dmg": {
+   "kind": "building",
+   "faction": "col",
+   "w": 86,
+   "h": 78,
+   "anchor": [
+    0.5,
+    0.7
+   ],
+   "footprint": [
+    2,
+    1
+   ],
+   "variantOf": "bld_col_capsulewall",
+   "state": "damaged",
+   "atlas": [
+    "buildings_col_0"
+   ]
+  },
+  "bld_col_superantigen": {
+   "kind": "building",
+   "faction": "col",
+   "w": 130,
+   "h": 122,
+   "anchor": [
+    0.5,
+    0.7
+   ],
+   "footprint": [
+    3,
+    3
+   ],
+   "variantOf": null,
+   "state": "normal",
+   "atlas": [
+    "buildings_col_0"
+   ]
+  },
+  "bld_col_superantigen_dmg": {
+   "kind": "building",
+   "faction": "col",
+   "w": 130,
+   "h": 130,
+   "anchor": [
+    0.5,
+    0.7
+   ],
+   "footprint": [
+    3,
+    3
+   ],
+   "variantOf": "bld_col_superantigen",
+   "state": "damaged",
+   "atlas": [
+    "buildings_col_0"
+   ]
+  },
+  "bld_crn_mothercapsid": {
+   "kind": "building",
+   "faction": "crn",
+   "w": 173,
+   "h": 174,
+   "anchor": [
+    0.5,
+    0.7
+   ],
+   "footprint": [
+    4,
+    4
+   ],
+   "variantOf": null,
+   "state": "normal",
+   "atlas": [
+    "buildings_crn_0"
+   ]
+  },
+  "bld_crn_mothercapsid_dmg": {
+   "kind": "building",
+   "faction": "crn",
+   "w": 173,
+   "h": 172,
+   "anchor": [
+    0.5,
+    0.7
+   ],
+   "footprint": [
+    4,
+    4
+   ],
+   "variantOf": "bld_crn_mothercapsid",
+   "state": "damaged",
+   "atlas": [
+    "buildings_crn_0"
+   ]
+  },
+  "bld_crn_mothercapsid_deployed": {
+   "kind": "building",
+   "faction": "crn",
+   "w": 173,
+   "h": 179,
+   "anchor": [
+    0.5,
+    0.7
+   ],
+   "footprint": [
+    4,
+    4
+   ],
+   "variantOf": null,
+   "state": "normal",
+   "atlas": [
+    "buildings_crn_0"
+   ]
+  },
+  "bld_crn_mothercapsid_deployed_dmg": {
+   "kind": "building",
+   "faction": "crn",
+   "w": 173,
+   "h": 134,
+   "anchor": [
+    0.5,
+    0.7
+   ],
+   "footprint": [
+    4,
+    4
+   ],
+   "variantOf": "bld_crn_mothercapsid_deployed",
+   "state": "damaged",
+   "atlas": [
+    "buildings_crn_0"
+   ]
+  },
+  "bld_crn_forge": {
+   "kind": "building",
+   "faction": "crn",
+   "w": 130,
+   "h": 138,
+   "anchor": [
+    0.5,
+    0.7
+   ],
+   "footprint": [
+    3,
+    3
+   ],
+   "variantOf": null,
+   "state": "normal",
+   "atlas": [
+    "buildings_crn_0"
+   ]
+  },
+  "bld_crn_forge_dmg": {
+   "kind": "building",
+   "faction": "crn",
+   "w": 130,
+   "h": 131,
+   "anchor": [
+    0.5,
+    0.7
+   ],
+   "footprint": [
+    3,
+    3
+   ],
+   "variantOf": "bld_crn_forge",
+   "state": "damaged",
+   "atlas": [
+    "buildings_crn_0"
+   ]
+  },
+  "bld_crn_spikespire": {
+   "kind": "building",
+   "faction": "crn",
+   "w": 86,
+   "h": 112,
+   "anchor": [
+    0.5,
+    0.7
+   ],
+   "footprint": [
+    2,
+    2
+   ],
+   "variantOf": null,
+   "state": "normal",
+   "atlas": [
+    "buildings_crn_0"
+   ]
+  },
+  "bld_crn_spikespire_dmg": {
+   "kind": "building",
+   "faction": "crn",
+   "w": 86,
+   "h": 108,
+   "anchor": [
+    0.5,
+    0.7
+   ],
+   "footprint": [
+    2,
+    2
+   ],
+   "variantOf": "bld_crn_spikespire",
+   "state": "damaged",
+   "atlas": [
+    "buildings_crn_0"
+   ]
+  },
+  "bld_crn_neuralnest": {
+   "kind": "building",
+   "faction": "crn",
+   "w": 130,
+   "h": 130,
+   "anchor": [
+    0.5,
+    0.7
+   ],
+   "footprint": [
+    3,
+    3
+   ],
+   "variantOf": null,
+   "state": "normal",
+   "atlas": [
+    "buildings_crn_0"
+   ]
+  },
+  "bld_crn_neuralnest_dmg": {
+   "kind": "building",
+   "faction": "crn",
+   "w": 130,
+   "h": 132,
+   "anchor": [
+    0.5,
+    0.7
+   ],
+   "footprint": [
+    3,
+    3
+   ],
+   "variantOf": "bld_crn_neuralnest",
+   "state": "damaged",
+   "atlas": [
+    "buildings_crn_0"
+   ]
+  },
+  "bld_crn_projector": {
+   "kind": "building",
+   "faction": "crn",
+   "w": 130,
+   "h": 157,
+   "anchor": [
+    0.5,
+    0.7
+   ],
+   "footprint": [
+    3,
+    3
+   ],
+   "variantOf": null,
+   "state": "normal",
+   "atlas": [
+    "buildings_crn_0"
+   ]
+  },
+  "bld_crn_projector_dmg": {
+   "kind": "building",
+   "faction": "crn",
+   "w": 130,
+   "h": 151,
+   "anchor": [
+    0.5,
+    0.7
+   ],
+   "footprint": [
+    3,
+    3
+   ],
+   "variantOf": "bld_crn_projector",
+   "state": "damaged",
+   "atlas": [
+    "buildings_crn_0"
+   ]
+  },
+  "bld_neu_epithelial": {
+   "kind": "hostcell",
+   "faction": "neu",
+   "w": 86,
+   "h": 105,
+   "anchor": [
+    0.5,
+    0.7
+   ],
+   "footprint": [
+    2,
+    2
+   ],
+   "variantOf": null,
+   "state": "normal",
+   "atlas": [
+    "world_neutral_0"
+   ]
+  },
+  "bld_neu_epithelial_dmg": {
+   "kind": "hostcell",
+   "faction": "neu",
+   "w": 86,
+   "h": 98,
+   "anchor": [
+    0.5,
+    0.7
+   ],
+   "footprint": [
+    2,
+    2
+   ],
+   "variantOf": "bld_neu_epithelial",
+   "state": "damaged",
+   "atlas": [
+    "world_neutral_0"
+   ]
+  },
+  "bld_neu_epithelial_infected": {
+   "kind": "hostcell",
+   "faction": "neu",
+   "w": 86,
+   "h": 104,
+   "anchor": [
+    0.5,
+    0.7
+   ],
+   "footprint": [
+    2,
+    2
+   ],
+   "variantOf": null,
+   "state": "normal",
+   "atlas": [
+    "world_neutral_0"
+   ]
+  },
+  "bld_neu_epithelial_infected_dmg": {
+   "kind": "hostcell",
+   "faction": "neu",
+   "w": 86,
+   "h": 98,
+   "anchor": [
+    0.5,
+    0.7
+   ],
+   "footprint": [
+    2,
+    2
+   ],
+   "variantOf": "bld_neu_epithelial_infected",
+   "state": "damaged",
+   "atlas": [
+    "world_neutral_0"
+   ]
+  },
+  "bld_neu_epithelial_burst": {
+   "kind": "hostcell",
+   "faction": "neu",
+   "w": 86,
+   "h": 88,
+   "anchor": [
+    0.5,
+    0.7
+   ],
+   "footprint": [
+    2,
+    2
+   ],
+   "variantOf": null,
+   "state": "normal",
+   "atlas": [
+    "world_neutral_0"
+   ]
+  },
+  "bld_neu_epithelial_burst_dmg": {
+   "kind": "hostcell",
+   "faction": "neu",
+   "w": 86,
+   "h": 87,
+   "anchor": [
+    0.5,
+    0.7
+   ],
+   "footprint": [
+    2,
+    2
+   ],
+   "variantOf": "bld_neu_epithelial_burst",
+   "state": "damaged",
+   "atlas": [
+    "world_neutral_0"
+   ]
+  },
+  "bld_neu_hepatocyte": {
+   "kind": "hostcell",
+   "faction": "neu",
+   "w": 86,
+   "h": 86,
+   "anchor": [
+    0.5,
+    0.7
+   ],
+   "footprint": [
+    2,
+    2
+   ],
+   "variantOf": null,
+   "state": "normal",
+   "atlas": [
+    "world_neutral_0"
+   ]
+  },
+  "bld_neu_hepatocyte_dmg": {
+   "kind": "hostcell",
+   "faction": "neu",
+   "w": 86,
+   "h": 86,
+   "anchor": [
+    0.5,
+    0.7
+   ],
+   "footprint": [
+    2,
+    2
+   ],
+   "variantOf": "bld_neu_hepatocyte",
+   "state": "damaged",
+   "atlas": [
+    "world_neutral_0"
+   ]
+  },
+  "bld_neu_kidneycell": {
+   "kind": "hostcell",
+   "faction": "neu",
+   "w": 86,
+   "h": 93,
+   "anchor": [
+    0.5,
+    0.7
+   ],
+   "footprint": [
+    2,
+    2
+   ],
+   "variantOf": null,
+   "state": "normal",
+   "atlas": [
+    "world_neutral_0"
+   ]
+  },
+  "bld_neu_kidneycell_dmg": {
+   "kind": "hostcell",
+   "faction": "neu",
+   "w": 86,
+   "h": 92,
+   "anchor": [
+    0.5,
+    0.7
+   ],
+   "footprint": [
+    2,
+    2
+   ],
+   "variantOf": "bld_neu_kidneycell",
+   "state": "damaged",
+   "atlas": [
+    "world_neutral_0"
+   ]
+  },
+  "bld_neu_cardiomyocyte": {
+   "kind": "hostcell",
+   "faction": "neu",
+   "w": 86,
+   "h": 90,
+   "anchor": [
+    0.5,
+    0.7
+   ],
+   "footprint": [
+    2,
+    2
+   ],
+   "variantOf": null,
+   "state": "normal",
+   "atlas": [
+    "world_neutral_0"
+   ]
+  },
+  "bld_neu_cardiomyocyte_dmg": {
+   "kind": "hostcell",
+   "faction": "neu",
+   "w": 86,
+   "h": 94,
+   "anchor": [
+    0.5,
+    0.7
+   ],
+   "footprint": [
+    2,
+    2
+   ],
+   "variantOf": "bld_neu_cardiomyocyte",
+   "state": "damaged",
+   "atlas": [
+    "world_neutral_0"
+   ]
+  },
+  "bld_neu_neuron": {
+   "kind": "hostcell",
+   "faction": "neu",
+   "w": 86,
+   "h": 86,
+   "anchor": [
+    0.5,
+    0.7
+   ],
+   "footprint": [
+    2,
+    2
+   ],
+   "variantOf": null,
+   "state": "normal",
+   "atlas": [
+    "world_neutral_0"
+   ]
+  },
+  "bld_neu_neuron_dmg": {
+   "kind": "hostcell",
+   "faction": "neu",
+   "w": 86,
+   "h": 84,
+   "anchor": [
+    0.5,
+    0.7
+   ],
+   "footprint": [
+    2,
+    2
+   ],
+   "variantOf": "bld_neu_neuron",
+   "state": "damaged",
+   "atlas": [
+    "world_neutral_0"
+   ]
+  },
+  "res_glucose_large": {
+   "kind": "resource",
+   "faction": "neu",
+   "w": 86,
+   "h": 84,
+   "anchor": [
+    0.5,
+    0.7
+   ],
+   "footprint": [
+    2,
+    2
+   ],
+   "variantOf": null,
+   "state": "normal",
+   "atlas": [
+    "world_neutral_0"
+   ]
+  },
+  "res_glucose_small": {
+   "kind": "resource",
+   "faction": "neu",
+   "w": 43,
+   "h": 42,
+   "anchor": [
+    0.5,
+    0.7
+   ],
+   "footprint": [
+    1,
+    1
+   ],
+   "variantOf": null,
+   "state": "normal",
+   "atlas": [
+    "world_neutral_0"
+   ]
+  },
+  "res_protein": {
+   "kind": "resource",
+   "faction": "neu",
+   "w": 86,
+   "h": 82,
+   "anchor": [
+    0.5,
+    0.7
+   ],
+   "footprint": [
+    2,
+    2
+   ],
+   "variantOf": null,
+   "state": "normal",
+   "atlas": [
+    "world_neutral_0"
+   ]
+  },
+  "res_iron": {
+   "kind": "resource",
+   "faction": "neu",
+   "w": 86,
+   "h": 82,
+   "anchor": [
+    0.5,
+    0.7
+   ],
+   "footprint": [
+    2,
+    2
+   ],
+   "variantOf": null,
+   "state": "normal",
+   "atlas": [
+    "world_neutral_0"
+   ]
+  },
+  "fx_strep_whip": {
+   "kind": "fx",
+   "blend": "key",
+   "frames": [
+    "fx_strep_whip#00",
+    "fx_strep_whip#01",
+    "fx_strep_whip#02",
+    "fx_strep_whip#03",
+    "fx_strep_whip#04",
+    "fx_strep_whip#05",
+    "fx_strep_whip#06",
+    "fx_strep_whip#07"
+   ],
+   "fps": 12,
+   "w": 94,
+   "h": 96,
+   "anchor": [
+    0.5,
+    0.5
+   ],
+   "atlas": [
+    "fx_c_0"
+   ]
+  },
+  "fx_toxin_cloud": {
+   "kind": "fx",
+   "blend": "key",
+   "frames": [
+    "fx_toxin_cloud#00",
+    "fx_toxin_cloud#01",
+    "fx_toxin_cloud#02",
+    "fx_toxin_cloud#03",
+    "fx_toxin_cloud#04",
+    "fx_toxin_cloud#05",
+    "fx_toxin_cloud#06",
+    "fx_toxin_cloud#07"
+   ],
+   "fps": 12,
+   "w": 78,
+   "h": 96,
+   "anchor": [
+    0.5,
+    0.5
+   ],
+   "atlas": [
+    "fx_c_0"
+   ]
+  },
+  "fx_spike_dart": {
+   "kind": "fx",
+   "blend": "add",
+   "frames": [
+    "fx_spike_dart#00",
+    "fx_spike_dart#01",
+    "fx_spike_dart#02",
+    "fx_spike_dart#03",
+    "fx_spike_dart#04",
+    "fx_spike_dart#05",
+    "fx_spike_dart#06",
+    "fx_spike_dart#07"
+   ],
+   "fps": 12,
+   "w": 96,
+   "h": 69,
+   "anchor": [
+    0.5,
+    0.5
+   ],
+   "atlas": [
+    "fx_c_1"
+   ]
+  },
+  "fx_net_burst": {
+   "kind": "fx",
+   "blend": "add",
+   "frames": [
+    "fx_net_burst#00",
+    "fx_net_burst#01",
+    "fx_net_burst#02",
+    "fx_net_burst#03",
+    "fx_net_burst#04",
+    "fx_net_burst#05",
+    "fx_net_burst#06"
+   ],
+   "fps": 12,
+   "w": 96,
+   "h": 77,
+   "anchor": [
+    0.5,
+    0.5
+   ],
+   "atlas": [
+    "fx_b_0"
+   ]
+  },
+  "fx_phagocytosis": {
+   "kind": "fx",
+   "blend": "key",
+   "frames": [
+    "fx_phagocytosis#00",
+    "fx_phagocytosis#01",
+    "fx_phagocytosis#02",
+    "fx_phagocytosis#03",
+    "fx_phagocytosis#04",
+    "fx_phagocytosis#05",
+    "fx_phagocytosis#06",
+    "fx_phagocytosis#07"
+   ],
+   "fps": 12,
+   "w": 82,
+   "h": 96,
+   "anchor": [
+    0.5,
+    0.5
+   ],
+   "atlas": [
+    "fx_c_0"
+   ]
+  },
+  "fx_scan_ring": {
+   "kind": "fx",
+   "blend": "add",
+   "frames": [
+    "fx_scan_ring#00",
+    "fx_scan_ring#01",
+    "fx_scan_ring#02",
+    "fx_scan_ring#03",
+    "fx_scan_ring#04",
+    "fx_scan_ring#05",
+    "fx_scan_ring#06",
+    "fx_scan_ring#07"
+   ],
+   "fps": 12,
+   "w": 88,
+   "h": 96,
+   "anchor": [
+    0.5,
+    0.5
+   ],
+   "atlas": [
+    "fx_c_0"
+   ]
+  },
+  "fx_opsonize_tag": {
+   "kind": "fx",
+   "blend": "key",
+   "frames": [
+    "fx_opsonize_tag#00",
+    "fx_opsonize_tag#01",
+    "fx_opsonize_tag#02",
+    "fx_opsonize_tag#03",
+    "fx_opsonize_tag#04",
+    "fx_opsonize_tag#05",
+    "fx_opsonize_tag#06",
+    "fx_opsonize_tag#07"
+   ],
+   "fps": 12,
+   "w": 80,
+   "h": 96,
+   "anchor": [
+    0.5,
+    0.5
+   ],
+   "atlas": [
+    "fx_c_0"
+   ]
+  },
+  "fx_agglutination": {
+   "kind": "fx",
+   "blend": "key",
+   "frames": [
+    "fx_agglutination#00",
+    "fx_agglutination#01",
+    "fx_agglutination#02",
+    "fx_agglutination#03",
+    "fx_agglutination#04",
+    "fx_agglutination#05",
+    "fx_agglutination#06",
+    "fx_agglutination#07"
+   ],
+   "fps": 12,
+   "w": 88,
+   "h": 96,
+   "anchor": [
+    0.5,
+    0.5
+   ],
+   "atlas": [
+    "fx_a_0"
+   ]
+  },
+  "fx_clot_seal": {
+   "kind": "fx",
+   "blend": "key",
+   "frames": [
+    "fx_clot_seal#00",
+    "fx_clot_seal#01",
+    "fx_clot_seal#02",
+    "fx_clot_seal#03",
+    "fx_clot_seal#04",
+    "fx_clot_seal#05",
+    "fx_clot_seal#06",
+    "fx_clot_seal#07"
+   ],
+   "fps": 12,
+   "w": 87,
+   "h": 96,
+   "anchor": [
+    0.5,
+    0.5
+   ],
+   "atlas": [
+    "fx_a_0"
+   ]
+  },
+  "fx_granuloma_ring": {
+   "kind": "fx",
+   "blend": "key",
+   "frames": [
+    "fx_granuloma_ring#00",
+    "fx_granuloma_ring#01",
+    "fx_granuloma_ring#02",
+    "fx_granuloma_ring#03",
+    "fx_granuloma_ring#04",
+    "fx_granuloma_ring#05",
+    "fx_granuloma_ring#06",
+    "fx_granuloma_ring#07"
+   ],
+   "fps": 12,
+   "w": 96,
+   "h": 94,
+   "anchor": [
+    0.5,
+    0.5
+   ],
+   "atlas": [
+    "fx_b_0"
+   ]
+  },
+  "fx_interferon_wave": {
+   "kind": "fx",
+   "blend": "key",
+   "frames": [
+    "fx_interferon_wave#00",
+    "fx_interferon_wave#01",
+    "fx_interferon_wave#02",
+    "fx_interferon_wave#03",
+    "fx_interferon_wave#04",
+    "fx_interferon_wave#05",
+    "fx_interferon_wave#06"
+   ],
+   "fps": 12,
+   "w": 96,
+   "h": 58,
+   "anchor": [
+    0.5,
+    0.5
+   ],
+   "atlas": [
+    "fx_b_0",
+    "fx_b_1"
+   ]
+  },
+  "fx_il2_aura": {
+   "kind": "fx",
+   "blend": "add",
+   "frames": [
+    "fx_il2_aura#00",
+    "fx_il2_aura#01",
+    "fx_il2_aura#02",
+    "fx_il2_aura#03",
+    "fx_il2_aura#04",
+    "fx_il2_aura#05",
+    "fx_il2_aura#06",
+    "fx_il2_aura#07"
+   ],
+   "fps": 12,
+   "w": 80,
+   "h": 96,
+   "anchor": [
+    0.5,
+    0.5
+   ],
+   "atlas": [
+    "fx_b_0"
+   ]
+  },
+  "fx_fission": {
+   "kind": "fx",
+   "blend": "key",
+   "frames": [
+    "fx_fission#00",
+    "fx_fission#01",
+    "fx_fission#02",
+    "fx_fission#03",
+    "fx_fission#04",
+    "fx_fission#05",
+    "fx_fission#06",
+    "fx_fission#07"
+   ],
+   "fps": 12,
+   "w": 94,
+   "h": 96,
+   "anchor": [
+    0.5,
+    0.5
+   ],
+   "atlas": [
+    "fx_b_0"
+   ]
+  },
+  "fx_pinkburst": {
+   "kind": "fx",
+   "blend": "key",
+   "frames": [
+    "fx_pinkburst#00",
+    "fx_pinkburst#01",
+    "fx_pinkburst#02",
+    "fx_pinkburst#03",
+    "fx_pinkburst#04",
+    "fx_pinkburst#05",
+    "fx_pinkburst#06",
+    "fx_pinkburst#07"
+   ],
+   "fps": 12,
+   "w": 96,
+   "h": 88,
+   "anchor": [
+    0.5,
+    0.5
+   ],
+   "atlas": [
+    "fx_c_0"
+   ]
+  },
+  "fx_toxin_glob": {
+   "kind": "fx",
+   "blend": "key",
+   "frames": [
+    "fx_toxin_glob#00",
+    "fx_toxin_glob#01",
+    "fx_toxin_glob#02",
+    "fx_toxin_glob#03",
+    "fx_toxin_glob#04",
+    "fx_toxin_glob#05",
+    "fx_toxin_glob#06",
+    "fx_toxin_glob#07"
+   ],
+   "fps": 12,
+   "w": 96,
+   "h": 72,
+   "anchor": [
+    0.5,
+    0.5
+   ],
+   "atlas": [
+    "fx_c_1"
+   ]
+  },
+  "fx_histamine_pulse": {
+   "kind": "fx",
+   "blend": "add",
+   "frames": [
+    "fx_histamine_pulse#00",
+    "fx_histamine_pulse#01",
+    "fx_histamine_pulse#02",
+    "fx_histamine_pulse#03",
+    "fx_histamine_pulse#04",
+    "fx_histamine_pulse#05",
+    "fx_histamine_pulse#06",
+    "fx_histamine_pulse#07"
+   ],
+   "fps": 12,
+   "w": 90,
+   "h": 96,
+   "anchor": [
+    0.5,
+    0.5
+   ],
+   "atlas": [
+    "fx_b_0"
+   ]
+  },
+  "fx_nk_strike": {
+   "kind": "fx",
+   "blend": "add",
+   "frames": [
+    "fx_nk_strike#00",
+    "fx_nk_strike#01",
+    "fx_nk_strike#02",
+    "fx_nk_strike#03",
+    "fx_nk_strike#04",
+    "fx_nk_strike#05",
+    "fx_nk_strike#06",
+    "fx_nk_strike#07"
+   ],
+   "fps": 12,
+   "w": 96,
+   "h": 46,
+   "anchor": [
+    0.5,
+    0.5
+   ],
+   "atlas": [
+    "fx_b_0",
+    "fx_b_1"
+   ]
+  },
+  "fx_quorum": {
+   "kind": "fx",
+   "blend": "add",
+   "frames": [
+    "fx_quorum#00",
+    "fx_quorum#01",
+    "fx_quorum#02",
+    "fx_quorum#03",
+    "fx_quorum#04",
+    "fx_quorum#05",
+    "fx_quorum#06",
+    "fx_quorum#07"
+   ],
+   "fps": 12,
+   "w": 94,
+   "h": 96,
+   "anchor": [
+    0.5,
+    0.5
+   ],
+   "atlas": [
+    "fx_c_0"
+   ]
+  },
+  "fx_perforin": {
+   "kind": "fx",
+   "blend": "add",
+   "frames": [
+    "fx_perforin#00",
+    "fx_perforin#01",
+    "fx_perforin#02",
+    "fx_perforin#03",
+    "fx_perforin#04",
+    "fx_perforin#05",
+    "fx_perforin#06",
+    "fx_perforin#07"
+   ],
+   "fps": 12,
+   "w": 96,
+   "h": 87,
+   "anchor": [
+    0.5,
+    0.5
+   ],
+   "atlas": [
+    "fx_c_0",
+    "fx_c_1"
+   ]
+  },
+  "fx_eos_grenade": {
+   "kind": "fx",
+   "blend": "key",
+   "frames": [
+    "fx_eos_grenade#00",
+    "fx_eos_grenade#01",
+    "fx_eos_grenade#02",
+    "fx_eos_grenade#03",
+    "fx_eos_grenade#04",
+    "fx_eos_grenade#05",
+    "fx_eos_grenade#06",
+    "fx_eos_grenade#07"
+   ],
+   "fps": 12,
+   "w": 73,
+   "h": 96,
+   "anchor": [
+    0.5,
+    0.5
+   ],
+   "atlas": [
+    "fx_a_0"
+   ]
+  },
+  "fx_antibody_volley": {
+   "kind": "fx",
+   "blend": "key",
+   "frames": [
+    "fx_antibody_volley#00",
+    "fx_antibody_volley#01",
+    "fx_antibody_volley#02",
+    "fx_antibody_volley#03",
+    "fx_antibody_volley#04",
+    "fx_antibody_volley#05",
+    "fx_antibody_volley#06",
+    "fx_antibody_volley#07"
+   ],
+   "fps": 12,
+   "w": 96,
+   "h": 96,
+   "anchor": [
+    0.5,
+    0.5
+   ],
+   "atlas": [
+    "fx_a_0"
+   ]
+  },
+  "fx_building_collapse": {
+   "kind": "fx",
+   "blend": "key",
+   "frames": [
+    "fx_building_collapse#00",
+    "fx_building_collapse#01",
+    "fx_building_collapse#02",
+    "fx_building_collapse#03",
+    "fx_building_collapse#04",
+    "fx_building_collapse#05",
+    "fx_building_collapse#06",
+    "fx_building_collapse#07"
+   ],
+   "fps": 12,
+   "w": 62,
+   "h": 96,
+   "anchor": [
+    0.5,
+    0.5
+   ],
+   "atlas": [
+    "fx_a_0"
+   ]
+  },
+  "fx_death_virus": {
+   "kind": "fx",
+   "blend": "key",
+   "frames": [
+    "fx_death_virus#00",
+    "fx_death_virus#01",
+    "fx_death_virus#02",
+    "fx_death_virus#03",
+    "fx_death_virus#04",
+    "fx_death_virus#05",
+    "fx_death_virus#06",
+    "fx_death_virus#07"
+   ],
+   "fps": 12,
+   "w": 84,
+   "h": 96,
+   "anchor": [
+    0.5,
+    0.5
+   ],
+   "atlas": [
+    "fx_a_0"
+   ]
+  },
+  "fx_extravasation": {
+   "kind": "fx",
+   "blend": "key",
+   "frames": [
+    "fx_extravasation#00",
+    "fx_extravasation#01",
+    "fx_extravasation#02",
+    "fx_extravasation#03",
+    "fx_extravasation#04",
+    "fx_extravasation#05",
+    "fx_extravasation#06",
+    "fx_extravasation#07"
+   ],
+   "fps": 12,
+   "w": 96,
+   "h": 89,
+   "anchor": [
+    0.5,
+    0.5
+   ],
+   "atlas": [
+    "fx_b_0"
+   ]
+  },
+  "fx_death_bacteria": {
+   "kind": "fx",
+   "blend": "key",
+   "frames": [
+    "fx_death_bacteria#00",
+    "fx_death_bacteria#01",
+    "fx_death_bacteria#02",
+    "fx_death_bacteria#03",
+    "fx_death_bacteria#04",
+    "fx_death_bacteria#05",
+    "fx_death_bacteria#06",
+    "fx_death_bacteria#07"
+   ],
+   "fps": 12,
+   "w": 80,
+   "h": 96,
+   "anchor": [
+    0.5,
+    0.5
+   ],
+   "atlas": [
+    "fx_a_0"
+   ]
+  },
+  "fx_hijack": {
+   "kind": "fx",
+   "blend": "key",
+   "frames": [
+    "fx_hijack#00",
+    "fx_hijack#01",
+    "fx_hijack#02",
+    "fx_hijack#03",
+    "fx_hijack#04",
+    "fx_hijack#05",
+    "fx_hijack#06",
+    "fx_hijack#07"
+   ],
+   "fps": 12,
+   "w": 50,
+   "h": 96,
+   "anchor": [
+    0.5,
+    0.5
+   ],
+   "atlas": [
+    "fx_b_0"
+   ]
+  },
+  "fx_lysis_burst": {
+   "kind": "fx",
+   "blend": "key",
+   "frames": [
+    "fx_lysis_burst#00",
+    "fx_lysis_burst#01",
+    "fx_lysis_burst#02",
+    "fx_lysis_burst#03",
+    "fx_lysis_burst#04",
+    "fx_lysis_burst#05",
+    "fx_lysis_burst#06",
+    "fx_lysis_burst#07"
+   ],
+   "fps": 12,
+   "w": 94,
+   "h": 96,
+   "anchor": [
+    0.5,
+    0.5
+   ],
+   "atlas": [
+    "fx_b_0"
+   ]
+  },
+  "fx_steroid": {
+   "kind": "fx",
+   "blend": "key",
+   "frames": [
+    "fx_steroid#00",
+    "fx_steroid#01",
+    "fx_steroid#02",
+    "fx_steroid#03",
+    "fx_steroid#04",
+    "fx_steroid#05",
+    "fx_steroid#06",
+    "fx_steroid#07"
+   ],
+   "fps": 12,
+   "w": 96,
+   "h": 84,
+   "anchor": [
+    0.5,
+    0.5
+   ],
+   "atlas": [
+    "fx_c_1"
+   ]
+  },
+  "fx_fever_haze": {
+   "kind": "fx",
+   "blend": "add",
+   "frames": [
+    "fx_fever_haze#00",
+    "fx_fever_haze#01",
+    "fx_fever_haze#02",
+    "fx_fever_haze#03",
+    "fx_fever_haze#04",
+    "fx_fever_haze#05",
+    "fx_fever_haze#06",
+    "fx_fever_haze#07"
+   ],
+   "fps": 12,
+   "w": 74,
+   "h": 96,
+   "anchor": [
+    0.5,
+    0.5
+   ],
+   "atlas": [
+    "fx_b_0"
+   ]
+  },
+  "fx_iv_fluids": {
+   "kind": "fx",
+   "blend": "key",
+   "frames": [
+    "fx_iv_fluids#00",
+    "fx_iv_fluids#01",
+    "fx_iv_fluids#02",
+    "fx_iv_fluids#03",
+    "fx_iv_fluids#04",
+    "fx_iv_fluids#05",
+    "fx_iv_fluids#06",
+    "fx_iv_fluids#07"
+   ],
+   "fps": 12,
+   "w": 96,
+   "h": 94,
+   "anchor": [
+    0.5,
+    0.5
+   ],
+   "atlas": [
+    "fx_b_0"
+   ]
+  },
+  "fx_heartbeat": {
+   "kind": "fx",
+   "blend": "add",
+   "frames": [
+    "fx_heartbeat#00",
+    "fx_heartbeat#01",
+    "fx_heartbeat#02",
+    "fx_heartbeat#03",
+    "fx_heartbeat#04",
+    "fx_heartbeat#05",
+    "fx_heartbeat#06",
+    "fx_heartbeat#07"
+   ],
+   "fps": 12,
+   "w": 85,
+   "h": 96,
+   "anchor": [
+    0.5,
+    0.5
+   ],
+   "atlas": [
+    "fx_b_0"
+   ]
+  },
+  "fx_iron_draw": {
+   "kind": "fx",
+   "blend": "key",
+   "frames": [
+    "fx_iron_draw#00",
+    "fx_iron_draw#01",
+    "fx_iron_draw#02",
+    "fx_iron_draw#03",
+    "fx_iron_draw#04",
+    "fx_iron_draw#05",
+    "fx_iron_draw#06",
+    "fx_iron_draw#07"
+   ],
+   "fps": 12,
+   "w": 40,
+   "h": 96,
+   "anchor": [
+    0.5,
+    0.5
+   ],
+   "atlas": [
+    "fx_b_0"
+   ]
+  },
+  "fx_superantigen": {
+   "kind": "fx",
+   "blend": "add",
+   "frames": [
+    "fx_superantigen#00",
+    "fx_superantigen#01",
+    "fx_superantigen#02",
+    "fx_superantigen#03",
+    "fx_superantigen#04",
+    "fx_superantigen#05",
+    "fx_superantigen#06",
+    "fx_superantigen#07"
+   ],
+   "fps": 12,
+   "w": 96,
+   "h": 92,
+   "anchor": [
+    0.5,
+    0.5
+   ],
+   "atlas": [
+    "fx_c_0"
+   ]
+  },
+  "fx_conjugation": {
+   "kind": "fx",
+   "blend": "key",
+   "frames": [
+    "fx_conjugation#00",
+    "fx_conjugation#01",
+    "fx_conjugation#02",
+    "fx_conjugation#03",
+    "fx_conjugation#04",
+    "fx_conjugation#05",
+    "fx_conjugation#06",
+    "fx_conjugation#07"
+   ],
+   "fps": 12,
+   "w": 96,
+   "h": 64,
+   "anchor": [
+    0.5,
+    0.5
+   ],
+   "atlas": [
+    "fx_a_0",
+    "fx_a_1"
+   ]
+  },
+  "fx_integration": {
+   "kind": "fx",
+   "blend": "key",
+   "frames": [
+    "fx_integration#00",
+    "fx_integration#01",
+    "fx_integration#02",
+    "fx_integration#03",
+    "fx_integration#04",
+    "fx_integration#05",
+    "fx_integration#06",
+    "fx_integration#07"
+   ],
+   "fps": 12,
+   "w": 52,
+   "h": 96,
+   "anchor": [
+    0.5,
+    0.5
+   ],
+   "atlas": [
+    "fx_b_0"
+   ]
+  },
+  "fx_atp_orbs": {
+   "kind": "fx",
+   "blend": "key",
+   "frames": [
+    "fx_atp_orbs#00",
+    "fx_atp_orbs#01",
+    "fx_atp_orbs#02",
+    "fx_atp_orbs#03",
+    "fx_atp_orbs#04",
+    "fx_atp_orbs#05",
+    "fx_atp_orbs#06",
+    "fx_atp_orbs#07"
+   ],
+   "fps": 12,
+   "w": 63,
+   "h": 96,
+   "anchor": [
+    0.5,
+    0.5
+   ],
+   "atlas": [
+    "fx_a_0"
+   ]
+  },
+  "fx_urine_wave": {
+   "kind": "fx",
+   "blend": "key",
+   "frames": [
+    "fx_urine_wave#00",
+    "fx_urine_wave#01",
+    "fx_urine_wave#02",
+    "fx_urine_wave#03",
+    "fx_urine_wave#04",
+    "fx_urine_wave#05",
+    "fx_urine_wave#06",
+    "fx_urine_wave#07"
+   ],
+   "fps": 12,
+   "w": 74,
+   "h": 96,
+   "anchor": [
+    0.5,
+    0.5
+   ],
+   "atlas": [
+    "fx_c_0"
+   ]
+  },
+  "fx_death_immune": {
+   "kind": "fx",
+   "blend": "key",
+   "frames": [
+    "fx_death_immune#00",
+    "fx_death_immune#01",
+    "fx_death_immune#02",
+    "fx_death_immune#03",
+    "fx_death_immune#04",
+    "fx_death_immune#05",
+    "fx_death_immune#06",
+    "fx_death_immune#07"
+   ],
+   "fps": 12,
+   "w": 78,
+   "h": 96,
+   "anchor": [
+    0.5,
+    0.5
+   ],
+   "atlas": [
+    "fx_a_0"
+   ]
+  },
+  "fx_glucose_harvest": {
+   "kind": "fx",
+   "blend": "key",
+   "frames": [
+    "fx_glucose_harvest#00",
+    "fx_glucose_harvest#01",
+    "fx_glucose_harvest#02",
+    "fx_glucose_harvest#03",
+    "fx_glucose_harvest#04",
+    "fx_glucose_harvest#05",
+    "fx_glucose_harvest#06",
+    "fx_glucose_harvest#07"
+   ],
+   "fps": 12,
+   "w": 60,
+   "h": 96,
+   "anchor": [
+    0.5,
+    0.5
+   ],
+   "atlas": [
+    "fx_b_0"
+   ]
+  },
+  "fx_iv_line": {
+   "kind": "fx",
+   "blend": "key",
+   "frames": [
+    "fx_iv_line#00",
+    "fx_iv_line#01",
+    "fx_iv_line#02",
+    "fx_iv_line#03",
+    "fx_iv_line#04",
+    "fx_iv_line#05",
+    "fx_iv_line#06",
+    "fx_iv_line#07"
+   ],
+   "fps": 12,
+   "w": 28,
+   "h": 96,
+   "anchor": [
+    0.5,
+    0.5
+   ],
+   "atlas": [
+    "fx_b_0"
+   ]
+  },
+  "fx_cough": {
+   "kind": "fx",
+   "blend": "key",
+   "frames": [
+    "fx_cough#00",
+    "fx_cough#01",
+    "fx_cough#02",
+    "fx_cough#03",
+    "fx_cough#04",
+    "fx_cough#05",
+    "fx_cough#06",
+    "fx_cough#07"
+   ],
+   "fps": 12,
+   "w": 96,
+   "h": 80,
+   "anchor": [
+    0.5,
+    0.5
+   ],
+   "atlas": [
+    "fx_a_0",
+    "fx_a_1"
+   ]
+  },
+  "fx_antibiotic_strike": {
+   "kind": "fx",
+   "blend": "key",
+   "frames": [
+    "fx_antibiotic_strike#00",
+    "fx_antibiotic_strike#01",
+    "fx_antibiotic_strike#02",
+    "fx_antibiotic_strike#03",
+    "fx_antibiotic_strike#04",
+    "fx_antibiotic_strike#05",
+    "fx_antibiotic_strike#06",
+    "fx_antibiotic_strike#07"
+   ],
+   "fps": 12,
+   "w": 68,
+   "h": 96,
+   "anchor": [
+    0.5,
+    0.5
+   ],
+   "atlas": [
+    "fx_a_0"
+   ]
+  },
+  "fx_endotoxin_blast": {
+   "kind": "fx",
+   "blend": "key",
+   "frames": [
+    "fx_endotoxin_blast#00",
+    "fx_endotoxin_blast#01",
+    "fx_endotoxin_blast#02",
+    "fx_endotoxin_blast#03",
+    "fx_endotoxin_blast#04",
+    "fx_endotoxin_blast#05",
+    "fx_endotoxin_blast#06",
+    "fx_endotoxin_blast#07"
+   ],
+   "fps": 12,
+   "w": 88,
+   "h": 96,
+   "anchor": [
+    0.5,
+    0.5
+   ],
+   "atlas": [
+    "fx_a_0"
+   ]
+  },
+  "fx_vasopressor": {
+   "kind": "fx",
+   "blend": "add",
+   "frames": [
+    "fx_vasopressor#00",
+    "fx_vasopressor#01",
+    "fx_vasopressor#02",
+    "fx_vasopressor#03",
+    "fx_vasopressor#04",
+    "fx_vasopressor#05",
+    "fx_vasopressor#06",
+    "fx_vasopressor#07"
+   ],
+   "fps": 12,
+   "w": 88,
+   "h": 96,
+   "anchor": [
+    0.5,
+    0.5
+   ],
+   "atlas": [
+    "fx_c_0"
+   ]
+  },
+  "fx_complement_strike": {
+   "kind": "fx",
+   "blend": "add",
+   "frames": [
+    "fx_complement_strike#00",
+    "fx_complement_strike#01",
+    "fx_complement_strike#02",
+    "fx_complement_strike#03",
+    "fx_complement_strike#04",
+    "fx_complement_strike#05",
+    "fx_complement_strike#06",
+    "fx_complement_strike#07"
+   ],
+   "fps": 12,
+   "w": 69,
+   "h": 96,
+   "anchor": [
+    0.5,
+    0.5
+   ],
+   "atlas": [
+    "fx_a_0"
+   ]
+  },
+  "fx_surgical": {
+   "kind": "fx",
+   "blend": "add",
+   "frames": [
+    "fx_surgical#00",
+    "fx_surgical#01",
+    "fx_surgical#02",
+    "fx_surgical#03",
+    "fx_surgical#04",
+    "fx_surgical#05",
+    "fx_surgical#06",
+    "fx_surgical#07"
+   ],
+   "fps": 12,
+   "w": 66,
+   "h": 96,
+   "anchor": [
+    0.5,
+    0.5
+   ],
+   "atlas": [
+    "fx_c_0"
+   ]
+  },
+  "fx_biofilm_spread": {
+   "kind": "fx",
+   "blend": "key",
+   "frames": [
+    "fx_biofilm_spread#00",
+    "fx_biofilm_spread#01",
+    "fx_biofilm_spread#02",
+    "fx_biofilm_spread#03",
+    "fx_biofilm_spread#04",
+    "fx_biofilm_spread#05",
+    "fx_biofilm_spread#06",
+    "fx_biofilm_spread#07"
+   ],
+   "fps": 12,
+   "w": 96,
+   "h": 80,
+   "anchor": [
+    0.5,
+    0.5
+   ],
+   "atlas": [
+    "fx_a_1"
+   ]
+  },
+  "fx_mass_infection": {
+   "kind": "fx",
+   "blend": "add",
+   "frames": [
+    "fx_mass_infection#00",
+    "fx_mass_infection#01",
+    "fx_mass_infection#02",
+    "fx_mass_infection#03",
+    "fx_mass_infection#04",
+    "fx_mass_infection#05",
+    "fx_mass_infection#06",
+    "fx_mass_infection#07"
+   ],
+   "fps": 12,
+   "w": 65,
+   "h": 96,
+   "anchor": [
+    0.5,
+    0.5
+   ],
+   "atlas": [
+    "fx_b_0"
+   ]
+  },
+  "fx_antiviral": {
+   "kind": "fx",
+   "blend": "add",
+   "frames": [
+    "fx_antiviral#00",
+    "fx_antiviral#01",
+    "fx_antiviral#02",
+    "fx_antiviral#03",
+    "fx_antiviral#04",
+    "fx_antiviral#05",
+    "fx_antiviral#06",
+    "fx_antiviral#07"
+   ],
+   "fps": 12,
+   "w": 55,
+   "h": 96,
+   "anchor": [
+    0.5,
+    0.5
+   ],
+   "atlas": [
+    "fx_a_0"
+   ]
+  },
+  "fx_phage_drop": {
+   "kind": "fx",
+   "blend": "key",
+   "frames": [
+    "fx_phage_drop#00",
+    "fx_phage_drop#01",
+    "fx_phage_drop#02",
+    "fx_phage_drop#03",
+    "fx_phage_drop#04",
+    "fx_phage_drop#05",
+    "fx_phage_drop#06",
+    "fx_phage_drop#07"
+   ],
+   "fps": 12,
+   "w": 84,
+   "h": 96,
+   "anchor": [
+    0.5,
+    0.5
+   ],
+   "atlas": [
+    "fx_c_0"
+   ]
+  },
+  "fx_spore_form": {
+   "kind": "fx",
+   "blend": "key",
+   "frames": [
+    "fx_spore_form#00",
+    "fx_spore_form#01",
+    "fx_spore_form#02",
+    "fx_spore_form#03",
+    "fx_spore_form#04",
+    "fx_spore_form#05",
+    "fx_spore_form#06",
+    "fx_spore_form#07"
+   ],
+   "fps": 12,
+   "w": 74,
+   "h": 96,
+   "anchor": [
+    0.5,
+    0.5
+   ],
+   "atlas": [
+    "fx_c_0"
+   ]
+  },
+  "fx_ribosome_income": {
+   "kind": "fx",
+   "blend": "key",
+   "frames": [
+    "fx_ribosome_income#00",
+    "fx_ribosome_income#01",
+    "fx_ribosome_income#02",
+    "fx_ribosome_income#03",
+    "fx_ribosome_income#04",
+    "fx_ribosome_income#05",
+    "fx_ribosome_income#06",
+    "fx_ribosome_income#07"
+   ],
+   "fps": 12,
+   "w": 44,
+   "h": 96,
+   "anchor": [
+    0.5,
+    0.5
+   ],
+   "atlas": [
+    "fx_c_0"
+   ]
+  },
+  "fx_build_grow": {
+   "kind": "fx",
+   "blend": "key",
+   "frames": [
+    "fx_build_grow#00",
+    "fx_build_grow#01",
+    "fx_build_grow#02",
+    "fx_build_grow#03",
+    "fx_build_grow#04",
+    "fx_build_grow#05",
+    "fx_build_grow#06",
+    "fx_build_grow#07"
+   ],
+   "fps": 12,
+   "w": 69,
+   "h": 96,
+   "anchor": [
+    0.5,
+    0.5
+   ],
+   "atlas": [
+    "fx_a_0"
+   ]
+  },
+  "fx_drift": {
+   "kind": "fx",
+   "blend": "key",
+   "frames": [
+    "fx_drift#00",
+    "fx_drift#01",
+    "fx_drift#02",
+    "fx_drift#03",
+    "fx_drift#04",
+    "fx_drift#05",
+    "fx_drift#06",
+    "fx_drift#07"
+   ],
+   "fps": 12,
+   "w": 94,
+   "h": 96,
+   "anchor": [
+    0.5,
+    0.5
+   ],
+   "atlas": [
+    "fx_a_0"
+   ]
+  },
+  "icon_atp": {
+   "kind": "icon",
+   "w": 56,
+   "h": 64,
+   "anchor": [
+    0.5,
+    0.5
+   ],
+   "atlas": [
+    "icons_0"
+   ]
+  },
+  "icon_oxygen": {
+   "kind": "icon",
+   "w": 54,
+   "h": 64,
+   "anchor": [
+    0.5,
+    0.5
+   ],
+   "atlas": [
+    "icons_0"
+   ]
+  },
+  "icon_amino": {
+   "kind": "icon",
+   "w": 60,
+   "h": 64,
+   "anchor": [
+    0.5,
+    0.5
+   ],
+   "atlas": [
+    "icons_0"
+   ]
+  },
+  "icon_iron": {
+   "kind": "icon",
+   "w": 59,
+   "h": 64,
+   "anchor": [
+    0.5,
+    0.5
+   ],
+   "atlas": [
+    "icons_0"
+   ]
+  },
+  "icon_ribosome": {
+   "kind": "icon",
+   "w": 61,
+   "h": 64,
+   "anchor": [
+    0.5,
+    0.5
+   ],
+   "atlas": [
+    "icons_0"
+   ]
+  },
+  "cursor_select": {
+   "kind": "icon",
+   "w": 54,
+   "h": 64,
+   "anchor": [
+    0.5,
+    0.5
+   ],
+   "atlas": [
+    "icons_0"
+   ]
+  },
+  "cursor_move": {
+   "kind": "icon",
+   "w": 60,
+   "h": 64,
+   "anchor": [
+    0.5,
+    0.5
+   ],
+   "atlas": [
+    "icons_0"
+   ]
+  },
+  "cursor_attack": {
+   "kind": "icon",
+   "w": 58,
+   "h": 64,
+   "anchor": [
+    0.5,
+    0.5
+   ],
+   "atlas": [
+    "icons_0"
+   ]
+  },
+  "cursor_sample": {
+   "kind": "icon",
+   "w": 48,
+   "h": 64,
+   "anchor": [
+    0.5,
+    0.5
+   ],
+   "atlas": [
+    "icons_0"
+   ]
+  },
+  "cursor_hijack": {
+   "kind": "icon",
+   "w": 53,
+   "h": 64,
+   "anchor": [
+    0.5,
+    0.5
+   ],
+   "atlas": [
+    "icons_0"
+   ]
+  },
+  "cursor_invalid": {
+   "kind": "icon",
+   "w": 64,
+   "h": 54,
+   "anchor": [
+    0.5,
+    0.5
+   ],
+   "atlas": [
+    "icons_0"
+   ]
+  },
+  "rank_1": {
+   "kind": "icon",
+   "w": 60,
+   "h": 64,
+   "anchor": [
+    0.5,
+    0.5
+   ],
+   "atlas": [
+    "icons_0"
+   ]
+  },
+  "rank_2": {
+   "kind": "icon",
+   "w": 60,
+   "h": 64,
+   "anchor": [
+    0.5,
+    0.5
+   ],
+   "atlas": [
+    "icons_0"
+   ]
+  },
+  "rank_3": {
+   "kind": "icon",
+   "w": 60,
+   "h": 64,
+   "anchor": [
+    0.5,
+    0.5
+   ],
+   "atlas": [
+    "icons_0"
+   ]
+  },
+  "order_antibiotic": {
+   "kind": "icon",
+   "w": 64,
+   "h": 64,
+   "anchor": [
+    0.5,
+    0.5
+   ],
+   "atlas": [
+    "icons_0"
+   ]
+  },
+  "order_iv_fluids": {
+   "kind": "icon",
+   "w": 61,
+   "h": 64,
+   "anchor": [
+    0.5,
+    0.5
+   ],
+   "atlas": [
+    "icons_0"
+   ]
+  },
+  "order_antipyretic": {
+   "kind": "icon",
+   "w": 62,
+   "h": 64,
+   "anchor": [
+    0.5,
+    0.5
+   ],
+   "atlas": [
+    "icons_0"
+   ]
+  },
+  "order_targeted_antibiotic": {
+   "kind": "icon",
+   "w": 64,
+   "h": 62,
+   "anchor": [
+    0.5,
+    0.5
+   ],
+   "atlas": [
+    "icons_0"
+   ]
+  },
+  "order_antiviral": {
+   "kind": "icon",
+   "w": 64,
+   "h": 62,
+   "anchor": [
+    0.5,
+    0.5
+   ],
+   "atlas": [
+    "icons_0"
+   ]
+  },
+  "order_steroid": {
+   "kind": "icon",
+   "w": 64,
+   "h": 61,
+   "anchor": [
+    0.5,
+    0.5
+   ],
+   "atlas": [
+    "icons_0"
+   ]
+  },
+  "order_vaccine": {
+   "kind": "icon",
+   "w": 64,
+   "h": 62,
+   "anchor": [
+    0.5,
+    0.5
+   ],
+   "atlas": [
+    "icons_0"
+   ]
+  },
+  "order_vasopressor": {
+   "kind": "icon",
+   "w": 64,
+   "h": 62,
+   "anchor": [
+    0.5,
+    0.5
+   ],
+   "atlas": [
+    "icons_0"
+   ]
+  },
+  "order_surgical": {
+   "kind": "icon",
+   "w": 62,
+   "h": 64,
+   "anchor": [
+    0.5,
+    0.5
+   ],
+   "atlas": [
+    "icons_0"
+   ]
+  },
+  "order_device_removal": {
+   "kind": "icon",
+   "w": 64,
+   "h": 64,
+   "anchor": [
+    0.5,
+    0.5
+   ],
+   "atlas": [
+    "icons_0"
+   ]
+  },
+  "order_phage": {
+   "kind": "icon",
+   "w": 63,
+   "h": 64,
+   "anchor": [
+    0.5,
+    0.5
+   ],
+   "atlas": [
+    "icons_0"
+   ]
+  },
+  "order_vancomycin": {
+   "kind": "icon",
+   "w": 64,
+   "h": 64,
+   "anchor": [
+    0.5,
+    0.5
+   ],
+   "atlas": [
+    "icons_0"
+   ]
+  },
+  "ui_sidebar_wl": {
+   "kind": "ui",
+   "file": "ui/ui_sidebar_wl.webp",
+   "w": 431,
+   "h": 1024
+  },
+  "ui_sidebar_col": {
+   "kind": "ui",
+   "file": "ui/ui_sidebar_col.webp",
+   "w": 469,
+   "h": 1024
+  },
+  "ui_sidebar_crn": {
+   "kind": "ui",
+   "file": "ui/ui_sidebar_crn.webp",
+   "w": 433,
+   "h": 1024
+  },
+  "ui_monitor_frame": {
+   "kind": "ui",
+   "file": "ui/ui_monitor_frame.webp",
+   "w": 1024,
+   "h": 950
+  },
+  "ui_inflammation_bar": {
+   "kind": "ui",
+   "file": "ui/ui_inflammation_bar.webp",
+   "w": 1024,
+   "h": 332
+  },
+  "ui_campaign_map": {
+   "kind": "ui",
+   "file": "ui/ui_campaign_map.webp",
+   "w": 897,
+   "h": 1024
+  },
+  "emblem_wl": {
+   "kind": "ui",
+   "file": "ui/emblem_wl.webp",
+   "w": 512,
+   "h": 501
+  },
+  "emblem_col": {
+   "kind": "ui",
+   "file": "ui/emblem_col.webp",
+   "w": 512,
+   "h": 492
+  },
+  "emblem_crn": {
+   "kind": "ui",
+   "file": "ui/emblem_crn.webp",
+   "w": 512,
+   "h": 499
+  },
+  "brand_yak": {
+   "kind": "ui",
+   "file": "ui/brand_yak.webp",
+   "w": 457,
+   "h": 512
+  },
+  "map_m01_skin": {
+   "kind": "map",
+   "file": "maps/map_m01_skin.webp",
+   "preview": "maps/preview/map_m01_skin.webp",
+   "w": 3344,
+   "h": 1882,
+   "tiles": [
+    104,
+    58
+   ]
+  },
+  "map_m02_subcutis": {
+   "kind": "map",
+   "file": "maps/map_m02_subcutis.webp",
+   "preview": "maps/preview/map_m02_subcutis.webp",
+   "w": 3344,
+   "h": 1882,
+   "tiles": [
+    104,
+    58
+   ]
+  },
+  "map_m03_lymphnode": {
+   "kind": "map",
+   "file": "maps/map_m03_lymphnode.webp",
+   "preview": "maps/preview/map_m03_lymphnode.webp",
+   "w": 3344,
+   "h": 1882,
+   "tiles": [
+    104,
+    58
+   ]
+  },
+  "map_m04_vein": {
+   "kind": "map",
+   "file": "maps/map_m04_vein.webp",
+   "preview": "maps/preview/map_m04_vein.webp",
+   "w": 3344,
+   "h": 1882,
+   "tiles": [
+    104,
+    58
+   ]
+  },
+  "map_m05_spleen": {
+   "kind": "map",
+   "file": "maps/map_m05_spleen.webp",
+   "preview": "maps/preview/map_m05_spleen.webp",
+   "w": 3344,
+   "h": 1882,
+   "tiles": [
+    104,
+    58
+   ]
+  },
+  "map_m06_nose": {
+   "kind": "map",
+   "file": "maps/map_m06_nose.webp",
+   "preview": "maps/preview/map_m06_nose.webp",
+   "w": 3344,
+   "h": 1882,
+   "tiles": [
+    104,
+    58
+   ]
+  },
+  "map_m07_trachea": {
+   "kind": "map",
+   "file": "maps/map_m07_trachea.webp",
+   "preview": "maps/preview/map_m07_trachea.webp",
+   "w": 3344,
+   "h": 1882,
+   "tiles": [
+    104,
+    58
+   ]
+  },
+  "map_m08_lungs": {
+   "kind": "map",
+   "file": "maps/map_m08_lungs.webp",
+   "preview": "maps/preview/map_m08_lungs.webp",
+   "w": 3344,
+   "h": 1882,
+   "tiles": [
+    104,
+    58
+   ]
+  },
+  "map_m09_smallintestine": {
+   "kind": "map",
+   "file": "maps/map_m09_smallintestine.webp",
+   "preview": "maps/preview/map_m09_smallintestine.webp",
+   "w": 3344,
+   "h": 1882,
+   "tiles": [
+    104,
+    58
+   ]
+  },
+  "map_m10_colon": {
+   "kind": "map",
+   "file": "maps/map_m10_colon.webp",
+   "preview": "maps/preview/map_m10_colon.webp",
+   "w": 3344,
+   "h": 1882,
+   "tiles": [
+    104,
+    58
+   ]
+  },
+  "map_m11_liver": {
+   "kind": "map",
+   "file": "maps/map_m11_liver.webp",
+   "preview": "maps/preview/map_m11_liver.webp",
+   "w": 3344,
+   "h": 1882,
+   "tiles": [
+    104,
+    58
+   ]
+  },
+  "map_m12_urinary": {
+   "kind": "map",
+   "file": "maps/map_m12_urinary.webp",
+   "preview": "maps/preview/map_m12_urinary.webp",
+   "w": 3344,
+   "h": 1882,
+   "tiles": [
+    104,
+    58
+   ]
+  },
+  "map_m13_heartvalve": {
+   "kind": "map",
+   "file": "maps/map_m13_heartvalve.webp",
+   "preview": "maps/preview/map_m13_heartvalve.webp",
+   "w": 3344,
+   "h": 1882,
+   "tiles": [
+    104,
+    58
+   ]
+  },
+  "map_m14_marrow": {
+   "kind": "map",
+   "file": "maps/map_m14_marrow.webp",
+   "preview": "maps/preview/map_m14_marrow.webp",
+   "w": 3344,
+   "h": 1882,
+   "tiles": [
+    104,
+    58
+   ]
+  },
+  "map_m15_thymus": {
+   "kind": "map",
+   "file": "maps/map_m15_thymus.webp",
+   "preview": "maps/preview/map_m15_thymus.webp",
+   "w": 3344,
+   "h": 1882,
+   "tiles": [
+    104,
+    58
+   ]
+  },
+  "map_m16_meninges": {
+   "kind": "map",
+   "file": "maps/map_m16_meninges.webp",
+   "preview": "maps/preview/map_m16_meninges.webp",
+   "w": 3344,
+   "h": 1882,
+   "tiles": [
+    104,
+    58
+   ]
+  },
+  "map_m17_ganglion": {
+   "kind": "map",
+   "file": "maps/map_m17_ganglion.webp",
+   "preview": "maps/preview/map_m17_ganglion.webp",
+   "w": 3344,
+   "h": 1882,
+   "tiles": [
+    104,
+    58
+   ]
+  },
+  "map_m18_systemic": {
+   "kind": "map",
+   "file": "maps/map_m18_systemic.webp",
+   "preview": "maps/preview/map_m18_systemic.webp",
+   "w": 3344,
+   "h": 1882,
+   "tiles": [
+    104,
+    58
+   ]
+  },
+  "map_m19_centralline": {
+   "kind": "map",
+   "file": "maps/map_m19_centralline.webp",
+   "preview": "maps/preview/map_m19_centralline.webp",
+   "w": 3344,
+   "h": 1882,
+   "tiles": [
+    104,
+    58
+   ]
+  },
+  "map_m20_heart": {
+   "kind": "map",
+   "file": "maps/map_m20_heart.webp",
+   "preview": "maps/preview/map_m20_heart.webp",
+   "w": 3344,
+   "h": 1882,
+   "tiles": [
+    104,
+    58
+   ]
+  },
+  "tile_acid": {
+   "kind": "tile",
+   "file": "tiles/tile_acid.webp",
+   "w": 512,
+   "h": 512
+  },
+  "tile_alveolar": {
+   "kind": "tile",
+   "file": "tiles/tile_alveolar.webp",
+   "w": 512,
+   "h": 512
+  },
+  "tile_biofilm": {
+   "kind": "tile",
+   "file": "tiles/tile_biofilm.webp",
+   "w": 512,
+   "h": 512
+  },
+  "tile_blood": {
+   "kind": "tile",
+   "file": "tiles/tile_blood.webp",
+   "w": 512,
+   "h": 512
+  },
+  "tile_bone": {
+   "kind": "tile",
+   "file": "tiles/tile_bone.webp",
+   "w": 512,
+   "h": 512
+  },
+  "tile_fog": {
+   "kind": "tile",
+   "file": "tiles/tile_fog.webp",
+   "w": 512,
+   "h": 512
+  },
+  "tile_keratin": {
+   "kind": "tile",
+   "file": "tiles/tile_keratin.webp",
+   "w": 512,
+   "h": 512
+  },
+  "tile_liver": {
+   "kind": "tile",
+   "file": "tiles/tile_liver.webp",
+   "w": 512,
+   "h": 512
+  },
+  "tile_lymph": {
+   "kind": "tile",
+   "file": "tiles/tile_lymph.webp",
+   "w": 512,
+   "h": 512
+  },
+  "tile_mucus": {
+   "kind": "tile",
+   "file": "tiles/tile_mucus.webp",
+   "w": 512,
+   "h": 512
+  },
+  "tile_neural": {
+   "kind": "tile",
+   "file": "tiles/tile_neural.webp",
+   "w": 512,
+   "h": 512
+  },
+  "tile_plastic": {
+   "kind": "tile",
+   "file": "tiles/tile_plastic.webp",
+   "w": 512,
+   "h": 512
+  },
+  "tile_pus": {
+   "kind": "tile",
+   "file": "tiles/tile_pus.webp",
+   "w": 512,
+   "h": 512
+  },
+  "tile_tissue": {
+   "kind": "tile",
+   "file": "tiles/tile_tissue.webp",
+   "w": 512,
+   "h": 512
+  },
+  "tile_villi": {
+   "kind": "tile",
+   "file": "tiles/tile_villi.webp",
+   "w": 512,
+   "h": 512
+  },
+  "portrait_aureus": {
+   "kind": "portrait",
+   "file": "portraits/portrait_aureus.webp",
+   "w": 512,
+   "h": 512
+  },
+  "portrait_aureus_mrsa": {
+   "kind": "portrait",
+   "file": "portraits/portrait_aureus_mrsa.webp",
+   "w": 512,
+   "h": 512
+  },
+  "portrait_bigmac": {
+   "kind": "portrait",
+   "file": "portraits/portrait_bigmac.webp",
+   "w": 512,
+   "h": 512
+  },
+  "portrait_clostra": {
+   "kind": "portrait",
+   "file": "portraits/portrait_clostra.webp",
+   "w": 512,
+   "h": 512
+  },
+  "portrait_crown": {
+   "kind": "portrait",
+   "file": "portraits/portrait_crown.webp",
+   "w": 512,
+   "h": 512
+  },
+  "portrait_dendra": {
+   "kind": "portrait",
+   "file": "portraits/portrait_dendra.webp",
+   "w": 512,
+   "h": 512
+  },
+  "portrait_doctor": {
+   "kind": "portrait",
+   "file": "portraits/portrait_doctor.webp",
+   "w": 512,
+   "h": 512
+  },
+  "portrait_flu": {
+   "kind": "portrait",
+   "file": "portraits/portrait_flu.webp",
+   "w": 512,
+   "h": 512
+  },
+  "portrait_general4": {
+   "kind": "portrait",
+   "file": "portraits/portrait_general4.webp",
+   "w": 512,
+   "h": 512
+  },
+  "portrait_integrator": {
+   "kind": "portrait",
+   "file": "portraits/portrait_integrator.webp",
+   "w": 512,
+   "h": 512
+  },
+  "portrait_killer": {
+   "kind": "portrait",
+   "file": "portraits/portrait_killer.webp",
+   "w": 512,
+   "h": 512
+  },
+  "portrait_lacto": {
+   "kind": "portrait",
+   "file": "portraits/portrait_lacto.webp",
+   "w": 512,
+   "h": 512
+  },
+  "portrait_meningo": {
+   "kind": "portrait",
+   "file": "portraits/portrait_meningo.webp",
+   "w": 512,
+   "h": 512
+  },
+  "portrait_nurse": {
+   "kind": "portrait",
+   "file": "portraits/portrait_nurse.webp",
+   "w": 512,
+   "h": 512
+  },
+  "portrait_plasma": {
+   "kind": "portrait",
+   "file": "portraits/portrait_plasma.webp",
+   "w": 512,
+   "h": 512
+  },
+  "portrait_pseudo": {
+   "kind": "portrait",
+   "file": "portraits/portrait_pseudo.webp",
+   "w": 512,
+   "h": 512
+  },
+  "portrait_sleeper": {
+   "kind": "portrait",
+   "file": "portraits/portrait_sleeper.webp",
+   "w": 512,
+   "h": 512
+  },
+  "portrait_thymus": {
+   "kind": "portrait",
+   "file": "portraits/portrait_thymus.webp",
+   "w": 512,
+   "h": 512
+  },
+  "expr_aureus": {
+   "kind": "expressions",
+   "files": [
+    "portraits/expr/expr_aureus_0.webp",
+    "portraits/expr/expr_aureus_1.webp",
+    "portraits/expr/expr_aureus_2.webp",
+    "portraits/expr/expr_aureus_3.webp"
+   ],
+   "order": [
+    "calm",
+    "happy",
+    "angry",
+    "shocked"
+   ]
+  },
+  "expr_bigmac": {
+   "kind": "expressions",
+   "files": [
+    "portraits/expr/expr_bigmac_0.webp",
+    "portraits/expr/expr_bigmac_1.webp",
+    "portraits/expr/expr_bigmac_2.webp",
+    "portraits/expr/expr_bigmac_3.webp"
+   ],
+   "order": [
+    "calm",
+    "happy",
+    "angry",
+    "shocked"
+   ]
+  },
+  "expr_crown": {
+   "kind": "expressions",
+   "files": [
+    "portraits/expr/expr_crown_0.webp",
+    "portraits/expr/expr_crown_1.webp",
+    "portraits/expr/expr_crown_2.webp",
+    "portraits/expr/expr_crown_3.webp"
+   ],
+   "order": [
+    "calm",
+    "happy",
+    "angry",
+    "shocked"
+   ]
+  },
+  "expr_crown_alt": {
+   "kind": "expressions",
+   "files": [
+    "portraits/expr/expr_crown_alt_0.webp",
+    "portraits/expr/expr_crown_alt_1.webp",
+    "portraits/expr/expr_crown_alt_2.webp",
+    "portraits/expr/expr_crown_alt_3.webp"
+   ],
+   "order": [
+    "calm",
+    "happy",
+    "angry",
+    "shocked"
+   ]
+  },
+  "expr_dendra": {
+   "kind": "expressions",
+   "files": [
+    "portraits/expr/expr_dendra_0.webp",
+    "portraits/expr/expr_dendra_1.webp",
+    "portraits/expr/expr_dendra_2.webp",
+    "portraits/expr/expr_dendra_3.webp"
+   ],
+   "order": [
+    "calm",
+    "happy",
+    "angry",
+    "shocked"
+   ]
+  },
+  "expr_general4": {
+   "kind": "expressions",
+   "files": [
+    "portraits/expr/expr_general4_0.webp",
+    "portraits/expr/expr_general4_1.webp",
+    "portraits/expr/expr_general4_2.webp",
+    "portraits/expr/expr_general4_3.webp"
+   ],
+   "order": [
+    "calm",
+    "happy",
+    "angry",
+    "shocked"
+   ]
+  },
+  "expr_killer": {
+   "kind": "expressions",
+   "files": [
+    "portraits/expr/expr_killer_0.webp",
+    "portraits/expr/expr_killer_1.webp",
+    "portraits/expr/expr_killer_2.webp",
+    "portraits/expr/expr_killer_3.webp"
+   ],
+   "order": [
+    "calm",
+    "happy",
+    "angry",
+    "shocked"
+   ]
+  },
+  "cine_01_fence": {
+   "kind": "cinematic",
+   "file": "cine/cine_01_fence.webp",
+   "w": 1672,
+   "h": 941
+  },
+  "cine_02_dive": {
+   "kind": "cinematic",
+   "file": "cine/cine_02_dive.webp",
+   "w": 1672,
+   "h": 941
+  },
+  "cine_03_paratroopers": {
+   "kind": "cinematic",
+   "file": "cine/cine_03_paratroopers.webp",
+   "w": 1672,
+   "h": 941
+  },
+  "cine_04_command": {
+   "kind": "cinematic",
+   "file": "cine/cine_04_command.webp",
+   "w": 1672,
+   "h": 941
+  },
+  "cine_05_launch": {
+   "kind": "cinematic",
+   "file": "cine/cine_05_launch.webp",
+   "w": 1672,
+   "h": 941
+  },
+  "cine_06_crown_lands": {
+   "kind": "cinematic",
+   "file": "cine/cine_06_crown_lands.webp",
+   "w": 1672,
+   "h": 941
+  },
+  "cine_07_hospital": {
+   "kind": "cinematic",
+   "file": "cine/cine_07_hospital.webp",
+   "w": 1672,
+   "h": 941
+  },
+  "cine_08_vegetation": {
+   "kind": "cinematic",
+   "file": "cine/cine_08_vegetation.webp",
+   "w": 1672,
+   "h": 941
+  },
+  "cine_09_storm": {
+   "kind": "cinematic",
+   "file": "cine/cine_09_storm.webp",
+   "w": 1672,
+   "h": 941
+  },
+  "cine_10_discharge": {
+   "kind": "cinematic",
+   "file": "cine/cine_10_discharge.webp",
+   "w": 1672,
+   "h": 941
+  },
+  "cine_11_memory": {
+   "kind": "cinematic",
+   "file": "cine/cine_11_memory.webp",
+   "w": 1672,
+   "h": 941
+  },
+  "cine_12_sequel": {
+   "kind": "cinematic",
+   "file": "cine/cine_12_sequel.webp",
+   "w": 1672,
+   "h": 941
+  },
+  "keyart_title": {
+   "kind": "cinematic",
+   "file": "cine/keyart_title.webp",
+   "w": 1672,
+   "h": 941
+  },
+  "ui_briefing_bg": {
+   "kind": "ui",
+   "file": "cine/ui_briefing_bg.webp",
+   "w": 1672,
+   "h": 941
+  },
+  "lineup_wl": {
+   "kind": "reference",
+   "file": "reference/lineup_wl.webp"
+  },
+  "lineup_col": {
+   "kind": "reference",
+   "file": "reference/lineup_col.webp"
+  },
+  "lineup_crn": {
+   "kind": "reference",
+   "file": "reference/lineup_crn.webp"
+  }
+ },
+ "missing": [
+  "logo (HOST WARS title) — will be set in code"
+ ]
+}
