@@ -6,7 +6,7 @@ import { runHeadless } from '../../src/sim/headless';
 import { step } from '../../src/sim/sim';
 import { arena, catalog, monkey, newCtx, setup } from './helpers';
 
-describe('determinism (gate 1 acceptance, now with navigation)', () => {
+describe('determinism (gate 1 acceptance, now with navigation and economy)', () => {
   it('1,000 ticks twice give the same hash at every checkpoint', () => {
     const a = runHeadless(newCtx(), setup, { ticks: 1000, script: monkey(7), checkpointEvery: 50, invariants: true });
     const b = runHeadless(newCtx(), setup, { ticks: 1000, script: monkey(7), checkpointEvery: 50, invariants: true });
@@ -14,8 +14,8 @@ describe('determinism (gate 1 acceptance, now with navigation)', () => {
     expect(a.checkpoints).toHaveLength(20);
     expect(b.checkpoints).toEqual(a.checkpoints);
     expect(b.finalHash).toBe(a.finalHash);
-    // the monkey really moved things
-    expect(a.events.filter((e) => e.type === 'arrived').length).toBeGreaterThanOrEqual(5);
+    // the monkey really moved things (its gather orders mostly get interrupted; the save test below mines for real)
+    expect(a.events.filter((e) => e.type === 'arrived').length).toBeGreaterThanOrEqual(3);
   });
 
   it('a different seed gives a different match', () => {
@@ -63,5 +63,38 @@ describe('determinism (gate 1 acceptance, now with navigation)', () => {
       ticks: 500, script, start: world, queue: CommandQueue.fromJSON(loaded.queue),
     });
     expect(resumed.finalHash).toBe(full.finalHash);
+  });
+
+  it('save mid-cycle, with slots held and loads on the way: identical to never stopping', () => {
+    // both players mine from the first tick; the monkey keeps poking at them. The monkey has
+    // state, so every run gets its own copy, and the save/resume pair shares one.
+    const makeScript = () => {
+      const poke = monkey(13, 90);
+      return (world: Parameters<typeof poke>[0], tick: number): CommandEnvelope[] => {
+        const pokes = poke(world, tick).map((c) => ({ ...c, seq: c.seq + 1 }));
+        if (tick !== 0) return pokes;
+        const gathers = [1, 2].map((player) => {
+          const units = world.entities.filter((e) => e.owner === player && (catalog.units.get(e.type)?.carry ?? 0) > 0).map((e) => e.id);
+          const crystal = world.entities.find((e) => e.res?.field === player)!;
+          return { player, seq: 1, tick, cmd: { type: 'GATHER' as const, units, target: crystal.id } };
+        });
+        return [...gathers, ...pokes];
+      };
+    };
+    const script = makeScript();
+    const full = runHeadless(newCtx(), setup, { ticks: 1400, script: makeScript(), invariants: true });
+    expect(full.problems).toEqual([]);
+    const half = runHeadless(newCtx(), setup, { ticks: 700, script });
+    const w = half.world;
+    expect(w.entities.some((e) => e.cargo > 0)).toBe(true);
+    expect(w.entities.some((e) => e.res?.slots.some((id) => id !== 0))).toBe(true);
+    const saved = JSON.stringify({ world: JSON.parse(snapshot(w)), queue: half.queue.toJSON() });
+    const loaded = JSON.parse(saved);
+    const world = restore(JSON.stringify(loaded.world));
+    const resumed = runHeadless(contextForWorld(catalog, arena, world), setup, {
+      ticks: 700, script, start: world, queue: CommandQueue.fromJSON(loaded.queue),
+    });
+    expect(resumed.finalHash).toBe(full.finalHash);
+    expect(world.players[0]!.basic).toBeGreaterThan(350);
   });
 });

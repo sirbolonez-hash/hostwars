@@ -1,20 +1,25 @@
 // One simulation tick, in the order written in the architecture (tab 2, section 3).
 // Phases that later gates fill in are listed in place so the order never shifts.
 
-import { validate, type CommandEnvelope, type Rejection } from './commands/commands';
-import type { SimContext } from './context';
-import { isqrt } from './core/fixed';
+import { validate, type CommandEnvelope, type RejectReason, type Rejection } from './commands/commands';
+import { footprintOrigin, type SimContext } from './context';
+import { isqrt, SUB } from './core/fixed';
 import { Hasher } from './core/hash';
-import { removeEntity, spawnUnit, type Entity, type World } from './core/world';
+import { entityById, removeEntity, spawnBuilding, spawnUnit, type Entity, type World } from './core/world';
+import { carryOf, gatherPhase, isCrystal, isDeposit, isExtractor, orderGather, stopGather, type GatherEvent } from './economy/gather';
 import { centreOf, CLASS_SIZE } from './navigation/grid';
 import { nearestPassable } from './navigation/slots';
 import { clearMove, issueMove, moveUnits, processPathQueue, type MoveEvent } from './navigation/movement';
+
+export type DeathCause = 'lifespan' | 'damage' | 'depleted';
 
 export type SimEvent =
   | { tick: number; type: 'rejected'; rejection: Rejection }
   | { tick: number; type: 'arrived'; entity: number }
   | { tick: number; type: 'blocked'; entity: number }
-  | { tick: number; type: 'died'; entity: number; entityType: string; owner: number; cause: 'lifespan' | 'damage' };
+  | ({ tick: number } & GatherEvent)
+  /** `cargo`: the load it was carrying, lost with it */
+  | { tick: number; type: 'died'; entity: number; entityType: string; owner: number; cause: DeathCause; cargo: number };
 
 export interface StepStats {
   pathExpansions: number;
@@ -44,12 +49,11 @@ export function step(world: World, ctx: SimContext, commands: CommandEnvelope[])
   // 3. validate and apply commands
   let index = indexOf(world);
   for (const env of commands) {
-    const reason = env.tick !== tick ? 'late' : validate(world, env, index, (t) => catalog.units.has(t));
-    if (reason) {
-      events.push({ tick, type: 'rejected', rejection: { player: env.player, seq: env.seq, reason } });
-      continue;
-    }
-    applyCommand(world, ctx, env, index);
+    const reason = env.tick !== tick ? 'late' : validate(world, env, index, ctx);
+    // a command can still fail while it runs (a building site found taken); it then changes nothing
+    const failed = reason ?? applyCommand(world, ctx, env, index);
+    if (failed) events.push({ tick, type: 'rejected', rejection: { player: env.player, seq: env.seq, reason: failed } });
+    if (!reason) index = indexOf(world);
   }
 
   // 4. AI decisions are commands for a later tick; they enter through the queue (gate 6)
@@ -62,12 +66,16 @@ export function step(world: World, ctx: SimContext, commands: CommandEnvelope[])
   for (const m of moveEvents) events.push({ tick, ...m });
 
   // 6. spatial index and vision after movement                              (gate 5)
-  // 7. economy: gathering, construction, production, research               (gate 3, 4)
+  // 7. economy: gathering now; construction, production, research in gate 4
+  const gatherEvents: GatherEvent[] = [];
+  gatherPhase(world, ctx, gatherEvents);
+  for (const g of gatherEvents) events.push({ tick, ...g });
   // 8. targeting, weapon cooldowns, firing                                  (gate 5)
   // 9. projectiles and hits: damage first, then healing                     (gate 5)
 
-  // 10. death: lifespans and hit points; release supply, footprints and path requests
-  const dying: { e: Entity; cause: 'lifespan' | 'damage' }[] = [];
+  // 10. death: lifespans, hit points, emptied resources; release supply, footprints,
+  //     path requests, work slots and links. A load on the way dies with its carrier.
+  const dying: { e: Entity; cause: DeathCause }[] = [];
   for (const e of world.entities) {
     if (e.hp <= 0) {
       dying.push({ e, cause: 'damage' });
@@ -76,11 +84,11 @@ export function step(world: World, ctx: SimContext, commands: CommandEnvelope[])
     if (!e.building) {
       const life = catalog.units.get(e.type)?.lifespan ?? 0;
       if (life > 0 && tick - e.bornTick >= life) dying.push({ e, cause: 'lifespan' });
-    }
+    } else if (e.res && e.res.stock === 0 && catalog.resources.has(e.type)) dying.push({ e, cause: 'depleted' });
   }
   for (const { e, cause } of dying) {
     removeEntity(world, ctx, e.id);
-    events.push({ tick, type: 'died', entity: e.id, entityType: e.type, owner: e.owner, cause });
+    events.push({ tick, type: 'died', entity: e.id, entityType: e.type, owner: e.owner, cause, cargo: e.cargo });
   }
 
   // 11. host monitor: inflammation, fever, pressure, saturation              (gate 7)
@@ -89,25 +97,39 @@ export function step(world: World, ctx: SimContext, commands: CommandEnvelope[])
   return { events, hash: hashWorld(world, ctx), stats: { pathExpansions } };
 }
 
-function applyCommand(world: World, ctx: SimContext, env: CommandEnvelope, index: Map<number, Entity>): void {
+/** Runs a validated command. Returns a reason when it turns out it cannot run; then nothing changed. */
+function applyCommand(world: World, ctx: SimContext, env: CommandEnvelope, index: Map<number, Entity>): RejectReason | null {
   const units = env.cmd.units.map((id) => index.get(id)).filter((e): e is Entity => e !== undefined);
   switch (env.cmd.type) {
     case 'MOVE':
+      for (const e of units) stopGather(world, e);
       issueMove(world, ctx, units, env.cmd.x, env.cmd.y);
       break;
     case 'STOP':
       for (const e of units) {
+        stopGather(world, e);
         clearMove(world, e);
         e.order = { kind: 'idle' };
       }
       break;
     case 'HOLD':
       for (const e of units) {
+        stopGather(world, e);
         clearMove(world, e);
         e.order = { kind: 'hold' };
       }
       break;
+    case 'GATHER':
+      orderGather(world, ctx, units, index.get(env.cmd.target)!, env.player);
+      break;
+    case 'DEV_KILL':
+      for (const id of env.cmd.targets) {
+        const e = index.get(id);
+        if (e) e.hp = 0;
+      }
+      break;
     case 'DEV_SPAWN': {
+      if (ctx.catalog.buildings.has(env.cmd.unit)) return devPlaceBuilding(world, ctx, env.player, env.cmd.unit, env.cmd.x, env.cmd.y);
       // a square block around the point, each body on the nearest tile it can stand on
       const def = ctx.catalog.units.get(env.cmd.unit)!;
       const size = CLASS_SIZE[def.navClass];
@@ -125,6 +147,43 @@ function applyCommand(world: World, ctx: SimContext, env: CommandEnvelope, index
       break;
     }
   }
+  return null;
+}
+
+/**
+ * Test matches: puts a finished building with its centre on the tile under (x, y). The
+ * footprint must be open ground with no unit on it; an extractor goes on the free deposit
+ * of its kind under that point instead. Construction proper arrives in gate 4.
+ */
+function devPlaceBuilding(world: World, ctx: SimContext, player: number, type: string, x: number, y: number): RejectReason | null {
+  const def = ctx.catalog.buildings.get(type)!;
+  if (def.faction !== world.players[player - 1]!.faction) return 'bad_target';
+  const tx = Math.floor(x / SUB);
+  const ty = Math.floor(y / SUB);
+  if (def.onResource) {
+    const dep = world.entities.find((e) => {
+      if (!isDeposit(ctx, e) || e.res!.link !== 0 || ctx.catalog.resources.get(e.type)!.kind !== def.onResource) return false;
+      const [ox, oy, fw, fh] = footprintOrigin(ctx, e.type, e.x, e.y);
+      return tx >= ox && tx < ox + fw && ty >= oy && ty < oy + fh;
+    });
+    if (!dep) return 'site_blocked';
+    const b = spawnBuilding(world, ctx, type, player, dep.x, dep.y);
+    b.res!.link = dep.id;
+    dep.res!.link = b.id;
+    return null;
+  }
+  const [fw, fh] = def.footprint;
+  const ox = tx - Math.floor((fw - 1) / 2);
+  const oy = ty - Math.floor((fh - 1) / 2);
+  for (let y2 = oy; y2 < oy + fh; y2++) for (let x2 = ox; x2 < ox + fw; x2++) if (ctx.nav.blocked(x2, y2)) return 'site_blocked';
+  for (const e of world.entities) {
+    if (e.building) continue;
+    const ux = Math.floor(e.x / SUB);
+    const uy = Math.floor(e.y / SUB);
+    if (ux >= ox - 1 && ux <= ox + fw && uy >= oy - 1 && uy <= oy + fh) return 'site_blocked';
+  }
+  spawnBuilding(world, ctx, type, player, ox * SUB + fw * (SUB / 2), oy * SUB + fh * (SUB / 2));
+  return null;
 }
 
 /** Canonical hash of everything that affects the future of the match. */
@@ -148,7 +207,19 @@ export function hashWorld(world: World, ctx: SimContext): string {
       case 'move':
         h.int(2).int(e.order.x).int(e.order.y);
         break;
+      case 'gather':
+        h.int(3);
+        break;
     }
+    if (!e.res) h.int(-1);
+    else {
+      h.int(e.res.stock).int(e.res.field).int(e.res.link).int(e.res.slots.length);
+      for (const v of e.res.slots) h.int(v);
+    }
+    const g = e.gather;
+    if (!g) h.int(-1);
+    else h.str(g.st).int(g.target).int(g.field).int(g.tx).int(g.ty).int(g.drop).int(g.until).int(g.tries);
+    h.int(e.cargo).str(e.cargoKind);
     const mv = e.mv;
     if (!mv) h.int(-1);
     else {
@@ -184,13 +255,48 @@ export function checkInvariants(world: World, ctx: SimContext): string[] {
       if (e.owner > 0) supply.set(e.owner, (supply.get(e.owner) ?? 0) + (catalog.units.get(e.type)?.supply ?? 0));
       if (nav.blocked(Math.floor(e.x / 256), Math.floor(e.y / 256))) out.push(`entity ${e.id}: standing inside a wall or building`);
       if (e.mv) {
-        if (e.order.kind !== 'move') out.push(`entity ${e.id}: has a path but no move order`);
+        if (e.order.kind !== 'move' && e.order.kind !== 'gather') out.push(`entity ${e.id}: has a path but no move or gather order`);
         if (e.mv.path.length % 2 !== 0 || e.mv.i % 2 !== 0) out.push(`entity ${e.id}: malformed path`);
         const queued = world.pathQueue.some((r) => r.id === e.id);
         if (e.mv.waiting !== queued) out.push(`entity ${e.id}: waiting=${e.mv.waiting} but queued=${queued}`);
       }
     }
   }
+  // economy: stocks and loads within bounds, every slot owned by a living harvester, and
+  // every harvester holding exactly one slot of the target it works
+  const holder = new Map<number, number>();
+  for (const e of world.entities) {
+    if (e.res) {
+      const rd = catalog.resources.get(e.type);
+      const bd = catalog.buildings.get(e.type);
+      const max = rd ? rd.stock : 0;
+      if (!Number.isSafeInteger(e.res.stock) || e.res.stock < 0 || e.res.stock > max) out.push(`entity ${e.id}: stock ${e.res.stock} of ${max}`);
+      const want = rd ? rd.slots : (bd?.workSlots ?? 0);
+      if (e.res.slots.length !== want) out.push(`entity ${e.id}: ${e.res.slots.length} slots, expected ${want}`);
+      for (const id of e.res.slots) {
+        if (id === 0) continue;
+        const c = entityById(world, id);
+        if (!c || !c.gather || c.gather.st !== 'harvest' || c.gather.target !== e.id) out.push(`entity ${e.id}: slot held by ${id}, which is not harvesting it`);
+        if (holder.has(id)) out.push(`carrier ${id} holds two slots`);
+        holder.set(id, e.id);
+      }
+      if (e.res.link !== 0) {
+        const o = entityById(world, e.res.link);
+        if (!o || !o.res || o.res.link !== e.id) out.push(`entity ${e.id}: link to ${e.res.link} is not mutual`);
+        else if (isExtractor(ctx, e) === isExtractor(ctx, o)) out.push(`entity ${e.id}: link must join an extractor and a deposit`);
+      }
+    } else if (e.building && (catalog.resources.has(e.type) || isExtractor(ctx, e))) out.push(`entity ${e.id}: resource state missing`);
+    if (!Number.isSafeInteger(e.cargo) || e.cargo < 0 || e.cargo > carryOf(ctx, e)) out.push(`entity ${e.id}: cargo ${e.cargo}`);
+    if ((e.cargo > 0) !== (e.cargoKind !== '')) out.push(`entity ${e.id}: cargo ${e.cargo} of kind '${e.cargoKind}'`);
+    if ((e.gather !== null) !== (e.order.kind === 'gather')) out.push(`entity ${e.id}: gather state and order disagree`);
+    if (e.gather && carryOf(ctx, e) === 0) out.push(`entity ${e.id}: gathering without being a carrier`);
+  }
+  for (const e of world.entities) {
+    if (e.gather?.st !== 'harvest') continue;
+    const t = entityById(world, e.gather.target);
+    if (t && holder.get(e.id) !== t.id) out.push(`carrier ${e.id}: harvesting ${t.id} without its slot`);
+  }
+  for (const e of world.entities) if (isCrystal(ctx, e) && e.res && e.res.field === 0) out.push(`crystal ${e.id}: no field`);
   for (const r of world.pathQueue) {
     const e = world.entities.find((x) => x.id === r.id);
     if (!e || !e.mv || !e.mv.waiting) out.push(`path request for ${r.id} without a waiting unit`);

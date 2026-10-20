@@ -15,24 +15,33 @@ export class Game {
   readonly me = 1;
   /** positions before the last tick, for interpolation */
   readonly prev = new Map<number, [number, number]>();
-  private seq = 0;
+  private readonly seqs = new Map<number, number>();
   private acc = 0;
   speed = 1;
   paused = false;
   readonly simTimes: number[] = [];
   readonly pathCounts: number[] = [];
-  lastEvents: SimEvent[] = [];
+  /** events of every tick stepped in the last frame */
+  readonly events: SimEvent[] = [];
 
   constructor(readonly ctx: SimContext, setup: MatchSetup) {
     this.world = createWorld(ctx, setup);
   }
 
   issue(cmd: Cmd): void {
-    this.queue.submit({ player: this.me, seq: ++this.seq, tick: this.world.tick + 1, cmd }, this.world.tick);
+    this.issueAs(this.me, cmd);
+  }
+
+  /** Test matches: commands for another player too (the Colony has no AI before gate 6). */
+  issueAs(player: number, cmd: Cmd): void {
+    const seq = (this.seqs.get(player) ?? 0) + 1;
+    this.seqs.set(player, seq);
+    this.queue.submit({ player, seq, tick: this.world.tick + 1, cmd }, this.world.tick);
   }
 
   /** Advances the clock by real time; returns the interpolation fraction for drawing. */
   frame(dtMs: number): number {
+    this.events.length = 0;
     if (this.paused) return 1;
     this.acc += Math.min(dtMs, 250) * this.speed;
     let steps = 0;
@@ -47,7 +56,7 @@ export class Game {
         this.simTimes.shift();
         this.pathCounts.shift();
       }
-      this.lastEvents = res.events;
+      for (const e of res.events) this.events.push(e);
       this.acc -= TICK_MS;
       steps++;
     }

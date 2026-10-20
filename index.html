@@ -24,7 +24,16 @@
     .panel { position: fixed; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 10px 14px; font-size: 14px; line-height: 1.5; backdrop-filter: blur(4px); }
     #top { top: 10px; right: 10px; left: 10px; display: flex; align-items: center; gap: 16px; padding: 6px 14px; flex-wrap: wrap; }
     #top img { height: 34px; width: auto; }
-    #res { font-weight: 700; font-variant-numeric: tabular-nums; }
+    #res { font-weight: 700; font-variant-numeric: tabular-nums; display: flex; gap: 14px; align-items: center; flex-wrap: wrap; }
+    #res .r { display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; }
+    #res img { height: 22px; width: auto; }
+    #res .income { color: var(--green); font-weight: 600; }
+    #eco { top: 64px; left: 10px; width: 330px; font-size: 13px; }
+    #eco h2 { font: 600 15px Fredoka, Assistant, sans-serif; margin: 0 0 4px; color: var(--gold); }
+    #eco-body > div { padding: 2px 0; }
+    #eco .warn { color: #ffb347; font-weight: 700; }
+    #eco .idle { color: var(--muted); }
+    #dev h3 { font: 600 12px Assistant, sans-serif; margin: 4px 0 0; color: var(--muted); }
     #selection { color: var(--muted); flex: 1; min-width: 200px; }
     #dev { top: 64px; right: 10px; width: 230px; display: grid; gap: 6px; }
     #dev h2 { font: 600 15px Fredoka, Assistant, sans-serif; margin: 0 0 2px; color: var(--gold); }
@@ -46,7 +55,7 @@
     #start-btn { font-size: 18px; padding: 10px 36px; background: var(--blue); color: #0b1630; text-align: center; }
     #start-btn:disabled { opacity: 0.5; cursor: wait; }
     #load-status { color: var(--gold); min-height: 1.4em; }
-    @media (max-width: 700px) { #dev, #help { display: none; } }
+    @media (max-width: 700px) { #dev, #help, #eco { display: none; } }
   </style>
 </head>
 <body>
@@ -58,13 +67,24 @@
     <span id="selection">לא נבחרו יחידות</span>
   </div>
 
+  <div id="eco" class="panel" aria-live="polite">
+    <h2>כלכלה</h2>
+    <div id="eco-body"><div class="idle">טוען…</div></div>
+  </div>
+
   <div id="dev" class="panel">
     <h2>מעבדת בדיקות</h2>
+    <h3>כלכלה</h3>
+    <button id="btn-glut" type="button">+8 נשאי GLUT לשדה הבית</button>
+    <button id="btn-mito" type="button">מפעל מיטוכונדריה ליד השדה הצפוני</button>
+    <button id="btn-pump" type="button">משאבת אמינו על מרבץ החלבון</button>
+    <button id="btn-kill" type="button">הרוס את מה שנבחר</button>
+    <h3>תנועה</h3>
     <button id="btn-20" type="button">+20 נויטרופילים</button>
     <button id="btn-80" type="button">+80 נויטרופילים ליד המעבר הצר</button>
     <button id="btn-macro" type="button">+6 מקרופאג'ים (גוף גדול)</button>
-    <button id="btn-mix" type="button">+8 מונוציטים ו-8 אאוזינופילים</button>
-    <button id="btn-debug" type="button" aria-pressed="false">שכבת ניווט (F3)</button>
+    <h3>כלים</h3>
+    <button id="btn-debug" type="button" aria-pressed="false">שכבת ניווט וכרייה (F3)</button>
     <button id="btn-speed" type="button">מהירות ×1</button>
     <button id="btn-pause" type="button">השהה</button>
     <div id="tip"></div>
@@ -72,7 +92,7 @@
 
   <div id="help" class="panel">
     <b>גרירה</b> — בחירה בתיבה · <b>לחיצה</b> — בחירת יחידה · <b>לחיצה כפולה</b> — כל היחידות מאותו סוג על המסך ·
-    <b>Shift</b> — הוספה לבחירה · <b>לחיצה ימנית</b> — תזוזה · <b>S</b> — עצור · <b>H</b> — החזק עמדה ·
+    <b>Shift</b> — הוספה לבחירה · <b>לחיצה ימנית</b> — תזוזה, ועל גביש עם נשאים: כרייה · <b>S</b> — עצור · <b>H</b> — החזק עמדה ·
     <b>Ctrl+מספר</b> — שמירת קבוצה · <b>מספר</b> — בחירת קבוצה (פעמיים: מצלמה אליה) · <b>רווח</b> — מצלמה לבחירה ·
     <b>חצים / קצה המסך / גלגלת לחוצה</b> — הזזת מצלמה · <b>גלגלת</b> — זום · <b>Ctrl+A</b> — כולם
   </div>
@@ -82,9 +102,9 @@
   <div id="start">
     <div class="card">
       <img src="assets/ui/logo.webp" alt="HOST WARS">
-      <h1>שער 2 · שליטה ותנועה</h1>
-      <p>זירת בדיקות: חומה עם שלושה פתחים (רחב, צר, וצר מאוד שרק יחידות קטנות עוברות בו), נהר דם עם זרם דרומה, ספל בצורת U מימין. אין עדיין כלכלה או קרב — רק לבחור, לשלוח, ולראות איך הן מוצאות את הדרך.</p>
-      <p>מה לבדוק: האם התנועה מרגישה טבעית? האם משהו נתקע, נכנס לקיר, או מתנהג מוזר?</p>
+      <h1>שער 3 · כלכלה</h1>
+      <p>נשאי ה-GLUT יוצאים לכרות מיד: כל אחד ממלא מטען מגביש גלוקוז, מביא אותו לצומת הלימפה, ורק אז ה-ATP נכנס לקופה. מעל כל שדה מופיע כמה נשאים עובדים בו מתוך המקסימום המועיל — שניים לכל גביש.</p>
+      <p>מה לבדוק: הוסיפו נשאים, שלחו חלק לשדה הצפוני הרחוק, בנו לידו מפעל מיטוכונדריה ותראו את הדרך מתקצרת. הרסו מחסן או גביש באמצע עבודה — שום דבר לא אמור להיתקע.</p>
       <button id="start-btn" type="button" disabled>התחל</button>
       <div id="load-status">טוען…</div>
     </div>

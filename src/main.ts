@@ -1,7 +1,7 @@
-// Gate 2: the first playable build. A test arena, White Line against an idle Colony;
-// select, move, and watch navigation work. No economy or combat yet.
+// Gate 3: the test arena with an economy. White Line against a Colony that only mines;
+// select, move, gather, and watch the loads come in. No construction or combat yet.
 
-import { Application, Assets, Container, Graphics, Texture } from 'pixi.js';
+import { Application, Assets, Container, Graphics, Sprite, Texture } from 'pixi.js';
 import { loadCatalog, loadMap } from './sim/content/load';
 import { createContext } from './sim/context';
 import { Game } from './client/game';
@@ -48,7 +48,8 @@ async function main(): Promise<void> {
 
   const manifest = await loadManifest();
   const [textures, ground, blood, wall] = await Promise.all([
-    loadAtlasGroups(manifest, ['units_wl', 'units_col', 'buildings_wl', 'buildings_col', 'world_neutral']),
+    // only the first page of two effect sets: the harvest sparkle and the ATP burst live there
+    loadAtlasGroups(manifest, ['units_wl', 'units_col', 'buildings_wl', 'buildings_col', 'world_neutral', 'icons', 'fx_a:0', 'fx_b:0']),
     loadImage('assets/' + manifest.assets['tile_tissue']!.file),
     loadImage('assets/' + manifest.assets['tile_blood']!.file),
     loadImage('assets/' + manifest.assets['tile_bone']!.file),
@@ -78,9 +79,15 @@ async function main(): Promise<void> {
 
   const cam = new Camera(map.w * TILE_PX, map.h * TILE_PX);
   const [sx, sy] = map.starts[0]!;
-  cam.centreOn((sx + 4) * TILE_PX, (sy + 2) * TILE_PX, app.screen.width, app.screen.height);
+  cam.centreOn((sx + 2) * TILE_PX, (sy + 2) * TILE_PX, app.screen.width, app.screen.height);
   const controls = new Controls(app.canvas, game, view, cam, box);
-  const hud = new Hud(game, controls, view, gpu, () => [(sx + 8) * 256, (sy - 3) * 256]);
+  // icons for the DOM, cut out of the atlas once
+  const iconUrl = async (id: string) => {
+    const t = textures.get(id);
+    return t ? await app.renderer.extract.base64(new Sprite(t)) : '';
+  };
+  const icons = { atp: await iconUrl('icon_atp'), amino: await iconUrl('icon_amino') };
+  const hud = new Hud(game, controls, view, gpu, { spawn: [(sx + 8) * 256, (sy + 6) * 256], depot: [16 * 256 + 128, 10 * 256 + 128] }, icons);
 
   // nothing runs until the player presses start
   game.paused = true;
@@ -92,13 +99,23 @@ async function main(): Promise<void> {
   startBtn.addEventListener('click', () => {
     overlay.hidden = true;
     game.paused = false;
+    // both sides start mining at once: the White Line by the player's hand, the Colony
+    // by the test lab (it has no AI before gate 6)
+    for (const player of [1, 2]) {
+      const carriers = game.world.entities.filter((e) => e.owner === player && (catalog.units.get(e.type)?.carry ?? 0) > 0);
+      const hq = game.world.entities.find((e) => e.owner === player && e.building);
+      const crystal = game.world.entities
+        .filter((e) => e.res && e.res.field > 0)
+        .sort((a, b) => (hq ? Math.hypot(a.x - hq.x, a.y - hq.y) - Math.hypot(b.x - hq.x, b.y - hq.y) : 0))[0];
+      if (carriers.length && crystal) game.issueAs(player, { type: 'GATHER', units: carriers.map((e) => e.id), target: crystal.id });
+    }
   });
 
   app.ticker.add((ticker) => {
     const dt = ticker.deltaMS;
     controls.update(dt);
     const alpha = game.frame(dt);
-    view.sync(game.world, game.prev, alpha, controls.selected, performance.now(), dt);
+    view.sync(game.world, game.prev, alpha, controls.selected, performance.now(), dt, game.events);
     cam.apply(view.root);
     hud.update(dt);
   });

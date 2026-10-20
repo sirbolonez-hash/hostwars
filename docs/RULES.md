@@ -51,3 +51,51 @@ Every gameplay rule and edge case gets written here before it is coded, and ever
 
 ### Dev matches
 - `DEV_SPAWN` (test matches only) puts up to 100 units of one type around a point, each on the nearest tile it can stand on, ignoring cost and supply.
+
+## Economy (gate 3)
+
+### Resources on the map
+- A glucose crystal has a stock (small 600, large 1,800) and one work slot. Each base has a field of 8 (4 small, 4 large: 9,600) in a crescent behind its HQ; a field is a numbered group of crystals with a name for the interface.
+- Protein and iron sit in deposits (1,800) worked only through an extractor on top (amino pump, siderophore tower), which has 3 work slots. A deposit links to at most one extractor and the link is mutual.
+- Resources block movement like buildings. An emptied crystal or deposit leaves the map at the end of its tick (`died`, cause `depleted`). An extractor whose deposit is gone stays, with nothing to work.
+
+### The cycle (one carrier)
+1. **To the target**: walk to one of the 3 open tiles next to it that are closest to the nearest dropoff (carriers of one target spread over them).
+2. **At the target**: within reach (body radius + 96 sub-tiles of the footprint), take a free work slot and harvest (5 s). If the slot is taken: a free crystal of the same field within 5 tiles that nobody is heading for, or wait in line (looking again every second).
+3. **Harvest ends**: take min(load left, stock) in one action and release the slot. Two carriers that finish on the same tick take in entity-id order, so nobody takes past the stock.
+4. **To the dropoff**: the nearest own dropoff (HQ, mitochondria, biofilm core, fermentation pit); walk to its nearest open side.
+5. **Unload** (1 s): the load becomes ATP (glucose) or the advanced resource (protein, iron) in one action, with a `delivered` event. Then back to the same target.
+
+Measured on the arena (5 s harvest, 1 s unload, crystals 4 tiles from the HQ): one carrier per crystal brings 1.2–1.3 ATP/s, two per crystal 1.0 ATP/s each (the design's opening value), a third adds nothing. Saturation is shown as carriers / (2 × crystals).
+
+### The order
+- `GATHER {units, target}`: target is a crystal, a deposit with the player's extractor on it (the order goes to the extractor), the player's extractor, or the player's dropoff (return cargo).
+- Carriers in the list are spread over the field: each takes the crystal with the fewest carriers, ties to the one nearest the clicked crystal. Units that cannot carry are left alone (the client sends them a MOVE).
+- A carrier holding a load delivers it first, then starts on the new target. GATHER on a dropoff: carriers with a load deliver it and go back to what they were mining (or stand idle if they were not mining); carriers without a load are unaffected.
+- MOVE, STOP and HOLD end gathering at once and release the slot; the carrier keeps its load.
+- Rejected: `unknown_target` (missing or dead), `not_owner` (enemy building or extractor), `no_extractor` (a deposit with none, or with the enemy's), `bad_target` (anything else), `depleted`, `no_carriers` (no carrier in the list).
+
+### Failure at every step
+- **Crystal depleted or destroyed** (on the way, waiting, or mid-harvest): the slot is released; a carrier with a load goes to unload; otherwise it takes the least worked crystal of the same field, then any crystal within 12 tiles. None left: it stops (`gather_stopped`, `depleted`).
+- **Extractor or its deposit gone**: carriers there stop (`no_extractor` / `depleted`); loads already taken are delivered.
+- **Dropoff destroyed on the way or during unload**: the carrier turns to the nearest other dropoff. None left: it stops holding its load (`no_dropoff`); the load is not money until a later GATHER brings it to a dropoff.
+- **Path blocked**: travel that ends short counts as a failed approach. After 3 the carrier tries another target (another crystal of the field, another dropoff); after 6 in a row it stops (`path_blocked`). A walled-in target fails at once.
+- **Carrier dies**: its slot is released in the death phase and its load is lost (the `died` event carries it).
+
+### Rules that must hold (checked after every tick in tests)
+- Stocks, loads and player resources are never negative; a load never exceeds the carrier's capacity; a load has a kind exactly when it is above zero.
+- Money changes only by `delivered` amounts. Ground + loads + banked + lost with dead carriers is constant.
+- Every taken slot belongs to a living carrier harvesting exactly that target; a harvesting carrier holds exactly one slot of its target.
+- A gather state exists exactly when the order is `gather`; only carriers gather.
+
+### Movement while gathering
+- Carriers on a gather order pass through other bodies (no separation pushes either way), so a mining line never jams; walls and buildings still push them out.
+- Gathering travel does not raise `arrived` / `blocked` events; the gather cycle handles its own outcomes.
+
+### Not yet
+- Fleeing from danger, and keeping carriers from routing through enemy lines, come with combat and vision (gate 5).
+- Building dropoffs and extractors, rally points to a field, and new carriers from the HQ come with construction and production (gate 4).
+
+### Dev matches
+- `DEV_SPAWN` with a building id places one finished building with its centre on the tile under the point, if the footprint is open ground with no unit on it or next to it (`site_blocked` otherwise). An extractor goes on the free deposit of its kind under the point and links to it.
+- `DEV_KILL {targets}` sets the listed entities' hit points to 0; they die in the death phase of that tick (resources and buildings too).

@@ -3,19 +3,23 @@
 
 import { hashJson } from '../core/hash';
 import { isInt } from '../core/fixed';
-import type { BuildingDef, ContentFiles, FactionDef, Tag, UnitDef, WeaponDef } from './types';
+import type { BuildingDef, ContentFiles, FactionDef, ResourceDef, ResourceKind, Tag, UnitDef, WeaponDef } from './types';
 
 export interface Catalog {
   units: Map<string, UnitDef>;
   buildings: Map<string, BuildingDef>;
   weapons: Map<string, WeaponDef>;
+  resources: Map<string, ResourceDef>;
   factions: Map<string, FactionDef>;
+  /** footprint in tiles of every building and resource type */
+  footprints: Map<string, [number, number]>;
   /** stable index per type id, used in hashing and snapshots */
   typeIndex: Map<string, number>;
   typeIds: string[];
   hash: string;
 }
 
+const KINDS: ResourceKind[] = ['glucose', 'protein', 'iron'];
 const TAGS: Tag[] = ['worker', 'biological', 'armored', 'building', 'capsule', 'concealed', 'air', 'hero', 'structure'];
 
 export function validateContent(c: ContentFiles, knownAssets?: Set<string>): string[] {
@@ -64,6 +68,7 @@ export function validateContent(c: ContentFiles, knownAssets?: Set<string>): str
     if (u.morphsTo !== null && !units.has(u.morphsTo)) e(`${at}: morphsTo ${u.morphsTo} does not exist`);
     for (const r of u.requires) if (!r.startsWith('antigen:') && !buildings.has(r)) e(`${at}: requires unknown ${r}`);
     if (u.role === 'worker' && u.carry < 1) e(`${at}: a worker must carry something`);
+    if (u.carry > 0 && u.navClass !== 'small') e(`${at}: carriers must be small bodies`);
     if (knownAssets && !knownAssets.has(u.id)) e(`${at}: no asset with this id`);
   }
 
@@ -82,6 +87,28 @@ export function validateContent(c: ContentFiles, knownAssets?: Set<string>): str
     for (const r of b.requires) if (!r.startsWith('antigen:') && !buildings.has(r)) e(`${at}: requires unknown ${r}`);
     if (b.weapon !== null && !weapons.has(b.weapon)) e(`${at}: unknown weapon ${b.weapon}`);
     if (knownAssets && !knownAssets.has(b.id)) e(`${at}: no asset with this id`);
+    ints(at, b, ['workSlots']);
+    if ((b.role === 'extractor') !== (b.onResource !== null)) e(`${at}: only an extractor sits on a resource`);
+    if (b.role === 'extractor' && (b.workSlots < 1 || b.dropoff)) e(`${at}: an extractor needs work slots and is not a dropoff`);
+    if (b.role !== 'extractor' && b.workSlots !== 0) e(`${at}: only an extractor has work slots`);
+  }
+
+  for (const r of c.resources) {
+    const at = `resource ${r.id}`;
+    unique(r.id, at);
+    if (!r.id.startsWith('res_')) e(`${at}: id must start with res_`);
+    if (!KINDS.includes(r.kind)) e(`${at}: unknown kind ${String(r.kind)}`);
+    ints(at, r, ['stock', 'slots', 'harvestTicks'], 0);
+    if (r.stock < 1 || r.harvestTicks < 1) e(`${at}: stock and harvest time must be positive`);
+    if (!r.footprint.every((v) => isInt(v) && v >= 1 && v <= 4)) e(`${at}: footprint must be 1–4 tiles`);
+    if (r.kind === 'glucose' && r.slots < 1) e(`${at}: glucose is worked directly and needs slots`);
+    if (r.kind !== 'glucose') {
+      if (r.slots !== 0) e(`${at}: ${r.kind} is worked through an extractor, so slots must be 0`);
+      const ext = c.buildings.filter((b) => b.onResource === r.kind);
+      if (ext.length === 0) e(`${at}: no extractor works ${r.kind}`);
+      for (const b of ext) if (b.footprint[0] !== r.footprint[0] || b.footprint[1] !== r.footprint[1]) e(`${at}: extractor ${b.id} must have the same footprint`);
+    }
+    if (knownAssets && !knownAssets.has(r.id)) e(`${at}: no asset with this id`);
   }
 
   // every unit must be producible by exactly the building it names (or be a morph)
@@ -124,12 +151,17 @@ export function validateContent(c: ContentFiles, knownAssets?: Set<string>): str
 export function compileCatalog(c: ContentFiles, knownAssets?: Set<string>): Catalog {
   const errors = validateContent(c, knownAssets);
   if (errors.length) throw new Error('content invalid:\n  ' + errors.join('\n  '));
-  const typeIds = [...c.units.map((u) => u.id), ...c.buildings.map((b) => b.id)].sort();
+  const typeIds = [...c.units.map((u) => u.id), ...c.buildings.map((b) => b.id), ...c.resources.map((r) => r.id)].sort();
+  const footprints = new Map<string, [number, number]>();
+  for (const b of c.buildings) footprints.set(b.id, b.footprint);
+  for (const r of c.resources) footprints.set(r.id, r.footprint);
   return {
     units: new Map(c.units.map((u) => [u.id, u])),
     buildings: new Map(c.buildings.map((b) => [b.id, b])),
     weapons: new Map(c.weapons.map((w) => [w.id, w])),
+    resources: new Map(c.resources.map((r) => [r.id, r])),
     factions: new Map(c.factions.map((f) => [f.id, f])),
+    footprints,
     typeIds,
     typeIndex: new Map(typeIds.map((id, i) => [id, i])),
     hash: hashJson(c).hex(),

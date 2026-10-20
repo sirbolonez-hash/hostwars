@@ -47,11 +47,14 @@ Asset ids follow `<kind>_<faction>_<name>`, with factions `wl` (White Line), `co
 | `content/units/slice.json` | unit definitions (`UnitDef` in `src/sim/content/types.ts`) |
 | `content/buildings/slice.json` | building definitions (`BuildingDef`) |
 | `content/weapons/slice.json` | weapon definitions (`WeaponDef`) |
+| `content/resources/slice.json` | resource definitions (`ResourceDef`): `kind` (glucose, protein, iron), `stock`, `footprint`, `slots` (carriers at once; 0 = worked through an extractor), `harvestTicks` |
 | `content/factions.json` | starting conditions per faction |
 
 The slice files are generated from `tools/content/slice_values.py`, which keeps the numbers in human units (seconds, tiles, tiles per second) next to the conversion. Edit the table there and rerun it; do not hand-edit the JSON.
 
-`src/sim/content/catalog.ts` validates everything before a match: integer types and ranges, unique ids, known weapons, tags and buildings, producers that list what they produce, an acyclic requirement graph, starting units that fit the HQ's supply, and (in tests) an asset for every unit and building.
+Buildings also carry `workSlots` (an extractor's slots; 0 for every other building) and `onResource` (the deposit kind an extractor sits on). Carriers are units with `carry` > 0 and must be small bodies.
+
+`src/sim/content/catalog.ts` validates everything before a match: integer types and ranges, unique ids, known weapons, tags and buildings, producers that list what they produce, an acyclic requirement graph, starting units that fit the HQ's supply, resources (glucose worked directly with slots; protein and iron through an extractor of the same footprint, with slots), and (in tests) an asset for every unit, building and resource.
 
 ## Maps (`content/maps/*.json`)
 
@@ -64,5 +67,7 @@ The slice files are generated from `tools/content/slice_values.py`, which keeps 
 | `rows` | `h` strings of `w` characters |
 | `flows` | currents: `rect` [x, y, w, h] in tiles, `dir` [dx, dy] (normalized when loaded), `strength` 0–1000 ‰ |
 | `starts` | HQ top-left tile per start position; each needs 6x6 open tiles |
+| `resources` | `{type, tile [x, y] (top-left), field}`; crystals belong to a named field, deposits to field 0 |
+| `fields` | `{id (≥ 1), name}`: the Hebrew name of each glucose field |
 
-`tools/content/make_arena.py` generates the gate 2 test arena. `validateMap` (in `src/sim/navigation/grid.ts`) runs before every match.
+`tools/content/make_arena.py` generates the test arena (gate 2 navigation cases, gate 3 fields and deposits, mirrored for both bases). `validateMap` (in `src/sim/navigation/grid.ts`) and `validateMapResources` (in `src/sim/context.ts`: known types, on open ground, no overlaps, clear of the 6x6 start areas, named fields) run before every match.

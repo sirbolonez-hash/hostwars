@@ -62,6 +62,19 @@ export interface BuildingDef {
   onResource: 'protein' | 'iron' | null;
   weapon: string | null;
   needsBiofilm: boolean;
+  workSlots: number; // extractors: carriers that can work it at once; 0 for every other building
+}
+
+export type ResourceKind = 'glucose' | 'protein' | 'iron';
+
+/** A neutral resource on the map. Glucose is worked directly; protein and iron through an extractor. */
+export interface ResourceDef {
+  id: string; // also the asset id
+  kind: ResourceKind;
+  stock: number;
+  footprint: [number, number]; // tiles
+  slots: number; // carriers that can work it at once; 0 = only through an extractor on top
+  harvestTicks: number; // time to fill one load
 }
 
 export interface FactionDef {
@@ -79,6 +92,7 @@ export interface ContentFiles {
   units: UnitDef[];
   buildings: BuildingDef[];
   weapons: WeaponDef[];
+  resources: ResourceDef[];
   factions: FactionDef[];
 }
 
@@ -100,4 +114,12 @@ export interface MapDef {
   rows: string[];
   flows: FlowDef[];
   starts: [number, number][]; // HQ top-left tile per start position
+  resources: MapResource[];
+  fields: { id: number; name: string }[]; // glucose fields, named for the interface
+}
+
+export interface MapResource {
+  type: string; // resource id
+  tile: [number, number]; // top-left
+  field: number; // crystals of one field share it; 0 for a deposit
 }

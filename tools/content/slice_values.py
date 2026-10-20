@@ -28,10 +28,15 @@ def unit(id, faction, role, cost, train_s, supply, hp, speed_tps, nav, sight_t, 
 
 
 def building(id, faction, role, cost, build_s, hp, fp, sight_t=8, armor=1, supply=0, dropoff=False, produces=(), requires=(),
-             critical=False, on=None, weapon=None, biofilm=False):
+             critical=False, on=None, weapon=None, biofilm=False, slots=0):
     return dict(id=id, faction=faction, role=role, cost=list(cost), buildTicks=S(build_s), hp=hp, armor=armor, footprint=list(fp),
                 supplyProvided=supply, dropoff=dropoff, produces=list(produces), requires=list(requires), sight=T(sight_t),
-                critical=critical, onResource=on, weapon=weapon, needsBiofilm=biofilm)
+                critical=critical, onResource=on, weapon=weapon, needsBiofilm=biofilm, workSlots=slots)
+
+
+def resource(id, kind, stock, fp, slots, harvest_s):
+    # slots: carriers that can work it at once; 0 = it is worked through an extractor built on top
+    return dict(id=id, kind=kind, stock=stock, footprint=list(fp), slots=slots, harvestTicks=S(harvest_s))
 
 
 weapons = [
@@ -78,7 +83,7 @@ buildings = [
              produces=('unit_wl_neutrophil', 'unit_wl_monocyte', 'unit_wl_dendritic', 'unit_wl_platelets')),
     building('bld_wl_spleen', 'wl', 'production', (180, 0), 35, 1000, (3, 3), critical=True, requires=('bld_wl_marrow',),
              produces=('unit_wl_eosinophil',)),
-    building('bld_wl_aminopump', 'wl', 'extractor', (75, 0), 20, 450, (2, 2), on='protein'),
+    building('bld_wl_aminopump', 'wl', 'extractor', (75, 0), 20, 450, (2, 2), on='protein', slots=3),
     building('bld_wl_mastcell', 'wl', 'defense', (140, 0), 30, 500, (2, 2), requires=('bld_wl_marrow',), weapon='w_histamine'),
     building('bld_wl_germinal', 'wl', 'tech', (250, 100), 60, 900, (3, 3), critical=True, requires=('bld_wl_spleen', 'antigen:any'),
              produces=('unit_wl_plasma',)),
@@ -88,12 +93,20 @@ buildings = [
              requires=('bld_col_biofilm_core',)),
     building('bld_col_fission', 'col', 'production', (150, 0), 30, 850, (3, 3), critical=True, biofilm=True,
              requires=('bld_col_biofilm_core',), produces=('unit_col_coccus',)),
-    building('bld_col_siderophore', 'col', 'extractor', (75, 0), 20, 450, (2, 2), on='iron'),
+    building('bld_col_siderophore', 'col', 'extractor', (75, 0), 20, 450, (2, 2), on='iron', slots=3),
     building('bld_col_flagellum', 'col', 'production', (180, 0), 35, 950, (3, 3), critical=True, biofilm=True,
              requires=('bld_col_fission',), produces=('unit_col_flagellate', 'unit_col_spirochete', 'unit_col_strep')),
     building('bld_col_toxinspire', 'col', 'defense', (130, 0), 30, 480, (2, 2), biofilm=True, requires=('bld_col_fission',), weapon='w_toxin_spray'),
     building('bld_col_toxinfoundry', 'col', 'tech', (250, 100), 60, 900, (3, 3), critical=True, biofilm=True,
              requires=('bld_col_flagellum',), produces=('unit_col_toxin',)),
+]
+
+# glucose crystals have one work slot each; protein and iron are worked through an extractor (3 slots)
+resources = [
+    resource('res_glucose_small', 'glucose', 600, (1, 1), 1, 5),
+    resource('res_glucose_large', 'glucose', 1800, (2, 2), 1, 5),
+    resource('res_protein', 'protein', 1800, (2, 2), 0, 5),
+    resource('res_iron', 'iron', 1800, (2, 2), 0, 5),
 ]
 
 factions = [
@@ -115,5 +128,6 @@ def write(rel, data):
 write('content/weapons/slice.json', weapons)
 write('content/units/slice.json', units)
 write('content/buildings/slice.json', buildings)
+write('content/resources/slice.json', resources)
 write('content/factions.json', factions)
-print(len(weapons), 'weapons,', len(units), 'units,', len(buildings), 'buildings,', len(factions), 'factions')
+print(len(weapons), 'weapons,', len(units), 'units,', len(buildings), 'buildings,', len(resources), 'resources,', len(factions), 'factions')

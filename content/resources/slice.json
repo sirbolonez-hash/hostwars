@@ -1,0 +1,46 @@
+[
+ {
+  "id": "res_glucose_small",
+  "kind": "glucose",
+  "stock": 600,
+  "footprint": [
+   1,
+   1
+  ],
+  "slots": 1,
+  "harvestTicks": 100
+ },
+ {
+  "id": "res_glucose_large",
+  "kind": "glucose",
+  "stock": 1800,
+  "footprint": [
+   2,
+   2
+  ],
+  "slots": 1,
+  "harvestTicks": 100
+ },
+ {
+  "id": "res_protein",
+  "kind": "protein",
+  "stock": 1800,
+  "footprint": [
+   2,
+   2
+  ],
+  "slots": 0,
+  "harvestTicks": 100
+ },
+ {
+  "id": "res_iron",
+  "kind": "iron",
+  "stock": 1800,
+  "footprint": [
+   2,
+   2
+  ],
+  "slots": 0,
+  "harvestTicks": 100
+ }
+]

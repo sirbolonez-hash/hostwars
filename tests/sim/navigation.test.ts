@@ -139,7 +139,7 @@ describe('movement (gate 2 acceptance)', () => {
   it('a group spreads over separate arrival spots', () => {
     const ctx = newCtx();
     const world = createWorld(ctx, setup);
-    const units = Array.from({ length: 20 }, (_, k) => spawnUnit(world, catalog, 'unit_wl_neutrophil', 1, (5 + (k % 5)) * T + 128, (18 + Math.floor(k / 5)) * T + 128));
+    const units = Array.from({ length: 20 }, (_, k) => spawnUnit(world, catalog, 'unit_wl_neutrophil', 1, (5 + (k % 5)) * T + 128, (35 + Math.floor(k / 5)) * T + 128));
     const r = travel(ctx, world, units, 20 * T, 34 * T, 1200);
     expect(r.arrived).toBe(20);
     for (let i = 0; i < units.length; i++)

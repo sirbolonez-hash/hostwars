@@ -55,13 +55,9 @@ export function issueMove(world: World, ctx: SimContext, units: Entity[], x: num
   const ty = Math.floor(y / SUB);
   if (units.length === 1) {
     const e = units[0]!;
-    const size = unitSize(ctx, e);
-    const [nx, ny] = nodeOf(x, y, size);
-    // a single unit goes exactly where it was sent, if it can stand there
-    const exact = ctx.nav.passable(nx, ny, size);
-    const node = exact ? [nx, ny] : nearestPassable(ctx.nav, nx, ny, size);
-    const [gx, gy] = exact ? [x, y] : node ? centreOf(node[0]!, node[1]!, size) : [x, y];
-    startMove(world, e, gx, gy, 0);
+    e.order = { kind: 'move', x, y };
+    travelTo(world, ctx, e, x, y);
+    if (e.mv) e.order = { kind: 'move', x: e.mv.gx, y: e.mv.gy };
     return;
   }
   const grp = world.nextGroup++;
@@ -80,8 +76,26 @@ export function issueMove(world: World, ctx: SimContext, units: Entity[], x: num
 
 function startMove(world: World, e: Entity, gx: number, gy: number, grp: number): void {
   e.order = { kind: 'move', x: gx, y: gy };
+  setTravel(world, e, gx, gy, grp);
+}
+
+function setTravel(world: World, e: Entity, gx: number, gy: number, grp: number): void {
   e.mv = { gx, gy, path: [], i: 0, waiting: true, best: dist(e.x, e.y, gx, gy), since: world.tick, stalls: 0, grp };
   enqueue(world, e.id, 0);
+}
+
+/**
+ * Sends one unit to (x, y) without touching its order: the exact point if it can stand
+ * there, otherwise the nearest spot it can. Used by orders that travel as one of their
+ * steps (gathering). Movement ends by clearing `mv`; the order's owner decides what next.
+ */
+export function travelTo(world: World, ctx: SimContext, e: Entity, x: number, y: number): void {
+  const size = unitSize(ctx, e);
+  const [nx, ny] = nodeOf(x, y, size);
+  const exact = ctx.nav.passable(nx, ny, size);
+  const node = exact ? [nx, ny] : nearestPassable(ctx.nav, nx, ny, size);
+  const [gx, gy] = exact ? [x, y] : node ? centreOf(node[0]!, node[1]!, size) : [x, y];
+  setTravel(world, e, gx, gy, 0);
 }
 
 function dist(ax: number, ay: number, bx: number, by: number): number {
@@ -220,10 +234,16 @@ export function processPathQueue(world: World, ctx: SimContext, index: Map<numbe
   return used;
 }
 
-function arrive(e: Entity, events: MoveEvent[]): void {
+/** Ends travel. A plain move order ends with it (and reports); any other order carries on from here. */
+function endTravel(e: Entity, events: MoveEvent[], type: MoveEvent['type']): void {
   e.mv = null;
+  if (e.order.kind !== 'move') return;
   e.order = { kind: 'idle' };
-  events.push({ type: 'arrived', entity: e.id });
+  events.push({ type, entity: e.id });
+}
+
+function arrive(e: Entity, events: MoveEvent[]): void {
+  endTravel(e, events, 'arrived');
 }
 
 const DIR8_X = [256, 181, 0, -181, -256, -181, 0, 181];
@@ -246,11 +266,8 @@ export function moveUnits(world: World, ctx: SimContext, events: MoveEvent[]): v
     const mv = e.mv;
     if (!mv || mv.waiting) continue;
     if (mv.i >= mv.path.length) {
-      if (mv.path.length === 0) {
-        events.push({ type: 'blocked', entity: e.id });
-        e.mv = null;
-        e.order = { kind: 'idle' };
-      } else arrive(e, events);
+      if (mv.path.length === 0) endTravel(e, events, 'blocked');
+      else arrive(e, events);
       continue;
     }
     const def = ctx.catalog.units.get(e.type)!;
@@ -301,7 +318,9 @@ export function moveUnits(world: World, ctx: SimContext, events: MoveEvent[]): v
   const pushX = new Map<number, number>();
   const pushY = new Map<number, number>();
   const moving = (e: Entity) => e.mv !== null && !e.mv.waiting;
+  // carriers on a gather order pass through other bodies, so a mining line never jams
   for (const a of units) {
+    if (a.gather) continue;
     const ra = radius(ctx, a);
     const cx = Math.floor(a.x / CELL);
     const cy = Math.floor(a.y / CELL);
@@ -310,7 +329,7 @@ export function moveUnits(world: World, ctx: SimContext, events: MoveEvent[]): v
         const list = cells.get((cy + oy) * cw + cx + ox);
         if (!list) continue;
         for (const b of list) {
-          if (b.id <= a.id) continue;
+          if (b.id <= a.id || b.gather) continue;
           const dx = b.x - a.x;
           const dy = b.y - a.y;
           const rr = ra + radius(ctx, b);
@@ -419,9 +438,7 @@ export function moveUnits(world: World, ctx: SimContext, events: MoveEvent[]): v
     if (dg <= SUB + 2 * radius(ctx, e)) {
       arrive(e, events);
     } else if (mv.stalls >= GIVE_UP_STALLS) {
-      e.mv = null;
-      e.order = { kind: 'idle' };
-      events.push({ type: 'blocked', entity: e.id });
+      endTravel(e, events, 'blocked');
     } else if (REPATH_AT.has(mv.stalls)) {
       mv.waiting = true;
       enqueue(world, e.id, 1);

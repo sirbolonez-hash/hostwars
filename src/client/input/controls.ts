@@ -2,7 +2,9 @@
 // intent into commands through Game.issue; never touches the world directly.
 
 import type { Container, Graphics } from 'pixi.js';
-import type { Entity } from '../../sim/core/world';
+import { footprintOrigin } from '../../sim/context';
+import { entityById, type Entity } from '../../sim/core/world';
+import { carryOf, isCrystal, isDeposit, isDropoffOf, isExtractor } from '../../sim/economy/gather';
 import type { Game } from '../game';
 import { PX, type WorldView } from '../render/worldView';
 import { TILE_PX } from '../render/terrain';
@@ -42,6 +44,8 @@ export class Camera {
 
 export class Controls {
   readonly selected = new Set<number>();
+  /** a building or resource shown in the selection line (not commanded) */
+  inspected: number | null = null;
   private readonly groups = new Map<number, number[]>();
   private dragStart: [number, number] | null = null;
   private dragging = false;
@@ -99,6 +103,39 @@ export class Controls {
     return best;
   }
 
+  /** The building or resource under a world point: its footprint, plus the art standing above it. */
+  pickBuilding(wx: number, wy: number): Entity | null {
+    const ctx = this.game.ctx;
+    let best: Entity | null = null;
+    for (const e of this.game.world.entities) {
+      if (!e.building) continue;
+      if (e.res && e.res.link !== 0 && isDeposit(ctx, e)) continue; // hidden under its extractor
+      const [tx, ty, fw, fh] = footprintOrigin(ctx, e.type, e.x, e.y);
+      const x0 = tx * TILE_PX;
+      const y0 = ty * TILE_PX - fh * TILE_PX * 0.5;
+      if (wx >= x0 && wx < x0 + fw * TILE_PX && wy >= y0 && wy < (ty + fh) * TILE_PX) best = e;
+    }
+    return best;
+  }
+
+  /** What right-clicking `t` with these units would be: gathering it, or just walking there. */
+  gatherTarget(units: Entity[], t: Entity | null): Entity | null {
+    if (!t) return null;
+    const ctx = this.game.ctx;
+    const me = this.game.me;
+    const carriers = units.filter((u) => carryOf(ctx, u) > 0);
+    if (carriers.length === 0) return null;
+    if (isCrystal(ctx, t)) return (t.res?.stock ?? 0) > 0 ? t : null;
+    if (isDeposit(ctx, t)) {
+      const ext = t.res && t.res.link !== 0 ? entityById(this.game.world, t.res.link) : undefined;
+      return ext && ext.owner === me ? t : null;
+    }
+    if (isExtractor(ctx, t)) return t.owner === me && t.res?.link ? t : null;
+    // own dropoff: only meaningful for carriers holding a load
+    if (isDropoffOf(ctx, t, me)) return carriers.some((c) => c.cargo > 0) ? t : null;
+    return null;
+  }
+
   private down(e: PointerEvent): void {
     const [sx, sy] = this.screen(e);
     if (e.button === 1) {
@@ -119,6 +156,13 @@ export class Controls {
   private move(e: PointerEvent): void {
     const [sx, sy] = this.screen(e);
     this.mouse = [sx, sy];
+    if (e.target === this.canvas && !this.dragStart) {
+      // a hand over something the selected carriers can work
+      const [wx, wy] = this.cam.toWorld(sx, sy);
+      const sel = this.selectedUnits();
+      const over = sel.length ? this.gatherTarget(sel, this.pickBuilding(wx, wy)) : null;
+      this.canvas.style.cursor = over ? 'pointer' : 'default';
+    }
     if (this.panning) {
       this.cam.x -= (sx - this.panning[0]) / this.cam.zoom;
       this.cam.y -= (sy - this.panning[1]) / this.cam.zoom;
@@ -140,6 +184,7 @@ export class Controls {
       const [ax, ay] = this.cam.toWorld(Math.min(sx, this.dragStart[0]), Math.min(sy, this.dragStart[1]));
       const [bx, by] = this.cam.toWorld(Math.max(sx, this.dragStart[0]), Math.max(sy, this.dragStart[1]));
       if (!add) this.selected.clear();
+      this.inspected = null;
       for (const u of this.mine()) {
         const x = u.x * PX;
         const y = u.y * PX;
@@ -149,6 +194,15 @@ export class Controls {
       const [wx, wy] = this.cam.toWorld(sx, sy);
       const hit = this.pick(wx, wy);
       const now = performance.now();
+      this.inspected = null;
+      if (!hit && !add) {
+        // nothing to command here: show what the building or resource is
+        const b = this.pickBuilding(wx, wy);
+        if (b) {
+          this.selected.clear();
+          this.inspected = b.id;
+        }
+      }
       if (hit && hit.owner === this.game.me) {
         if (now - this.lastClick.t < 320 && this.lastClick.id === hit.id) {
           this.selectTypeOnScreen(hit.type);
@@ -180,15 +234,29 @@ export class Controls {
     }
   }
 
+  private selectedUnits(): Entity[] {
+    return this.liveSelection().map((id) => entityById(this.game.world, id)).filter((e): e is Entity => e !== undefined);
+  }
+
   private order(sx: number, sy: number): void {
-    const units = this.liveSelection();
+    const units = this.selectedUnits();
     if (units.length === 0) return;
     const [wx, wy] = this.cam.toWorld(sx, sy);
     const x = Math.round(wx / PX);
     const y = Math.round(wy / PX);
     if (x < 0 || y < 0 || x >= this.game.world.mapW || y >= this.game.world.mapH) return;
-    for (let k = 0; k < units.length; k += 200) this.game.issue({ type: 'MOVE', units: units.slice(k, k + 200), x, y });
-    this.view.addMarker({ x: wx, y: wy, born: performance.now() });
+    const target = this.gatherTarget(units, this.pickBuilding(wx, wy));
+    let walkers = units;
+    if (target) {
+      // carriers work it; everyone else walks over
+      const ctx = this.game.ctx;
+      const carriers = units.filter((u) => carryOf(ctx, u) > 0);
+      walkers = units.filter((u) => carryOf(ctx, u) === 0);
+      for (let k = 0; k < carriers.length; k += 200) this.game.issue({ type: 'GATHER', units: carriers.slice(k, k + 200).map((u) => u.id), target: target.id });
+    }
+    const ids = walkers.map((u) => u.id);
+    for (let k = 0; k < ids.length; k += 200) this.game.issue({ type: 'MOVE', units: ids.slice(k, k + 200), x, y });
+    this.view.addMarker({ x: wx, y: wy, born: performance.now(), color: target ? 0xffd34d : 0x7ee081 });
   }
 
   liveSelection(): number[] {
@@ -219,6 +287,7 @@ export class Controls {
       } else {
         const g = (this.groups.get(n) ?? []).filter((id) => this.game.world.entities.some((x) => x.id === id));
         this.selected.clear();
+        this.inspected = null;
         for (const id of g) this.selected.add(id);
         const now = performance.now();
         if (this.lastGroupKey.n === n && now - this.lastGroupKey.t < 350) this.centreOnSelection();
@@ -236,6 +305,7 @@ export class Controls {
         break;
       case 'Escape':
         this.selected.clear();
+        this.inspected = null;
         this.onChange();
         break;
       case 'Space':

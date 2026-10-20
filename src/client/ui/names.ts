@@ -16,7 +16,27 @@ export const NAMES: Record<string, string> = {
   unit_col_strep: 'שרשרת',
   unit_col_toxin: 'מייצר רעלן',
   bld_wl_lymphnode: 'צומת לימפה',
+  bld_wl_capillary: 'צומת נימים',
+  bld_wl_mitochondria: 'מפעל מיטוכונדריה',
+  bld_wl_marrow: 'שלוחת מח עצם',
+  bld_wl_spleen: 'מחסן הטחול',
+  bld_wl_aminopump: 'משאבת אמינו',
+  bld_wl_mastcell: 'מגדל תא פיטום',
+  bld_wl_germinal: 'מרכז נבט',
   bld_col_biofilm_core: 'ליבת ביופילם',
+  bld_col_fermentation: 'בור תסיסה',
+  bld_col_fission: 'צבר חלוקה',
+  bld_col_siderophore: 'מגדל סידרופור',
+  bld_col_flagellum: 'קן הדגלונים',
+  bld_col_toxinspire: 'מגדל רעלן',
+  bld_col_toxinfoundry: 'מטבחת רעלנים',
+  res_glucose_small: 'גביש גלוקוז קטן',
+  res_glucose_large: 'גביש גלוקוז גדול',
+  res_protein: 'מרבץ חלבון',
+  res_iron: 'מרבץ ברזל',
 };
+
+/** what a load of each resource is called */
+export const KIND_NAME: Record<string, string> = { glucose: 'גלוקוז', protein: 'חלבון', iron: 'ברזל' };
 
 export const nameOf = (id: string): string => NAMES[id] ?? id;

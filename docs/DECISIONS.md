@@ -71,3 +71,27 @@ Each entry: the problem, the options, the choice, what it costs, and what would 
 
 ## 2026-10-20 · Dev commands
 - Choice: test spawning goes through a `DEV_SPAWN` command, valid only in a match created with `dev: true`, so even test tools change the world only through commands.
+
+## 2026-10-20 · Harvest 5 s and unload 1 s, so that two carriers per crystal is the full line
+- Problem: with the design's example (harvest 4 s) and crystals 2–3 tiles from the HQ, a carrier brought 1.7 ATP/s and a second carrier per crystal added only 45%: the trip was much shorter than the design's 4 s, so saturation was blurry and the economy ran fast.
+- Choice: crystals about 4 tiles from the HQ, harvest 5 s, unload 1 s. Measured: one carrier per crystal 1.2–1.3 ATP/s; two per crystal 1.0 ATP/s each (the design's value); a third adds under 1%. The interface counts saturation against 2 per crystal.
+- Revisit if: play wants faster openings (shorten the harvest, not the walk: the walk is what raids and depots act on).
+
+## 2026-10-20 · Carriers pass through bodies while gathering
+- Problem: with one slot per crystal, carriers queue at crystals and cross at the HQ; with pushes between them a mining line jams.
+- Choice: units on a gather order neither push nor get pushed. Walls and buildings still hold them. Other units walk through a mining line.
+- Revisit if: it hides too much in combat (gate 5 may turn pushes back on for carriers that flee).
+
+## 2026-10-20 · A GATHER order spreads its carriers
+- Choice: each carrier takes the crystal of the clicked field with the fewest carriers, ties to the one nearest the click; on a taken slot it moves to a free crystal next to it that nobody is heading for, or waits in line. One click sets a whole field to work.
+- Cost: a player cannot stack three carriers on one crystal with a single order (it gives nothing anyway).
+
+## 2026-10-20 · Reservations live on the target
+- Choice: a work slot is an entry in the target's slot array holding the carrier's id. Releasing scans the few resources; death releases in `removeEntity`. The check after every tick in tests: every held slot has a living carrier harvesting that target, and every harvester holds exactly one.
+
+## 2026-10-20 · Deposits and extractors are two linked entities
+- Choice: a protein or iron deposit is a neutral resource with the stock; the extractor is the player's building on the same footprint, with the 3 work slots, linked both ways. Destroying the extractor leaves the deposit and its stock; emptying the deposit leaves the extractor idle.
+- Until gate 4 builds things, extractors and depots come from the test lab (`DEV_SPAWN` with a building id).
+
+## 2026-10-20 · The Colony mines from the test lab
+- Choice: the client sends the Colony's opening GATHER as player 2 (test matches only), so both economies run in the arena before the AI exists (gate 6).

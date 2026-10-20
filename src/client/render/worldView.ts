@@ -1,10 +1,12 @@
-// Draws the world: terrain, current, units and buildings, selection, debug layers.
-// Reads the simulation's state; never writes it. Positions are interpolated between the
-// previous and the current tick, so 20 ticks a second still look smooth at 60 fps.
+// Draws the world: terrain, current, units, buildings and resources, selection, the economy
+// at a glance (loads, harvest sparkle, "+10" at the dropoff, saturation over each field) and
+// debug layers. Reads the simulation's state; never writes it. Positions are interpolated
+// between the previous and the current tick, so 20 ticks a second still look smooth at 60 fps.
 
-import { Container, Graphics, Sprite, type Texture, TilingSprite } from 'pixi.js';
-import type { Entity, World } from '../../sim/core/world';
+import { AnimatedSprite, Container, Graphics, Sprite, Text, type Texture, TilingSprite } from 'pixi.js';
+import { entityById, type Entity, type World } from '../../sim/core/world';
 import type { SimContext } from '../../sim/context';
+import type { SimEvent } from '../../sim/sim';
 import type { AssetRecord, Manifest } from './assets';
 import type { Shapes } from './shapes';
 import { TILE_PX } from './terrain';
@@ -18,19 +20,39 @@ interface View {
   shadow: Sprite | null;
   ring: Sprite | null;
   mark: Sprite | null;
+  cargo: Sprite | null;
+  cargoKind: string;
+  fx: AnimatedSprite | null;
   rec: AssetRecord | undefined;
   facing: 1 | -1;
   lastX: number;
   lastY: number;
   phase: number;
   moving: number; // 0..1, eased
+  baseScale: number;
 }
 
 export interface Marker {
   x: number;
   y: number;
   born: number;
+  color?: number;
 }
+
+interface Popup {
+  t: Text;
+  born: number;
+  x: number;
+  y: number;
+}
+
+interface FieldLabel {
+  t: Text;
+  field: number;
+}
+
+const POPUP_MS = 1100;
+const MAX_POPUPS = 16;
 
 export class WorldView {
   readonly root = new Container();
@@ -44,7 +66,17 @@ export class WorldView {
   private readonly markers: { s: Sprite; m: Marker }[] = [];
   private readonly views = new Map<number, View>();
   private readonly flows: { t: TilingSprite; vx: number; vy: number }[] = [];
+  private readonly popups: Popup[] = [];
+  private readonly fieldLabels: FieldLabel[] = [];
+  private labelClock = 0;
+  private readonly harvestFrames: Texture[];
+  private readonly orbFrames: Texture[];
   debugOn = false;
+  /** the player whose economy is shown (loads, popups, saturation) */
+  me = 1;
+  /** the inspected building or resource, outlined */
+  inspected: number | null = null;
+  private readonly inspectBox = new Graphics();
 
   constructor(
     private readonly ctx: SimContext,
@@ -54,7 +86,7 @@ export class WorldView {
     terrain: Texture,
   ) {
     this.bodies.sortableChildren = true;
-    this.root.addChild(this.ground, this.debugGrid, this.underlay, this.bodies, this.overlay, this.debug);
+    this.root.addChild(this.ground, this.debugGrid, this.underlay, this.inspectBox, this.bodies, this.overlay, this.debug);
     this.ground.addChild(new Sprite(terrain));
     for (const f of ctx.map.flows) {
       const [x, y, w, h] = f.rect;
@@ -66,6 +98,19 @@ export class WorldView {
       const speed = 24 + (f.strength / 1000) * 40; // px per second, for show only
       this.ground.addChild(t);
       this.flows.push({ t, vx: (f.dir[0] / len) * speed, vy: (f.dir[1] / len) * speed });
+    }
+    const frames = (id: string) => (manifest.assets[id]?.frames ?? []).map((n) => textures.get(n)).filter((t): t is Texture => t !== undefined);
+    this.harvestFrames = frames('fx_glucose_harvest');
+    this.orbFrames = frames('fx_atp_orbs');
+    for (const f of ctx.map.fields) {
+      const t = new Text({
+        text: '',
+        style: { fontFamily: 'Fredoka, Assistant, sans-serif', fontSize: 15, fontWeight: '600', fill: 0xffffff, stroke: { color: 0x1c0f1a, width: 4 } },
+      });
+      t.anchor.set(0.5, 1);
+      t.visible = false;
+      this.overlay.addChild(t);
+      this.fieldLabels.push({ t, field: f.id });
     }
   }
 
@@ -101,7 +146,10 @@ export class WorldView {
       mark.tint = TEAM_COLOR[e.owner] ?? 0xffffff;
       this.overlay.addChild(mark);
     }
-    return { body, shadow, ring, mark, rec, facing: 1, lastX: e.x, lastY: e.y, phase: (e.id * 1.37) % 6.28, moving: 0 };
+    return {
+      body, shadow, ring, mark, cargo: null, cargoKind: '', fx: null, rec, facing: 1,
+      lastX: e.x, lastY: e.y, phase: (e.id * 1.37) % 6.28, moving: 0, baseScale: body.scale.x,
+    };
   }
 
   private dropView(v: View): void {
@@ -109,20 +157,32 @@ export class WorldView {
     v.shadow?.destroy();
     v.ring?.destroy();
     v.mark?.destroy();
+    v.cargo?.destroy();
+    v.fx?.destroy();
   }
 
   addMarker(m: Marker): void {
     const s = new Sprite(this.shapes.ring);
     s.anchor.set(0.5);
-    s.tint = 0x7ee081;
+    s.tint = m.color ?? 0x7ee081;
     this.overlay.addChild(s);
     this.markers.push({ s, m });
   }
 
+  /** A load's look: a little crystal for glucose, the resource icon for the rest. */
+  private cargoSprite(kind: string): Sprite {
+    const id = kind === 'glucose' ? 'res_glucose_small' : kind === 'protein' ? 'icon_amino' : 'icon_iron';
+    const s = new Sprite(this.textures.get(id) ?? this.shapes.dot);
+    s.anchor.set(0.5, 0.8);
+    s.scale.set(kind === 'glucose' ? 0.42 : 0.3);
+    return s;
+  }
+
   /** Called every frame. `prev` holds positions before the last tick; `alpha` is how far into the next tick we are. */
-  sync(world: World, prev: Map<number, [number, number]>, alpha: number, selected: Set<number>, timeMs: number, dtMs: number): void {
+  sync(world: World, prev: Map<number, [number, number]>, alpha: number, selected: Set<number>, timeMs: number, dtMs: number, events: SimEvent[]): void {
     const seen = new Set<number>();
     const t = timeMs / 1000;
+    const { catalog } = this.ctx;
     for (const e of world.entities) {
       seen.add(e.id);
       let v = this.views.get(e.id);
@@ -136,18 +196,32 @@ export class WorldView {
       if (e.building) {
         v.body.position.set(x, y);
         v.body.zIndex = y;
+        const rd = catalog.resources.get(e.type);
+        if (rd && e.res) {
+          // a crystal shrinks as it is worked; a deposit is hidden under its extractor
+          const left = e.res.stock / rd.stock;
+          const s = v.baseScale * (0.62 + 0.38 * Math.sqrt(left));
+          v.body.scale.set(s);
+          v.body.visible = e.res.link === 0;
+          v.body.zIndex = y - 1;
+        }
         continue;
       }
       const dx = x - v.lastX;
       const dy = y - v.lastY;
-      const speed = Math.hypot(dx, dy) / Math.max(1, dtMs) * 1000; // px per second
+      const speed = (Math.hypot(dx, dy) / Math.max(1, dtMs)) * 1000; // px per second
       v.moving += ((speed > 6 ? 1 : 0) - v.moving) * Math.min(1, dtMs / 120);
       if (dx > 0.3) v.facing = -1; // art faces left; flip to face right
       else if (dx < -0.3) v.facing = 1;
       v.lastX = x;
       v.lastY = y;
-      // procedural life: breathing at rest, a little hop while walking
-      const breathe = Math.sin(t * 2.6 + v.phase) * 0.03 * (1 - v.moving);
+      // a harvesting carrier turns to its crystal
+      const g = e.gather;
+      const target = g && (g.st === 'harvest' || g.st === 'wait') ? entityById(world, g.target) : undefined;
+      if (target && v.moving < 0.5) v.facing = target.x > e.x ? -1 : 1;
+      // procedural life: breathing at rest, a little hop while walking, a bob while harvesting
+      const working = g?.st === 'harvest';
+      const breathe = Math.sin(t * (working ? 7 : 2.6) + v.phase) * (working ? 0.06 : 0.03) * (1 - v.moving);
       const hop = Math.abs(Math.sin(t * 9 + v.phase)) * 3 * v.moving;
       const squash = Math.abs(Math.sin(t * 9 + v.phase)) * 0.05 * v.moving;
       v.body.position.set(x, y - hop);
@@ -158,13 +232,47 @@ export class WorldView {
       const sel = selected.has(e.id);
       v.ring!.visible = sel;
       if (sel) {
-        const r = (this.ctx.catalog.units.get(e.type)?.radius ?? 115) * PX * 1.6;
+        const r = (catalog.units.get(e.type)?.radius ?? 115) * PX * 1.6;
         v.ring!.position.set(x, y);
         v.ring!.width = r * 2;
         v.ring!.height = r * 0.9;
       }
       const h = (v.rec?.h ?? 46) * (v.rec?.anchor?.[1] ?? 0.9);
       v.mark!.position.set(x, y - h - 8 - hop);
+      // the load it carries, held in front
+      if (e.cargo > 0) {
+        if (!v.cargo || v.cargoKind !== e.cargoKind) {
+          v.cargo?.destroy();
+          v.cargo = this.cargoSprite(e.cargoKind);
+          v.cargoKind = e.cargoKind;
+          this.bodies.addChild(v.cargo);
+        }
+        const w = (v.rec?.w ?? 46) * 0.32;
+        v.cargo.position.set(x - v.facing * w, y - h * 0.35 - hop);
+        v.cargo.zIndex = y + 0.5;
+      } else if (v.cargo) {
+        v.cargo.destroy();
+        v.cargo = null;
+        v.cargoKind = '';
+      }
+      // the sparkle of a harvest, between the carrier and its crystal
+      if (working && target && this.harvestFrames.length) {
+        if (!v.fx) {
+          v.fx = new AnimatedSprite(this.harvestFrames);
+          v.fx.anchor.set(0.5, 0.75);
+          v.fx.animationSpeed = 12 / 60;
+          v.fx.scale.set(0.55);
+          v.fx.play();
+          this.bodies.addChild(v.fx);
+        }
+        const tx = target.x * PX;
+        const ty = target.y * PX;
+        v.fx.position.set(x + (tx - x) * 0.45, y + (ty - y) * 0.45);
+        v.fx.zIndex = y + 1;
+      } else if (v.fx) {
+        v.fx.destroy();
+        v.fx = null;
+      }
     }
     for (const [id, v] of this.views) {
       if (!seen.has(id)) {
@@ -189,7 +297,99 @@ export class WorldView {
       s.height = 30 * (1 - age * 0.6);
       s.alpha = 1 - age;
     }
+    this.economyEffects(world, events, timeMs);
+    this.labelClock -= dtMs;
+    if (this.labelClock <= 0) {
+      this.labelClock = 250;
+      this.updateFieldLabels(world);
+    }
+    this.drawInspected(world);
     this.drawDebug(world, selected);
+  }
+
+  /** "+10" and a burst of ATP where my loads come in. */
+  private economyEffects(world: World, events: SimEvent[], timeMs: number): void {
+    for (const ev of events) {
+      if (ev.type !== 'delivered' || ev.owner !== this.me || this.popups.length >= MAX_POPUPS) continue;
+      const c = entityById(world, ev.entity);
+      if (!c) continue;
+      const x = c.x * PX;
+      const y = c.y * PX - 18;
+      const t = new Text({
+        text: `+${ev.amount}`,
+        style: {
+          fontFamily: 'Fredoka, Assistant, sans-serif', fontSize: 16, fontWeight: '600',
+          fill: ev.kind === 'glucose' ? 0xffd34d : 0x9fe8a2, stroke: { color: 0x1c0f1a, width: 4 },
+        },
+      });
+      t.anchor.set(0.5);
+      this.overlay.addChild(t);
+      this.popups.push({ t, born: timeMs, x, y });
+      if (this.orbFrames.length && ev.kind === 'glucose') {
+        const orb = new AnimatedSprite(this.orbFrames);
+        orb.anchor.set(0.5, 0.8);
+        orb.scale.set(0.5);
+        orb.loop = false;
+        orb.animationSpeed = 14 / 60;
+        orb.position.set(x, y + 18);
+        orb.zIndex = y + 40;
+        orb.onComplete = () => orb.destroy();
+        orb.play();
+        this.bodies.addChild(orb);
+      }
+    }
+    for (let i = this.popups.length - 1; i >= 0; i--) {
+      const p = this.popups[i]!;
+      const age = (timeMs - p.born) / POPUP_MS;
+      if (age >= 1) {
+        p.t.destroy();
+        this.popups.splice(i, 1);
+        continue;
+      }
+      p.t.position.set(p.x, p.y - age * 26);
+      p.t.alpha = age < 0.7 ? 1 : 1 - (age - 0.7) / 0.3;
+    }
+  }
+
+  /** Over each field: my carriers working it, against two per crystal (the useful maximum). */
+  private updateFieldLabels(world: World): void {
+    const { catalog } = this.ctx;
+    for (const l of this.fieldLabels) {
+      let n = 0;
+      let sx = 0;
+      let minY = Infinity;
+      const ids = new Set<number>();
+      for (const e of world.entities) {
+        if (!e.res || e.res.field !== l.field || !catalog.resources.has(e.type)) continue;
+        ids.add(e.id);
+        n++;
+        sx += e.x;
+        minY = Math.min(minY, e.y);
+      }
+      let workers = 0;
+      for (const e of world.entities) if (e.owner === this.me && e.gather && ids.has(e.gather.target)) workers++;
+      if (n === 0 || workers === 0) {
+        l.t.visible = false;
+        continue;
+      }
+      const optimal = n * 2;
+      l.t.visible = true;
+      l.t.text = `${workers}/${optimal}`;
+      l.t.style.fill = workers < n ? 0xffffff : workers <= optimal ? 0x7ee081 : 0xffb347;
+      l.t.position.set((sx / n) * PX, minY * PX - 34);
+    }
+  }
+
+  private drawInspected(world: World): void {
+    const g = this.inspectBox;
+    g.clear();
+    if (this.inspected === null) return;
+    const e = entityById(world, this.inspected);
+    const fp = e && this.ctx.catalog.footprints.get(e.type);
+    if (!e || !fp) return;
+    const w = fp[0] * TILE_PX;
+    const h = fp[1] * TILE_PX;
+    g.ellipse(e.x * PX, e.y * PX + h * 0.25, w * 0.62, h * 0.38).stroke({ width: 2, color: TEAM_COLOR[e.owner] ?? 0xffffff, alpha: 0.9 });
   }
 
   private drawDebug(world: World, selected: Set<number>): void {
@@ -211,8 +411,20 @@ export class WorldView {
       }
       this.debugGridVersion = nav.version;
     }
-    // paths of selected units, or all moving units when nothing is selected
+    const byId = new Map(world.entities.map((e) => [e.id, e]));
     for (const e of world.entities) {
+      // the economy: who works what (green), who is bringing a load where (gold), held slots (ring)
+      if (e.gather && (selected.size === 0 || selected.has(e.id))) {
+        const g2 = e.gather;
+        const to = byId.get(g2.st === 'toDrop' || g2.st === 'unload' ? g2.drop : g2.target);
+        if (to) {
+          g.moveTo(e.x * PX, e.y * PX).lineTo(to.x * PX, to.y * PX);
+          g.stroke({ width: 1, color: g2.st === 'toDrop' || g2.st === 'unload' ? 0xffd34d : 0x7ee081, alpha: 0.5 });
+        }
+        if (g2.st === 'harvest') g.circle(e.x * PX, e.y * PX, 9).stroke({ width: 2, color: 0x7ee081, alpha: 0.9 });
+        if (g2.st === 'wait') g.circle(e.x * PX, e.y * PX, 9).stroke({ width: 2, color: 0xffb347, alpha: 0.9 });
+      }
+      // paths of selected units, or all moving units when nothing is selected
       if (!e.mv) continue;
       if (selected.size > 0 && !selected.has(e.id)) continue;
       const mv = e.mv;
