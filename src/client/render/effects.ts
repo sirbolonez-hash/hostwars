@@ -46,13 +46,13 @@ export class CombatEffects {
     textures: Map<string, Texture>,
   ) {
     this.layer.addChild(this.shots);
-    for (const id of new Set([...Object.values(IMPACT), 'fx_death_immune', 'fx_death_bacteria', 'fx_building_collapse'])) {
+    for (const id of new Set([...Object.values(IMPACT), 'fx_death_immune', 'fx_death_bacteria', 'fx_building_collapse', 'fx_net_burst', 'fx_scan_ring', 'fx_il2_aura', 'fx_clot_seal', 'fx_extravasation'])) {
       const f = (manifest.assets[id]?.frames ?? []).map((n) => textures.get(n)).filter((t): t is Texture => t !== undefined);
       if (f.length) this.frames.set(id, f);
     }
   }
 
-  private play(id: string, x: number, y: number, scale: number): void {
+  play(id: string, x: number, y: number, scale: number): void {
     const f = this.frames.get(id);
     if (!f || this.live.length >= MAX_LIVE) return;
     const s = new AnimatedSprite(f);
@@ -79,6 +79,12 @@ export class CombatEffects {
     const engulfed = new Set<number>();
     for (const ev of events) {
       if (ev.type === 'engulfed') engulfed.add(ev.target);
+      if (ev.type === 'net' && sees(ev.x, ev.y)) this.play('fx_net_burst', ev.x * PX, ev.y * PX, 1.6);
+      if (ev.type === 'ability' && sees(ev.x, ev.y)) {
+        if (ev.ability === 'big_meal') engulfed.add(ev.target);
+        if (ev.ability === 'clean') this.play('fx_il2_aura', ev.x * PX, ev.y * PX, 1.8);
+        if (ev.ability === 'scan') this.play('fx_scan_ring', ev.x * PX, ev.y * PX, 2.6);
+      }
       if (ev.type === 'hit' && sees(ev.x, ev.y)) {
         flash(ev.target);
         const fx = IMPACT[ev.weapon];

@@ -6,7 +6,7 @@
  "cine": "cine_01_fence",
  "camera": [
   50,
-  34
+  31
  ],
  "player": {
   "faction": "wl",
@@ -108,7 +108,7 @@
    "owner": 1,
    "type": "unit_wl_neutrophil",
    "at": [
-    14,
+    32,
     37
    ],
    "n": 6
@@ -117,7 +117,7 @@
    "owner": 1,
    "type": "unit_wl_neutrophil",
    "at": [
-    82,
+    68,
     37
    ],
    "n": 6

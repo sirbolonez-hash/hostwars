@@ -145,3 +145,21 @@ Each entry: the problem, the options, the choice, what it costs, and what would 
 
 ## 2026-10-20 · Measured balance, left for the polish phase
 - AI league on the arena (25 minutes at most): the stronger difficulty wins nearly every pairing. In equal-cost open fights the White Line's basic units beat the Colony's; CD8s and eosinophils lose to cheaper swarms unless specific or helped. At equal difficulty the Colony is slightly ahead. Numbers stay as they are until the campaign gives them context.
+
+## 2026-10-20 · Painted maps: the painting is the ground, the walls are traced
+- Missions 1–3 use the painted maps (104×58 tiles, 3344×1882 px). `tools/maps/make_mission_maps.py` traces each one with shapes in tile coordinates (cliffs, fat, the capsule as walls; lymph vessels as walkable tiles with a strong one-way current; B and T zones) and writes an overlay to check the tracing by eye. The vessels in missions 1–3 are walls; units arrive through exit gates beside them (rivers come with mission 4).
+
+## 2026-10-20 · Inflammation numbers scaled to the fights we have
+- The design doc's numbers (+0.5 a neutrophil death against 0.5 a second of calm) never moved the meter in fights of 10–30 units. Choice: +2 a death, +3 more for a NET, +0.4 a histamine pulse, an ebb of 0.3 a second always plus 0.5 a second after 10 calm seconds. A heavy neutrophil response now pushes the meter into the raging tier within a minute or two; a measured one stays active. Revisit with play tests: the test is whether the player hesitates between more force and waiting.
+
+## 2026-10-20 · In missions, bacteria feed on the tissue
+- Without it, a player who did nothing in mission 1 could never lose. Colony units with nothing else to fight attack the nearest host cell they see (missions only), so tissue integrity is the pressure the design describes.
+
+## 2026-10-20 · Missions are data with triggers, run inside the tick
+- Objectives, triggers and actions live in `content/missions/*.json`, written by `tools/maps/make_missions.py`, which checks every placement against the map. The mission runs in phase 12, so a mission saves, resumes and replays like a skirmish. Each mission is proven winnable by a player under the same rules: a scripted player for mission 1, the White Line AI for missions 2 and 3.
+
+## 2026-10-20 · Heroes now, with two or three fixed abilities
+- The architecture put heroes in gate 8; missions 2 and 3 introduce Big Mac and Dendra, so they came with gate 7, with the fixed abilities only (no levels, no skill tree). Dendra's scan reaches 16 tiles, beyond her own sight of 11, or it would show nothing new.
+
+## 2026-10-20 · Campaign progress in the browser
+- Finished missions are kept in this browser's local storage (a convenience; the game works without it). The next mission and "try again" reload the page with `#mission=mXX`.

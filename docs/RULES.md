@@ -194,3 +194,32 @@ Measured on the arena (5 s harvest, 1 s unload, crystals 4 tiles from the HQ): o
 - Difficulties: easy (a small army, a first wave by 8 minutes whatever it has, slow to answer, never retreats), normal (scouts, expands, answers what it saw, attacks with an advantage), hard (faster thoughts, a second production building, two towers, raids and waves at once). The same resources and fog on every level.
 - Recovery: lost workers are trained again first; a Colony without a core builds a new one; a site that keeps being blocked is given up after three tries. With no workers it can use, no army and no way to make either, it surrenders (`SURRENDER`, with its reason), which defeats it at once.
 - Its whole state is plain data saved with the match; the same observations always give the same commands.
+
+## The host (gate 7)
+
+### The monitor (missions)
+- Inflammation, 0–100: a neutrophil dying +2, a NET +3 more, every histamine pulse +0.4, a toxin glob +1, a toxin tower's shot +0.3. It ebbs 0.3 a second always, 0.5 a second more once nothing has been hit anywhere for 10 seconds, and 0.2 a second more for every regulatory T cell.
+- Tiers: 0–30 calm; 31–60 active (extra exit gates open, reinforcements come a quarter sooner); 61–85 raging (the tissue loses 1% a minute, twice that with a fever above 40; the pressure falls a quarter of a point a second); 86–100 a cytokine storm (60 seconds to bring it under 86, or the mission is lost).
+- Fever = 37 + inflammation × 4 ÷ 100 (37–41 °C). At 38–39 immune cells move 10% faster and bacteria take a fifth longer to split.
+- Pressure starts at 85 and recovers half a point a second while inflammation is under 61. Under 65 production slows by a quarter (no progress one tick in four); under 50 for 60 seconds is shock, and the mission is lost.
+- Tissue integrity: the host cells' hit points now against when the mission began. Each mission has a minimum; below it the mission is lost.
+
+### Host cells, pus and NETs
+- Host cells are neutral, 1×1, and in the way. Area damage of either side hurts them. In a mission, bacteria with nothing else to fight feed on them.
+- Where a neutrophil dies, the 3×3 tiles around it fill with pus for two minutes: everyone on pus walks 30% slower. A macrophage (or Big Mac) standing on pus cleans a tile a second and heals 6 hit points as it does.
+- NET (N): each selected neutrophil bursts. Every enemy within 3 tiles is held for 6 seconds (no moving, no attacking; bodies may still nudge it) and takes 40 damage. The neutrophil is gone, and leaves pus.
+
+### Heroes
+- Big Mac: a heavy macrophage (650 hit points, armor 3, engulfs up to 200). Big meal: swallows an enemy unit of up to 400 hit points within a tile and a half; 30 s. Clean: clears the pus within 4 tiles and heals his side's units there by 40; 20 s.
+- Dr. Dendra: a dendritic cell that samples in one second. Scan: shows everything within 16 tiles of her for 8 seconds; 25 s.
+- A mission with a hero is lost if the hero falls.
+
+### Zones
+- On maps that mark them, the germinal centre stands only in a follicle (B zone) and the thymus academy only in the paracortex (T zone). Maps without zones (the arena) do not restrict them.
+
+## Missions (gate 7)
+- A mission is content: its map, who starts with what, host cells, exit gates, objectives, and triggers. A trigger waits for all its conditions (time, an objective's state, units in an area, tagged things gone or standing, counts, units trained, an antigen opened, inflammation above or below, no army), optionally held for a while, and then acts (spawn units, at a point or at the next open exit gate, optionally on an attack-move; set an objective; a line of dialogue; win; lose; switch a trigger off; grant resources; change inflammation). A repeating trigger fires again after its interval while its conditions hold; a reinforcement comes a quarter sooner while inflammation is active.
+- The mission decides the end. The usual defeat (no critical building) does not apply. A mission is also lost to a cytokine storm, shock, tissue below its minimum, or a fallen hero.
+- Mission 1, the scratch: no base. Reach the wound with neutrophils, destroy three staph clusters, bring platelets to the wound floor for 10 seconds. The wound sends bacteria into the tissue until it is sealed. Tissue minimum 60%.
+- Mission 2, inflammation: build a capillary junction and a bone marrow branch, stop the red front before the lymph vessel in the north-east (three enemy units there for 4 seconds lose the mission), destroy both biofilm cores. Big Mac. The Colony has an easy AI and sends a front every 80 seconds. Tissue minimum 50%.
+- Mission 3, the node: hold the lymph node for 20 minutes against waves coming down four lymph vessels, bring an antigen sample, train a first CD4 and a first B (plasma) cell. Dr. Dendra. Lost if the node falls, or at 26 minutes.

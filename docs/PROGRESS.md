@@ -92,6 +92,24 @@ In the browser: a skirmish menu (side, difficulty, test lab); the AI plays the o
 
 Not yet: the polish list (unit explanations, the barracks exit animation, map art) after the campaign gates.
 
+## Gate 7 · the playable slice — done, waiting for Yakir's play test
+
+Acceptance (`tests/mission/missions.test.ts`, `tests/sim/host.test.ts`): missions 1–3 played start to end under the player's rules.
+- Mission 1 is won by a scripted player (all neutrophils at the nearest cluster, then platelets to the wound) with the objectives in order; the same run twice gives the same hash, and a save in the middle resumes exactly; left alone, the bacteria eat the tissue and the mission is lost.
+- Mission 2 is won by the White Line AI (base, both cores, the front stopped); left alone, it is lost.
+- Mission 3 is won by the White Line AI at 20 minutes, with an antigen, a CD4 and a B cell, its thymus in a T zone and its germinal centre in a follicle; left alone, the node falls.
+- The host's rules one by one: inflammation from a death and its ebb (with and without fighting, with Tregs); a cytokine storm held 60 seconds; pressure into shock and 1% of tissue a minute while raging; fever speeds immune cells; pus and the macrophage that cleans it; the NET's hold, damage and pus; Big Mac's big meal (reach, size, cooldown) and clean; Dendra's scan and one-second sampling; zones; more gates and sooner reinforcements while inflammation is active; area damage and bacteria hurting host cells.
+
+In the browser:
+- A main menu (campaign or skirmish).
+- The campaign's three missions, unlocked in order.
+- Each mission opens with its cinematic picture and a briefing with portraits, then plays on its painting.
+- During play: objectives, the host's monitor (inflammation with its tiers, fever, pressure, pulse, tissue, a beating trace), lines from the speakers, and an alarm with a countdown for a storm or shock.
+- A NET button and N key; heroes' ability buttons; pus on the ground; exit gates glowing when open.
+- The end screen carries the mission's medical truth, the next mission, or "try again" with the reason it was lost.
+
+Not yet: the doctor's orders (act II), rivers and the other terrain of missions 4–20.
+
 ## Repository
 - GitHub: `sirbolonez-hash/hostwars`, branch `main`. Claude pushes directly since 20.10.2026.
 

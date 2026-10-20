@@ -26,8 +26,9 @@ export class Game {
   /** events of every tick stepped in the last frame */
   readonly events: SimEvent[] = [];
 
-  constructor(readonly ctx: SimContext, setup: MatchSetup, readonly me = 1, ais: AiPlayer[] = []) {
-    this.world = createWorld(ctx, setup);
+  /** `world`: a world already set up (a mission); otherwise one is made from `setup`. */
+  constructor(readonly ctx: SimContext, setup: MatchSetup, readonly me = 1, ais: AiPlayer[] = [], world?: World) {
+    this.world = world ?? createWorld(ctx, setup);
     this.ais = ais;
   }
 

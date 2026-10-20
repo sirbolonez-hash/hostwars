@@ -14,7 +14,10 @@ import { Hud } from './client/ui/hud';
 import { CommandCard } from './client/ui/commandCard';
 import { Placer } from './client/input/placement';
 import { AiPlayer } from './match/aiPlayer';
-import type { Difficulty } from './ai/types';
+import { loadMission, missions } from './sim/content/load';
+import { missionSetup, startMission } from './sim/mission/mission';
+import { chooseMatch, fromAddress, playStory, type Choice } from './client/ui/menu';
+import { MissionHud } from './client/ui/missionHud';
 
 const status = document.getElementById('load-status')!;
 
@@ -59,48 +62,50 @@ async function main(): Promise<void> {
     loadImage('assets/' + manifest.assets['tile_bone']!.file),
   ]);
 
-  // the menu: a side, a difficulty, the test lab
-  const choice = { faction: 'wl', level: 'normal' as Difficulty };
-  const pick = (cls: string, attr: string, set: (v: string) => void) => {
-    const btns = [...document.querySelectorAll<HTMLButtonElement>(`#start .${cls}`)];
-    for (const b of btns) {
-      b.addEventListener('click', () => {
-        for (const o of btns) o.setAttribute('aria-pressed', String(o === b));
-        set(b.dataset[attr]!);
-      });
-    }
-  };
-  pick('side', 'faction', (v) => (choice.faction = v));
-  pick('level', 'level', (v) => (choice.level = v as Difficulty));
+  // the menu: campaign or skirmish (or the mission asked for in the address: "next mission", "try again")
   status.textContent = '';
-  const startBtn = document.getElementById('start-btn') as HTMLButtonElement;
-  startBtn.disabled = false;
-  startBtn.focus();
-  await new Promise<void>((res) => startBtn.addEventListener('click', () => res(), { once: true }));
-  const dev = (document.getElementById('pick-dev') as HTMLInputElement).checked;
+  const choice: Choice = fromAddress() ?? (await chooseMatch(missions));
+  document.getElementById('start')!.hidden = true;
+  const dev = choice.dev;
+  const def = choice.kind === 'mission' ? loadMission(choice.id) : null;
+  if (def) await playStory(def);
 
   status.textContent = 'בונה את הזירה…';
   const catalog = loadCatalog();
-  const map = loadMap('arena');
-  const ctx = createContext(catalog, map);
-  const other = choice.faction === 'wl' ? 'col' : 'wl';
-  // the player is always player 1 at the western start; the AI is player 2
-  const ai = AiPlayer.create(2, other, choice.level, map.starts[1]!);
-  const game = new Game(
-    ctx,
-    {
-      seed: (Date.now() >>> 0) % 1_000_000,
-      map: map.id,
-      dev,
-      players: [
-        { faction: choice.faction as 'wl' | 'col', team: 1, startTile: map.starts[0]! },
-        { faction: other as 'wl' | 'col', team: 2, startTile: map.starts[1]! },
-      ],
-    },
-    1,
-    [ai],
-  );
-  const terrain = Texture.from(drawTerrain(map, ctx.nav, { ground, blood, wall }));
+  const map = loadMap(def ? def.map : 'arena');
+  const ctx = createContext(catalog, map, def);
+  const seed = (Date.now() >>> 0) % 1_000_000;
+  let game: Game;
+  let ai: AiPlayer | null = null;
+  if (def) {
+    // a mission: the player is the White Line; the enemy has an AI only if the mission says so
+    const world = startMission(ctx, seed);
+    world.dev = dev;
+    if (def.enemy.ai) ai = AiPlayer.create(2, def.enemy.faction, def.enemy.ai, map.starts[1]!);
+    game = new Game(ctx, missionSetup(ctx, seed), 1, ai ? [ai] : [], world);
+  } else {
+    const sk = choice as Extract<Choice, { kind: 'skirmish' }>;
+    const other = sk.faction === 'wl' ? 'col' : 'wl';
+    // the player is always player 1 at the western start; the AI is player 2
+    ai = AiPlayer.create(2, other, sk.level, map.starts[1]!);
+    game = new Game(
+      ctx,
+      {
+        seed,
+        map: map.id,
+        dev,
+        players: [
+          { faction: sk.faction, team: 1, startTile: map.starts[0]! },
+          { faction: other, team: 2, startTile: map.starts[1]! },
+        ],
+      },
+      1,
+      [ai],
+    );
+  }
+  const myFaction = game.world.players[0]!.faction;
+  // a painted map is its own ground; the arena is drawn from tiles
+  const terrain = map.art ? Texture.from(await loadImage('assets/' + manifest.assets[map.art]!.file)) : Texture.from(drawTerrain(map, ctx.nav, { ground, blood, wall }));
   const shapes = makeShapes(app.renderer);
   const view = new WorldView(ctx, manifest, textures, shapes, terrain);
   app.stage.addChild(view.root);
@@ -110,8 +115,8 @@ async function main(): Promise<void> {
   app.stage.addChild(screen);
 
   const cam = new Camera(map.w * TILE_PX, map.h * TILE_PX);
-  const [sx, sy] = map.starts[0]!;
-  cam.centreOn((sx + 2) * TILE_PX, (sy + 2) * TILE_PX, app.screen.width, app.screen.height);
+  const [sx, sy] = def ? def.camera : map.starts[0]!;
+  cam.centreOn((sx + (def ? 0 : 2)) * TILE_PX, (sy + (def ? 0 : 2)) * TILE_PX, app.screen.width, app.screen.height);
   // the placement preview reacts only to what the player can see
   const placer = new Placer(game, textures, (e) => view.sees(game.world, e));
   view.root.addChild(placer.layer);
@@ -137,13 +142,13 @@ async function main(): Promise<void> {
     }
     return url;
   };
-  const icons = { atp: iconOf('icon_atp'), advanced: iconOf(choice.faction === 'wl' ? 'icon_amino' : 'icon_iron') };
+  const icons = { atp: iconOf('icon_atp'), advanced: iconOf(myFaction === 'wl' ? 'icon_amino' : 'icon_iron') };
   const card = new CommandCard(game, controls, placer, iconOf);
   const hud = new Hud(game, controls, view, gpu, { spawn: [(sx + 8) * 256, (sy + 6) * 256], depot: [16 * 256 + 128, 10 * 256 + 128] }, icons);
   document.getElementById('dev')!.hidden = !dev;
 
-  document.getElementById('start')!.hidden = true;
   status.textContent = '';
+  const missionHud = def ? new MissionHud(game, def, view, missions[missions.indexOf(def) + 1] ?? null) : null;
   // the player's carriers start mining the nearest crystal, and new ones go there too
   const carriers = game.world.entities.filter((e) => e.owner === 1 && (catalog.units.get(e.type)?.carry ?? 0) > 0);
   const hq = game.world.entities.find((e) => e.owner === 1 && e.building);
@@ -160,6 +165,7 @@ async function main(): Promise<void> {
     view.sync(game.world, game.prev, alpha, controls.selected, performance.now(), dt, game.events);
     cam.apply(view.root);
     hud.update(dt);
+    missionHud?.update(dt);
     card.update();
   });
 

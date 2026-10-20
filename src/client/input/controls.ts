@@ -49,6 +49,8 @@ export class Controls {
   inspected: number | null = null;
   /** A pressed: the next left click attack-moves (or attacks what is under it) */
   attackMode = false;
+  /** a hero's ability waiting for its target: the next left click on an enemy */
+  abilityMode: { ability: string; hero: number } | null = null;
   private readonly groups = new Map<number, number[]>();
   private dragStart: [number, number] | null = null;
   private dragging = false;
@@ -141,8 +143,25 @@ export class Controls {
     return null;
   }
 
+  /** Starts aiming a hero's targeted ability (the command card's button). */
+  aimAbility(ability: string, hero: number): void {
+    this.abilityMode = { ability, hero };
+    this.canvas.style.cursor = 'crosshair';
+  }
+
   private down(e: PointerEvent): void {
     const [sx, sy] = this.screen(e);
+    if (this.abilityMode && e.button !== 1) {
+      const aim = this.abilityMode;
+      this.abilityMode = null;
+      this.canvas.style.cursor = 'default';
+      if (e.button === 0) {
+        const [wx, wy] = this.cam.toWorld(sx, sy);
+        const foe = this.foeAt(wx, wy);
+        if (foe) this.game.issue({ type: 'ABILITY', units: [aim.hero], ability: aim.ability, target: foe.id });
+      }
+      return;
+    }
     if (this.attackMode && e.button !== 1) {
       this.attackMode = false;
       this.canvas.style.cursor = 'default';
@@ -408,7 +427,18 @@ export class Controls {
           this.canvas.style.cursor = 'crosshair';
         }
         break;
+      case 'KeyN': {
+        // neutrophils give themselves up in a NET
+        const ns = this.selectedUnits().filter((u) => u.type === 'unit_wl_neutrophil').map((u) => u.id);
+        if (ns.length) this.game.issue({ type: 'NET', units: ns });
+        break;
+      }
       case 'Escape':
+        if (this.abilityMode) {
+          this.abilityMode = null;
+          this.canvas.style.cursor = 'default';
+          break;
+        }
         if (this.attackMode) {
           this.attackMode = false;
           this.canvas.style.cursor = 'default';

@@ -8,7 +8,7 @@ import { entityById, type Entity, type Memory, type World } from '../../sim/core
 import { allied, canSee } from '../../sim/vision/vision';
 import { CombatEffects } from './effects';
 import { FogLayer } from './fog';
-import { BiofilmLayer } from './biofilmLayer';
+import { BiofilmLayer, PusLayer } from './biofilmLayer';
 import type { SimContext } from '../../sim/context';
 import type { SimEvent } from '../../sim/sim';
 import type { AssetRecord, Manifest } from './assets';
@@ -89,7 +89,11 @@ export class WorldView {
   private readonly inspectBox = new Graphics();
   readonly fog: FogLayer;
   readonly biofilm: BiofilmLayer;
-  private readonly effects: CombatEffects;
+  readonly pus: PusLayer;
+  /** a mission's exit gates (tiles) and the inflammation that opens each */
+  gates: { at: [number, number]; infl: number }[] = [];
+  private readonly gateMarks = new Graphics();
+  readonly effects: CombatEffects;
   /** bodies blinking after a hit: id → until (ms) */
   private readonly flashes = new Map<number, number>();
   /** buildings remembered after they were destroyed out of sight: drawn from memory */
@@ -108,9 +112,15 @@ export class WorldView {
     this.fog = new FogLayer(ctx);
     this.biofilm = new BiofilmLayer(ctx);
     this.effects = new CombatEffects(ctx, manifest, textures);
-    this.root.addChild(this.ground, this.biofilm.sprite, this.debugGrid, this.underlay, this.inspectBox, this.bodies, this.effects.layer, this.overlay, this.fog.sprite, this.debug);
-    this.ground.addChild(new Sprite(terrain));
-    for (const f of ctx.map.flows) {
+    this.pus = new PusLayer(ctx);
+    this.root.addChild(this.ground, this.biofilm.sprite, this.pus.sprite, this.gateMarks, this.debugGrid, this.underlay, this.inspectBox, this.bodies, this.effects.layer, this.overlay, this.fog.sprite, this.debug);
+    // the ground: the arena's tiles, or a mission's painting stretched over the map
+    const ground = new Sprite(terrain);
+    ground.width = ctx.map.w * TILE_PX;
+    ground.height = ctx.map.h * TILE_PX;
+    this.ground.addChild(ground);
+    // a painted map shows its own currents; the chevrons are for tiled maps
+    for (const f of ctx.map.art ? [] : ctx.map.flows) {
       const [x, y, w, h] = f.rect;
       const t = new TilingSprite({ texture: shapes.chevron, width: w * TILE_PX, height: h * TILE_PX });
       t.position.set(x * TILE_PX, y * TILE_PX);
@@ -385,6 +395,20 @@ export class WorldView {
     if (this.flashes.size > 200) for (const [id, until] of this.flashes) if (until < timeMs) this.flashes.delete(id);
     this.fog.update(world, this.me);
     this.biofilm.update(world, this.me, this.fog.off);
+    this.pus.update(world, this.me, this.fog.off);
+    // exit gates: open ones glow and breathe, closed ones (more inflammation needed) are dim
+    const gm = this.gateMarks;
+    gm.clear();
+    const infl = world.host?.infl ?? 0;
+    const beat = 0.5 + 0.5 * Math.sin(timeMs / 300);
+    for (const g of this.gates) {
+      const cx = g.at[0] * TILE_PX + TILE_PX / 2;
+      const cy = g.at[1] * TILE_PX + TILE_PX / 2;
+      if (infl >= g.infl) {
+        gm.circle(cx, cy, 13 + beat * 4).fill({ color: 0xff5c8a, alpha: 0.18 + beat * 0.12 }).stroke({ width: 2, color: 0xffd0e0, alpha: 0.9 });
+        gm.circle(cx, cy, 5).fill({ color: 0xffffff, alpha: 0.9 });
+      } else gm.circle(cx, cy, 11).stroke({ width: 2, color: 0xffffff, alpha: 0.25 });
+    }
     for (const f of this.flows) {
       f.t.tilePosition.x += (f.vx * dtMs) / 1000;
       f.t.tilePosition.y += (f.vy * dtMs) / 1000;

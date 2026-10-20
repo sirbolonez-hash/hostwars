@@ -336,7 +336,8 @@ export class Hud {
       }
     }
     const out = this.game.world.outcome;
-    if (out && !this.endShown) {
+    // a mission ends on its own screen (MissionHud)
+    if (out && !this.endShown && !this.game.world.mission) {
       this.endShown = true;
       const myTeam = this.game.world.players[this.game.me - 1]!.team;
       $('end-title').textContent = out.winnerTeam === 0 ? 'תיקו' : out.winnerTeam === myTeam ? 'ניצחון!' : 'הפסד';
@@ -366,13 +367,18 @@ export class Hud {
       this.fpsAcc = 0;
       const w = this.game.world;
       const p = w.players[this.game.me - 1]!;
+      const base = w.entities.some((e) => e.owner === this.game.me && e.building);
       const perMin = this.incomeLog.length ? Math.round((this.incomeLog.reduce((s, v) => s + v, 0) * 60) / this.incomeLog.length) : 0;
       $('res').innerHTML =
         `<span class="r" title="ATP"><img src="${this.icons.atp}" alt="">ATP ${fmt(p.basic)}</span>` +
         `<span class="r" title="${this.advName}"><img src="${this.icons.advanced}" alt="">${this.advName} ${fmt(p.advanced)}</span>` +
-        `<span class="r${p.supplyUsed > p.supplyCap ? ' over' : ''}" title="בשימוש / תקרה${p.supplyReserved ? ' (שמור בתורים)' : ''}">אספקה ${p.supplyUsed}${p.supplyReserved ? `+${p.supplyReserved}` : ''}/${p.supplyCap}</span>` +
-        `<span class="r income">+${fmt(perMin)} ATP לדקה</span>` +
-        (this.faction === 'wl' ? `<span class="r" title="משפחות חיידקים שהגוף כבר מכיר">אנטיגנים: ${p.antigens.length ? p.antigens.map((f) => FAMILY_NAME[f] ?? f).join(', ') : 'אין — שלחו תא דנדריטי לדגום אויב'}</span>` : '');
+        (base
+          ? `<span class="r${p.supplyUsed > p.supplyCap ? ' over' : ''}" title="בשימוש / תקרה${p.supplyReserved ? ' (שמור בתורים)' : ''}">אספקה ${p.supplyUsed}${p.supplyReserved ? `+${p.supplyReserved}` : ''}/${p.supplyCap}</span>` +
+            `<span class="r income">+${fmt(perMin)} ATP לדקה</span>`
+          : '') +
+        (this.faction === 'wl' && base ? `<span class="r" title="משפחות חיידקים שהגוף כבר מכיר">אנטיגנים: ${p.antigens.length ? p.antigens.map((f) => FAMILY_NAME[f] ?? f).join(', ') : 'אין — שלחו תא דנדריטי לדגום אויב'}</span>` : '');
+      // a mission without a base (mission 1): no economy to show
+      $('eco').hidden = !base;
       // the debug layer: what each AI decided last
       const notes = this.game.ais.map((a) => a.state.note).filter(Boolean);
       $('ai-note').textContent = notes.length ? `היריב: ${notes.join(' · ')}` : '';

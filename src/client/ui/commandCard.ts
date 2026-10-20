@@ -24,6 +24,12 @@ const REASON: Partial<Record<RejectReason, string>> = {
   cannot_split: 'רק על ביופילם שלכם, אחרי כמה שניות בלי קרב',
 };
 
+const ABILITY_TEXT: Record<string, { name: string; text: string; aim: boolean }> = {
+  big_meal: { name: 'ארוחה גדולה', text: 'בולע אויב עד 400 נקודות חיים שעומד לידו (לחיצה על הכפתור ואז על האויב)', aim: true },
+  clean: { name: 'ניקיון', text: 'מנקה את המוגלה ברדיוס 4 ומרפא 40 לכל יחידה שלכם שם', aim: false },
+  scan: { name: 'סריקה', text: 'רואה הכול ברדיוס 16 סביבה ל-8 שניות', aim: false },
+};
+
 type Btn = { label: string; icon: string; cost: [number, number]; cmd: Cmd | null; reason: string | null; key: string; then?: () => void };
 
 export class CommandCard {
@@ -88,7 +94,7 @@ export class CommandCard {
     const p = world.players[me - 1]!;
     const key = [
       mineB ? `${mineB.id}|${mineB.build ? 'g' : 'c'}|${(mineB.queue ?? []).map((q) => q.unit + (q.started ? 's' : '') + (q.blocked ? 'b' : '')).join(',')}|${mineB.buildOrder?.type ?? ''}` : '',
-      units.map((u) => u.id + u.type + (u.morph ? 'm' : '') + (u.job ? 'j' : '') + (canSplit(world, this.game.ctx, u) ? 's' : '')).join(','),
+      units.map((u) => u.id + u.type + (u.morph ? 'm' : '') + (u.job ? 'j' : '') + (canSplit(world, this.game.ctx, u) ? 's' : '') + Object.values(u.ready).map((r) => Math.max(0, Math.ceil((r - world.tick) / 20))).join('/')).join(','),
       p.basic >= 0 ? Math.floor(p.basic / 5) : 0, p.advanced, p.supplyUsed, p.supplyReserved, p.supplyCap,
       world.entities.filter((e) => e.owner === me && e.building && !e.build).length,
       this.placer.active,
@@ -203,9 +209,27 @@ export class CommandCard {
         const cmd: Cmd = { type: 'SPLIT', units: fighters.map((u) => u.id) };
         btns.push({ label: ready.length > 1 ? `חלוקה (${ready.length})` : 'חלוקה', icon: this.iconOf(fighters[0]!.type), cost, cmd, reason: this.reason(validateSplit(world, ctx, me, fighters)), key: 'split' });
       }
+      // neutrophils: the NET (N)
+      const ns = units.filter((u) => u.type === 'unit_wl_neutrophil');
+      if (ns.length) {
+        btns.push({ label: ns.length > 1 ? `רשת NET (${ns.length})` : 'רשת NET', icon: this.iconOf('unit_wl_neutrophil'), cost: [0, 0], cmd: { type: 'NET', units: ns.map((u) => u.id) }, reason: null, key: 'net' });
+        html.push('<div class="hint">רשת NET (מקש N): הנויטרופילים מתפוצצים לרשת שעוצרת אויבים בטווח 3 ל-6 שניות ופוגעת בהם — הם עצמם לא שורדים, והדלקת עולה</div>');
+      }
+      // heroes: their abilities, with the time left to wait
+      for (const h of units.filter((u) => (ctx.catalog.units.get(u.type)?.abilities.length ?? 0) > 0)) {
+        for (const ab of ctx.catalog.units.get(h.type)!.abilities) {
+          const wait = Math.max(0, (h.ready[ab] ?? 0) - world.tick);
+          const info = ABILITY_TEXT[ab]!;
+          const reason = wait > 0 ? `מוכן בעוד ${Math.ceil(wait / 20)} שנ'` : null;
+          if (info.aim) btns.push({ label: info.name, icon: this.iconOf(h.type), cost: [0, 0], cmd: null, reason, key: ab, then: () => this.controls.aimAbility(ab, h.id) });
+          else btns.push({ label: info.name, icon: this.iconOf(h.type), cost: [0, 0], cmd: { type: 'ABILITY', units: [h.id], ability: ab, target: 0 }, reason, key: ab });
+        }
+        html.push(`<div class="hint">${ctx.catalog.units.get(h.type)!.abilities.map((ab) => `<b>${ABILITY_TEXT[ab]!.name}</b> — ${ABILITY_TEXT[ab]!.text}`).join(' · ')}</div>`);
+      }
       if (units.some((u) => ctx.catalog.units.get(u.type)?.role === 'intel')) {
         const carrying = units.find((u) => u.sample !== '');
-        html.push(`<div class="hint">${carrying ? 'נושא דגימה בדרך לצומת הלימפה' : 'תא דנדריטי: לחיצה ימנית על אויב — דגימת אנטיגן (5 שניות לידו), ואז הוא מביא אותה לצומת הלימפה'}</div>`);
+        const fast = units.some((u) => (ctx.catalog.units.get(u.type)?.sampleTicks ?? 0) > 0);
+        html.push(`<div class="hint">${carrying ? 'נושא דגימה בדרך לצומת הלימפה' : `לחיצה ימנית על אויב — דגימת אנטיגן (${fast ? 'שנייה אחת' : '5 שניות'} לידו), ואז הדגימה עוברת לצומת הלימפה`}</div>`);
       }
     }
     const offset = this.actions.length;

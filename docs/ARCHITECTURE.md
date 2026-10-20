@@ -34,6 +34,9 @@ content/ ──► src/sim ◄── commands ◄── src/client/input, src/ai
 | `src/sim/colony/biofilm.ts` | phase 2: biofilm laid from the cores (derived, never saved) and its effects' constants |
 | `src/sim/colony/colony.ts` | the orders BUILD_AT and SPLIT; phase 7: feeders becoming buildings, regeneration on biofilm |
 | `src/sim/intel/antigen.ts` | the order SAMPLE; phase 7: sampling, carrying samples home, processing them at the lymph node |
+| `src/sim/host/host.ts` | phase 11: the host's monitor (inflammation, fever, pressure, tissue, storm and shock), pus, the NET order |
+| `src/sim/hero/abilities.ts` | the ABILITY order: Big Mac's big meal and clean, Dendra's scan |
+| `src/sim/mission/mission.ts` | a mission's setup and phase 12: objectives, triggers and actions from `content/missions` |
 | `src/sim/vision/observe.ts` | a player's observation as plain data: own things in full, enemies only as seen or remembered (the AI's only view) |
 | `src/sim/build/production.ts` | phase 7 after gathering: morphs, builders, growth, production queues; the orders TRAIN, CANCEL, QUEUE_BUILD, PLACE_BUILD, SET_RALLY, ASSIST_BUILD, REPAIR, DEPLOY; refunds when something is lost |
 
@@ -47,6 +50,15 @@ An entity carries all its state in plain fields: `order` and `mv` (movement), `r
 | `src/ai/plans.ts` | each faction's build order and unit mixes (its personality) |
 | `src/ai/brain.ts` | `think(state, observation, services)` → commands: economy, army and strategy layers with one shared ledger |
 | `src/match/aiPlayer.ts` | the host: builds the observation when a layer is due and submits the commands 2 ticks ahead through the command queue |
+
+## Campaign (gate 7)
+
+| Module | Job |
+| --- | --- |
+| `content/maps/m01–m03.json` | painted maps: `art` (the painting), traced walls, lymph currents, zones (`tools/maps/make_mission_maps.py`) |
+| `content/missions/m01–m03.json` | missions as data (`tools/maps/make_missions.py`, which checks every placement) |
+| `src/client/ui/menu.ts` | main menu, campaign list and progress, cinematic and briefing |
+| `src/client/ui/missionHud.ts` | objectives, the monitor, speakers, alarms, the end with the medical truth |
 
 ## Client (gates 2–3)
 

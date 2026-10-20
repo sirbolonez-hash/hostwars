@@ -100,13 +100,13 @@ def m01():
     cells = [(3, 16), (5, 36), (18, 33), (22, 19), (24, 13), (27, 36), (33, 12), (64, 12), (72, 16), (78, 33),
              (82, 15), (84, 26), (86, 35), (88, 13), (69, 36), (16, 14), (11, 35), (36, 38), (63, 38), (76, 27)]
     return {
-        'id': 'm01', 'number': 1, 'title': 'השריטה', 'map': 'm01', 'cine': 'cine_01_fence', 'camera': [50, 34],
+        'id': 'm01', 'number': 1, 'title': 'השריטה', 'map': 'm01', 'cine': 'cine_01_fence', 'camera': [50, 31],
         'player': {'faction': 'wl', 'basic': 0, 'advanced': 0},
         'enemy': {'faction': 'col', 'basic': 0, 'advanced': 0},
         'host': {'cells': cells, 'tissueMin': 600},
         'place': [
-            {'owner': ME, 'type': 'unit_wl_neutrophil', 'at': [14, 37], 'n': 6},
-            {'owner': ME, 'type': 'unit_wl_neutrophil', 'at': [82, 37], 'n': 6},
+            {'owner': ME, 'type': 'unit_wl_neutrophil', 'at': [32, 37], 'n': 6},
+            {'owner': ME, 'type': 'unit_wl_neutrophil', 'at': [68, 37], 'n': 6},
             # three clusters of staph that have settled in the wound, and a few already out
             {'owner': ENEMY, 'type': 'bld_col_fission', 'at': [37, 22], 'tag': 'cluster', 'hp': 2500},
             {'owner': ENEMY, 'type': 'bld_col_fission', 'at': [61, 19], 'tag': 'cluster', 'hp': 2500},
