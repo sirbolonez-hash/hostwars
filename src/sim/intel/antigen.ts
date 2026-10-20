@@ -105,7 +105,7 @@ export function antigenPhase(world: World, ctx: SimContext, events: AntigenEvent
       }
       if (u.mv) clearMove(world, u);
       if (j.next < 0) j.next = tick;
-      if (tick - j.next < SAMPLE_TICKS) continue;
+      if (tick - j.next < (ctx.catalog.units.get(u.type)?.sampleTicks || SAMPLE_TICKS)) continue;
       u.sample = familyOf(ctx, t);
       events.push({ type: 'sampled', entity: u.id, family: u.sample, owner: u.owner });
       const lab = nearestLab(world, u);

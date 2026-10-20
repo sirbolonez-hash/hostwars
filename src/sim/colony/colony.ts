@@ -132,7 +132,10 @@ export function applySplit(world: World, ctx: SimContext, player: number, units:
       u.cb.target = 0;
       u.cb.windupEnd = -1;
     }
-    u.morph = { into: u.type, until: world.tick + Math.max(1, Math.floor(d.trainTicks / 2)), paid: [...d.cost], extra: d.supply, copy: true };
+    // a fever of 38–39 slows bacteria: splitting takes a fifth longer
+    const fever = world.host !== null && world.host.infl >= 25_000 && world.host.infl < 50_000;
+    const half = Math.max(1, Math.floor(d.trainTicks / 2));
+    u.morph = { into: u.type, until: world.tick + (fever ? Math.floor((half * 6) / 5) : half), paid: [...d.cost], extra: d.supply, copy: true };
     u.order = { kind: 'morph' };
   }
 }

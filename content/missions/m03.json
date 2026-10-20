@@ -1,0 +1,1180 @@
+{
+ "id": "m03",
+ "number": 3,
+ "title": "הצומת",
+ "map": "m03",
+ "cine": "cine_03_paratroopers",
+ "camera": [
+  52,
+  31
+ ],
+ "player": {
+  "faction": "wl",
+  "basic": 500,
+  "advanced": 100
+ },
+ "enemy": {
+  "faction": "col",
+  "basic": 0,
+  "advanced": 0
+ },
+ "host": {
+  "cells": [
+   [
+    28,
+    26
+   ],
+   [
+    33,
+    30
+   ],
+   [
+    40,
+    20
+   ],
+   [
+    70,
+    20
+   ],
+   [
+    78,
+    27
+   ],
+   [
+    66,
+    41
+   ],
+   [
+    40,
+    42
+   ],
+   [
+    30,
+    40
+   ],
+   [
+    81,
+    39
+   ],
+   [
+    61,
+    12
+   ],
+   [
+    48,
+    12
+   ],
+   [
+    24,
+    22
+   ],
+   [
+    86,
+    22
+   ],
+   [
+    54,
+    44
+   ],
+   [
+    45,
+    44
+   ],
+   [
+    69,
+    43
+   ]
+  ],
+  "tissueMin": 500
+ },
+ "place": [
+  {
+   "owner": 1,
+   "type": "bld_wl_lymphnode",
+   "at": [
+    50,
+    30
+   ],
+   "tag": "node"
+  },
+  {
+   "owner": 1,
+   "type": "bld_wl_capillary",
+   "at": [
+    47,
+    25
+   ]
+  },
+  {
+   "owner": 1,
+   "type": "bld_wl_marrow",
+   "at": [
+    56,
+    24
+   ]
+  },
+  {
+   "owner": 1,
+   "type": "unit_wl_glut",
+   "at": [
+    48,
+    35
+   ],
+   "n": 8
+  },
+  {
+   "owner": 1,
+   "type": "unit_wl_neutrophil",
+   "at": [
+    41,
+    28
+   ],
+   "n": 4
+  },
+  {
+   "owner": 1,
+   "type": "unit_wl_macrophage",
+   "at": [
+    60,
+    34
+   ],
+   "n": 2
+  },
+  {
+   "owner": 1,
+   "type": "unit_wl_dendritic",
+   "at": [
+    54,
+    36
+   ],
+   "n": 1
+  },
+  {
+   "owner": 1,
+   "type": "hero_wl_dendra",
+   "at": [
+    53,
+    36
+   ],
+   "tag": "hero"
+  }
+ ],
+ "gates": [],
+ "objectives": [
+  {
+   "id": "hold",
+   "text": "החזיקו את הצומת 20 דקות"
+  },
+  {
+   "id": "antigen",
+   "text": "הביאו דגימת אנטיגן ראשונה לצומת הלימפה"
+  },
+  {
+   "id": "cells",
+   "text": "ייצרו תא CD4 ראשון ותא B (פלזמה) ראשון"
+  }
+ ],
+ "triggers": [
+  {
+   "id": "hello",
+   "when": [
+    {
+     "t": "time",
+     "at": 40
+    }
+   ],
+   "do": [
+    {
+     "a": "say",
+     "speaker": "dendra",
+     "text": "ד\"ר דנדרה, מודיעין. החיידקים מגיעים בכלי הלימפה — ארבעה נתיבים, מהצפון ומהמערב. הזרם בהם מהיר, אז הם יגיעו מהר."
+    },
+    {
+     "a": "say",
+     "speaker": "dendra",
+     "text": "אני דוגמת בשנייה אחת, לא בחמש. הביאו אותי לאויב, לחיצה ימנית עליו — ואני מביאה את הדגימה לצומת. \"סריקה\" מראה לכם הכול סביבי לכמה שניות."
+    }
+   ]
+  },
+  {
+   "id": "wave0_0",
+   "when": [
+    {
+     "t": "time",
+     "at": 1200
+    }
+   ],
+   "every": 2400,
+   "do": [
+    {
+     "a": "spawn",
+     "owner": 2,
+     "type": "unit_col_coccus",
+     "n": 4,
+     "at": [
+      2,
+      7
+     ],
+     "go": [
+      51,
+      31
+     ]
+    }
+   ]
+  },
+  {
+   "id": "wave0_1",
+   "when": [
+    {
+     "t": "time",
+     "at": 1800
+    }
+   ],
+   "every": 2400,
+   "do": [
+    {
+     "a": "spawn",
+     "owner": 2,
+     "type": "unit_col_coccus",
+     "n": 4,
+     "at": [
+      2,
+      33
+     ],
+     "go": [
+      51,
+      31
+     ]
+    }
+   ]
+  },
+  {
+   "id": "wave0_2",
+   "when": [
+    {
+     "t": "time",
+     "at": 2400
+    }
+   ],
+   "every": 2400,
+   "do": [
+    {
+     "a": "spawn",
+     "owner": 2,
+     "type": "unit_col_coccus",
+     "n": 4,
+     "at": [
+      32,
+      1
+     ],
+     "go": [
+      51,
+      31
+     ]
+    }
+   ]
+  },
+  {
+   "id": "wave0_3",
+   "when": [
+    {
+     "t": "time",
+     "at": 3000
+    }
+   ],
+   "every": 2400,
+   "do": [
+    {
+     "a": "spawn",
+     "owner": 2,
+     "type": "unit_col_coccus",
+     "n": 4,
+     "at": [
+      84,
+      1
+     ],
+     "go": [
+      51,
+      31
+     ]
+    }
+   ]
+  },
+  {
+   "id": "wave0_end",
+   "when": [
+    {
+     "t": "time",
+     "at": 7200
+    }
+   ],
+   "do": [
+    {
+     "a": "stop",
+     "trigger": "wave0_0"
+    },
+    {
+     "a": "stop",
+     "trigger": "wave0_1"
+    },
+    {
+     "a": "stop",
+     "trigger": "wave0_2"
+    },
+    {
+     "a": "stop",
+     "trigger": "wave0_3"
+    }
+   ]
+  },
+  {
+   "id": "wave1_0",
+   "when": [
+    {
+     "t": "time",
+     "at": 7200
+    }
+   ],
+   "every": 2400,
+   "do": [
+    {
+     "a": "spawn",
+     "owner": 2,
+     "type": "unit_col_coccus",
+     "n": 4,
+     "at": [
+      2,
+      7
+     ],
+     "go": [
+      51,
+      31
+     ]
+    },
+    {
+     "a": "spawn",
+     "owner": 2,
+     "type": "unit_col_bacillus",
+     "n": 2,
+     "at": [
+      2,
+      7
+     ],
+     "go": [
+      51,
+      31
+     ]
+    }
+   ]
+  },
+  {
+   "id": "wave1_1",
+   "when": [
+    {
+     "t": "time",
+     "at": 7800
+    }
+   ],
+   "every": 2400,
+   "do": [
+    {
+     "a": "spawn",
+     "owner": 2,
+     "type": "unit_col_coccus",
+     "n": 4,
+     "at": [
+      2,
+      33
+     ],
+     "go": [
+      51,
+      31
+     ]
+    },
+    {
+     "a": "spawn",
+     "owner": 2,
+     "type": "unit_col_bacillus",
+     "n": 2,
+     "at": [
+      2,
+      33
+     ],
+     "go": [
+      51,
+      31
+     ]
+    }
+   ]
+  },
+  {
+   "id": "wave1_2",
+   "when": [
+    {
+     "t": "time",
+     "at": 8400
+    }
+   ],
+   "every": 2400,
+   "do": [
+    {
+     "a": "spawn",
+     "owner": 2,
+     "type": "unit_col_coccus",
+     "n": 4,
+     "at": [
+      32,
+      1
+     ],
+     "go": [
+      51,
+      31
+     ]
+    },
+    {
+     "a": "spawn",
+     "owner": 2,
+     "type": "unit_col_bacillus",
+     "n": 2,
+     "at": [
+      32,
+      1
+     ],
+     "go": [
+      51,
+      31
+     ]
+    }
+   ]
+  },
+  {
+   "id": "wave1_3",
+   "when": [
+    {
+     "t": "time",
+     "at": 9000
+    }
+   ],
+   "every": 2400,
+   "do": [
+    {
+     "a": "spawn",
+     "owner": 2,
+     "type": "unit_col_coccus",
+     "n": 4,
+     "at": [
+      84,
+      1
+     ],
+     "go": [
+      51,
+      31
+     ]
+    },
+    {
+     "a": "spawn",
+     "owner": 2,
+     "type": "unit_col_bacillus",
+     "n": 2,
+     "at": [
+      84,
+      1
+     ],
+     "go": [
+      51,
+      31
+     ]
+    }
+   ]
+  },
+  {
+   "id": "wave1_end",
+   "when": [
+    {
+     "t": "time",
+     "at": 14400
+    }
+   ],
+   "do": [
+    {
+     "a": "stop",
+     "trigger": "wave1_0"
+    },
+    {
+     "a": "stop",
+     "trigger": "wave1_1"
+    },
+    {
+     "a": "stop",
+     "trigger": "wave1_2"
+    },
+    {
+     "a": "stop",
+     "trigger": "wave1_3"
+    }
+   ]
+  },
+  {
+   "id": "wave2_0",
+   "when": [
+    {
+     "t": "time",
+     "at": 14400
+    }
+   ],
+   "every": 2400,
+   "do": [
+    {
+     "a": "spawn",
+     "owner": 2,
+     "type": "unit_col_coccus",
+     "n": 5,
+     "at": [
+      2,
+      7
+     ],
+     "go": [
+      51,
+      31
+     ]
+    },
+    {
+     "a": "spawn",
+     "owner": 2,
+     "type": "unit_col_bacillus",
+     "n": 2,
+     "at": [
+      2,
+      7
+     ],
+     "go": [
+      51,
+      31
+     ]
+    },
+    {
+     "a": "spawn",
+     "owner": 2,
+     "type": "unit_col_flagellate",
+     "n": 2,
+     "at": [
+      2,
+      7
+     ],
+     "go": [
+      51,
+      31
+     ]
+    }
+   ]
+  },
+  {
+   "id": "wave2_1",
+   "when": [
+    {
+     "t": "time",
+     "at": 15000
+    }
+   ],
+   "every": 2400,
+   "do": [
+    {
+     "a": "spawn",
+     "owner": 2,
+     "type": "unit_col_coccus",
+     "n": 5,
+     "at": [
+      2,
+      33
+     ],
+     "go": [
+      51,
+      31
+     ]
+    },
+    {
+     "a": "spawn",
+     "owner": 2,
+     "type": "unit_col_bacillus",
+     "n": 2,
+     "at": [
+      2,
+      33
+     ],
+     "go": [
+      51,
+      31
+     ]
+    },
+    {
+     "a": "spawn",
+     "owner": 2,
+     "type": "unit_col_flagellate",
+     "n": 2,
+     "at": [
+      2,
+      33
+     ],
+     "go": [
+      51,
+      31
+     ]
+    }
+   ]
+  },
+  {
+   "id": "wave2_2",
+   "when": [
+    {
+     "t": "time",
+     "at": 15600
+    }
+   ],
+   "every": 2400,
+   "do": [
+    {
+     "a": "spawn",
+     "owner": 2,
+     "type": "unit_col_coccus",
+     "n": 5,
+     "at": [
+      32,
+      1
+     ],
+     "go": [
+      51,
+      31
+     ]
+    },
+    {
+     "a": "spawn",
+     "owner": 2,
+     "type": "unit_col_bacillus",
+     "n": 2,
+     "at": [
+      32,
+      1
+     ],
+     "go": [
+      51,
+      31
+     ]
+    },
+    {
+     "a": "spawn",
+     "owner": 2,
+     "type": "unit_col_flagellate",
+     "n": 2,
+     "at": [
+      32,
+      1
+     ],
+     "go": [
+      51,
+      31
+     ]
+    }
+   ]
+  },
+  {
+   "id": "wave2_3",
+   "when": [
+    {
+     "t": "time",
+     "at": 16200
+    }
+   ],
+   "every": 2400,
+   "do": [
+    {
+     "a": "spawn",
+     "owner": 2,
+     "type": "unit_col_coccus",
+     "n": 5,
+     "at": [
+      84,
+      1
+     ],
+     "go": [
+      51,
+      31
+     ]
+    },
+    {
+     "a": "spawn",
+     "owner": 2,
+     "type": "unit_col_bacillus",
+     "n": 2,
+     "at": [
+      84,
+      1
+     ],
+     "go": [
+      51,
+      31
+     ]
+    },
+    {
+     "a": "spawn",
+     "owner": 2,
+     "type": "unit_col_flagellate",
+     "n": 2,
+     "at": [
+      84,
+      1
+     ],
+     "go": [
+      51,
+      31
+     ]
+    }
+   ]
+  },
+  {
+   "id": "wave2_end",
+   "when": [
+    {
+     "t": "time",
+     "at": 20400
+    }
+   ],
+   "do": [
+    {
+     "a": "stop",
+     "trigger": "wave2_0"
+    },
+    {
+     "a": "stop",
+     "trigger": "wave2_1"
+    },
+    {
+     "a": "stop",
+     "trigger": "wave2_2"
+    },
+    {
+     "a": "stop",
+     "trigger": "wave2_3"
+    }
+   ]
+  },
+  {
+   "id": "wave3_0",
+   "when": [
+    {
+     "t": "time",
+     "at": 20400
+    }
+   ],
+   "every": 2400,
+   "do": [
+    {
+     "a": "spawn",
+     "owner": 2,
+     "type": "unit_col_coccus",
+     "n": 6,
+     "at": [
+      2,
+      7
+     ],
+     "go": [
+      51,
+      31
+     ]
+    },
+    {
+     "a": "spawn",
+     "owner": 2,
+     "type": "unit_col_bacillus",
+     "n": 3,
+     "at": [
+      2,
+      7
+     ],
+     "go": [
+      51,
+      31
+     ]
+    },
+    {
+     "a": "spawn",
+     "owner": 2,
+     "type": "unit_col_capsule",
+     "n": 2,
+     "at": [
+      2,
+      7
+     ],
+     "go": [
+      51,
+      31
+     ]
+    }
+   ]
+  },
+  {
+   "id": "wave3_1",
+   "when": [
+    {
+     "t": "time",
+     "at": 21000
+    }
+   ],
+   "every": 2400,
+   "do": [
+    {
+     "a": "spawn",
+     "owner": 2,
+     "type": "unit_col_coccus",
+     "n": 6,
+     "at": [
+      2,
+      33
+     ],
+     "go": [
+      51,
+      31
+     ]
+    },
+    {
+     "a": "spawn",
+     "owner": 2,
+     "type": "unit_col_bacillus",
+     "n": 3,
+     "at": [
+      2,
+      33
+     ],
+     "go": [
+      51,
+      31
+     ]
+    },
+    {
+     "a": "spawn",
+     "owner": 2,
+     "type": "unit_col_capsule",
+     "n": 2,
+     "at": [
+      2,
+      33
+     ],
+     "go": [
+      51,
+      31
+     ]
+    }
+   ]
+  },
+  {
+   "id": "wave3_2",
+   "when": [
+    {
+     "t": "time",
+     "at": 21600
+    }
+   ],
+   "every": 2400,
+   "do": [
+    {
+     "a": "spawn",
+     "owner": 2,
+     "type": "unit_col_coccus",
+     "n": 6,
+     "at": [
+      32,
+      1
+     ],
+     "go": [
+      51,
+      31
+     ]
+    },
+    {
+     "a": "spawn",
+     "owner": 2,
+     "type": "unit_col_bacillus",
+     "n": 3,
+     "at": [
+      32,
+      1
+     ],
+     "go": [
+      51,
+      31
+     ]
+    },
+    {
+     "a": "spawn",
+     "owner": 2,
+     "type": "unit_col_capsule",
+     "n": 2,
+     "at": [
+      32,
+      1
+     ],
+     "go": [
+      51,
+      31
+     ]
+    }
+   ]
+  },
+  {
+   "id": "wave3_3",
+   "when": [
+    {
+     "t": "time",
+     "at": 22200
+    }
+   ],
+   "every": 2400,
+   "do": [
+    {
+     "a": "spawn",
+     "owner": 2,
+     "type": "unit_col_coccus",
+     "n": 6,
+     "at": [
+      84,
+      1
+     ],
+     "go": [
+      51,
+      31
+     ]
+    },
+    {
+     "a": "spawn",
+     "owner": 2,
+     "type": "unit_col_bacillus",
+     "n": 3,
+     "at": [
+      84,
+      1
+     ],
+     "go": [
+      51,
+      31
+     ]
+    },
+    {
+     "a": "spawn",
+     "owner": 2,
+     "type": "unit_col_capsule",
+     "n": 2,
+     "at": [
+      84,
+      1
+     ],
+     "go": [
+      51,
+      31
+     ]
+    }
+   ]
+  },
+  {
+   "id": "wave3_end",
+   "when": [
+    {
+     "t": "time",
+     "at": 25200
+    }
+   ],
+   "do": [
+    {
+     "a": "stop",
+     "trigger": "wave3_0"
+    },
+    {
+     "a": "stop",
+     "trigger": "wave3_1"
+    },
+    {
+     "a": "stop",
+     "trigger": "wave3_2"
+    },
+    {
+     "a": "stop",
+     "trigger": "wave3_3"
+    }
+   ]
+  },
+  {
+   "id": "sampled",
+   "when": [
+    {
+     "t": "antigen",
+     "owner": 1
+    }
+   ],
+   "do": [
+    {
+     "a": "objective",
+     "id": "antigen",
+     "state": "done"
+    },
+    {
+     "a": "say",
+     "speaker": "general4",
+     "text": "יש לנו משפחה. עכשיו: מחסן טחול, ואז אקדמיית התימוס באזור T ומרכז נבט בזקיק (אזור B) — רק שם הם נבנים."
+    }
+   ]
+  },
+  {
+   "id": "trained",
+   "when": [
+    {
+     "t": "made",
+     "owner": 1,
+     "type": "unit_wl_cd4",
+     "n": 1
+    },
+    {
+     "t": "made",
+     "owner": 1,
+     "type": "unit_wl_plasma",
+     "n": 1
+    }
+   ],
+   "do": [
+    {
+     "a": "objective",
+     "id": "cells",
+     "state": "done"
+    },
+    {
+     "a": "say",
+     "speaker": "dendra",
+     "text": "CD4 ותא B פעילים. ככה נראית תגובה חיסונית נרכשת."
+    }
+   ]
+  },
+  {
+   "id": "held",
+   "when": [
+    {
+     "t": "time",
+     "at": 24000
+    }
+   ],
+   "do": [
+    {
+     "a": "objective",
+     "id": "hold",
+     "state": "done"
+    }
+   ]
+  },
+  {
+   "id": "warm",
+   "when": [
+    {
+     "t": "infl",
+     "above": 31000
+    }
+   ],
+   "do": [
+    {
+     "a": "say",
+     "speaker": "nurse",
+     "text": "בלוטה נפוחה ורגישה בבית השחי, חום 38.1. היא עובדת."
+    }
+   ]
+  },
+  {
+   "id": "hot",
+   "when": [
+    {
+     "t": "infl",
+     "above": 61000
+    }
+   ],
+   "do": [
+    {
+     "a": "say",
+     "speaker": "nurse",
+     "text": "הדלקת סוערת — הבלוטה כואבת והלחץ יורד. תנו לה רגע."
+    }
+   ]
+  },
+  {
+   "id": "won",
+   "when": [
+    {
+     "t": "objective",
+     "id": "hold",
+     "is": "done"
+    },
+    {
+     "t": "objective",
+     "id": "antigen",
+     "is": "done"
+    },
+    {
+     "t": "objective",
+     "id": "cells",
+     "is": "done"
+    }
+   ],
+   "do": [
+    {
+     "a": "say",
+     "speaker": "general4",
+     "text": "הצומת עמד. ועכשיו הגוף זוכר אותם."
+    },
+    {
+     "a": "win"
+    }
+   ]
+  },
+  {
+   "id": "late",
+   "when": [
+    {
+     "t": "time",
+     "at": 31200
+    }
+   ],
+   "do": [
+    {
+     "a": "lose",
+     "reason": "time"
+    }
+   ]
+  },
+  {
+   "id": "node_lost",
+   "when": [
+    {
+     "t": "none_tagged",
+     "tag": "node"
+    }
+   ],
+   "do": [
+    {
+     "a": "lose",
+     "reason": "node"
+    }
+   ]
+  }
+ ],
+ "briefing": [
+  {
+   "speaker": "nurse",
+   "text": "בלוטה נפוחה ורגישה בבית השחי. הזיהום עלה במעלה הזרוע."
+  },
+  {
+   "speaker": "general4",
+   "text": "חיידקים נכנסו לכלי הלימפה, וכולם מובילים לכאן — לצומת. אם הוא נופל, אין מה שיעצור אותם."
+  },
+  {
+   "speaker": "general4",
+   "text": "ד\"ר דנדרה תביא לנו דגימה. ממנה נלמד להכין תאים שמכירים את האויב: CD4 שמכוון את המלחמה, ותא B שמייצר נוגדנים. החזיקו 20 דקות."
+  }
+ ],
+ "truth": {
+  "title": "בלוטה נפוחה היא בלוטה שעובדת",
+  "text": "תאים דנדריטיים לוקחים חלקי חיידק (אנטיגן) מהרקמה ונודדים בכלי הלימפה אל הבלוטה. שם הם מציגים אותו לתאי T, ותאי T מסייעים (CD4) מפעילים תאי B שמתחילים לייצר נוגדנים. ההתרבות הזו היא מה שגורם לבלוטה להתנפח."
+ }
+}

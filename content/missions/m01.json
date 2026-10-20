@@ -1,0 +1,557 @@
+{
+ "id": "m01",
+ "number": 1,
+ "title": "השריטה",
+ "map": "m01",
+ "cine": "cine_01_fence",
+ "camera": [
+  50,
+  34
+ ],
+ "player": {
+  "faction": "wl",
+  "basic": 0,
+  "advanced": 0
+ },
+ "enemy": {
+  "faction": "col",
+  "basic": 0,
+  "advanced": 0
+ },
+ "host": {
+  "cells": [
+   [
+    3,
+    16
+   ],
+   [
+    5,
+    36
+   ],
+   [
+    18,
+    33
+   ],
+   [
+    22,
+    19
+   ],
+   [
+    24,
+    13
+   ],
+   [
+    27,
+    36
+   ],
+   [
+    33,
+    12
+   ],
+   [
+    68,
+    14
+   ],
+   [
+    72,
+    16
+   ],
+   [
+    78,
+    33
+   ],
+   [
+    82,
+    15
+   ],
+   [
+    84,
+    26
+   ],
+   [
+    86,
+    35
+   ],
+   [
+    86,
+    14
+   ],
+   [
+    69,
+    36
+   ],
+   [
+    16,
+    14
+   ],
+   [
+    11,
+    35
+   ],
+   [
+    36,
+    38
+   ],
+   [
+    63,
+    38
+   ],
+   [
+    76,
+    27
+   ]
+  ],
+  "tissueMin": 600
+ },
+ "place": [
+  {
+   "owner": 1,
+   "type": "unit_wl_neutrophil",
+   "at": [
+    14,
+    37
+   ],
+   "n": 6
+  },
+  {
+   "owner": 1,
+   "type": "unit_wl_neutrophil",
+   "at": [
+    82,
+    37
+   ],
+   "n": 6
+  },
+  {
+   "owner": 2,
+   "type": "bld_col_fission",
+   "at": [
+    37,
+    22
+   ],
+   "tag": "cluster",
+   "hp": 2500
+  },
+  {
+   "owner": 2,
+   "type": "bld_col_fission",
+   "at": [
+    61,
+    19
+   ],
+   "tag": "cluster",
+   "hp": 2500
+  },
+  {
+   "owner": 2,
+   "type": "bld_col_fission",
+   "at": [
+    59,
+    28
+   ],
+   "tag": "cluster",
+   "hp": 2500
+  },
+  {
+   "owner": 2,
+   "type": "unit_col_coccus",
+   "at": [
+    41,
+    26
+   ],
+   "n": 3
+  },
+  {
+   "owner": 2,
+   "type": "unit_col_coccus",
+   "at": [
+    60,
+    24
+   ],
+   "n": 3
+  },
+  {
+   "owner": 2,
+   "type": "unit_col_coccus",
+   "at": [
+    57,
+    32
+   ],
+   "n": 3
+  }
+ ],
+ "gates": [
+  {
+   "at": [
+    14,
+    38
+   ],
+   "infl": 0
+  },
+  {
+   "at": [
+    50,
+    38
+   ],
+   "infl": 0
+  },
+  {
+   "at": [
+    82,
+    38
+   ],
+   "infl": 0
+  },
+  {
+   "at": [
+    32,
+    39
+   ],
+   "infl": 31000
+  },
+  {
+   "at": [
+    70,
+    39
+   ],
+   "infl": 31000
+  }
+ ],
+ "objectives": [
+  {
+   "id": "reach",
+   "text": "הגיעו לפצע עם חוליית נויטרופילים"
+  },
+  {
+   "id": "clusters",
+   "text": "השמידו את 3 אשכולות החיידקים",
+   "hidden": true
+  },
+  {
+   "id": "seal",
+   "text": "הביאו טסיות ואטמו את הפצע",
+   "hidden": true
+  }
+ ],
+ "triggers": [
+  {
+   "id": "hello",
+   "when": [
+    {
+     "t": "time",
+     "at": 40
+    }
+   ],
+   "do": [
+    {
+     "a": "say",
+     "speaker": "general4",
+     "text": "החתך פתוח והחיידקים כבר בפנים. סמנו את הנויטרופילים בגרירה, ולחיצה ימנית כדי להזיז אותם אל הפצע."
+    }
+   ]
+  },
+  {
+   "id": "wound",
+   "when": [
+    {
+     "t": "time",
+     "at": 600
+    }
+   ],
+   "every": 600,
+   "do": [
+    {
+     "a": "spawn",
+     "owner": 2,
+     "type": "unit_col_coccus",
+     "n": 2,
+     "at": [
+      43,
+      27
+     ],
+     "go": [
+      22,
+      22
+     ]
+    },
+    {
+     "a": "spawn",
+     "owner": 2,
+     "type": "unit_col_coccus",
+     "n": 2,
+     "at": [
+      64,
+      30
+     ],
+     "go": [
+      80,
+      24
+     ]
+    }
+   ]
+  },
+  {
+   "id": "clusters_send",
+   "when": [
+    {
+     "t": "time",
+     "at": 1000
+    },
+    {
+     "t": "tagged",
+     "tag": "cluster"
+    }
+   ],
+   "every": 900,
+   "do": [
+    {
+     "a": "spawn",
+     "owner": 2,
+     "type": "unit_col_coccus",
+     "n": 2,
+     "at": [
+      63,
+      24
+     ],
+     "go": [
+      78,
+      34
+     ]
+    }
+   ]
+  },
+  {
+   "id": "clusters_send2",
+   "when": [
+    {
+     "t": "time",
+     "at": 3600
+    },
+    {
+     "t": "tagged",
+     "tag": "cluster"
+    }
+   ],
+   "every": 1200,
+   "do": [
+    {
+     "a": "spawn",
+     "owner": 2,
+     "type": "unit_col_coccus",
+     "n": 3,
+     "at": [
+      40,
+      28
+     ],
+     "go": [
+      20,
+      33
+     ]
+    }
+   ]
+  },
+  {
+   "id": "reinforce",
+   "when": [
+    {
+     "t": "time",
+     "at": 800
+    }
+   ],
+   "every": 800,
+   "fast": true,
+   "do": [
+    {
+     "a": "spawn",
+     "owner": 1,
+     "type": "unit_wl_neutrophil",
+     "n": 4,
+     "at": "gates"
+    }
+   ]
+  },
+  {
+   "id": "reached",
+   "when": [
+    {
+     "t": "units_in",
+     "owner": 1,
+     "rect": [
+      38,
+      18,
+      26,
+      16
+     ],
+     "n": 4,
+     "role": "infantry"
+    }
+   ],
+   "do": [
+    {
+     "a": "objective",
+     "id": "reach",
+     "state": "done"
+    },
+    {
+     "a": "objective",
+     "id": "clusters",
+     "state": "active"
+    },
+    {
+     "a": "say",
+     "speaker": "general4",
+     "text": "שם הם — שלושה אשכולות של סטפילוקוקוס. השמידו את שלושתם."
+    },
+    {
+     "a": "say",
+     "speaker": "nurse",
+     "text": "טיפ ממשמרת לילה: נויטרופיל יכול להתפוצץ לרשת (NET) שעוצרת אויבים ל-6 שניות. סמנו נויטרופילים ולחצו N. זה נגמר בהם — ובמוגלה."
+    }
+   ]
+  },
+  {
+   "id": "warm",
+   "when": [
+    {
+     "t": "infl",
+     "above": 31000
+    }
+   ],
+   "do": [
+    {
+     "a": "say",
+     "speaker": "nurse",
+     "text": "חום 38.3. הדלקת פעילה: נפתחים עוד שערים ותגבורת מגיעה מהר יותר. זה טוב — אל תגזימו."
+    }
+   ]
+  },
+  {
+   "id": "hot",
+   "when": [
+    {
+     "t": "infl",
+     "above": 61000
+    }
+   ],
+   "do": [
+    {
+     "a": "say",
+     "speaker": "nurse",
+     "text": "דלקת סוערת! הרקמה נפגעת והלחץ יורד. תנו לה להירגע — פחות נויטרופילים מתים, פחות דלקת."
+    }
+   ]
+  },
+  {
+   "id": "clusters_down",
+   "when": [
+    {
+     "t": "none_tagged",
+     "tag": "cluster"
+    }
+   ],
+   "do": [
+    {
+     "a": "objective",
+     "id": "clusters",
+     "state": "done"
+    },
+    {
+     "a": "objective",
+     "id": "seal",
+     "state": "active"
+    },
+    {
+     "a": "spawn",
+     "owner": 1,
+     "type": "unit_wl_platelets",
+     "n": 3,
+     "at": [
+      50,
+      37
+     ]
+    },
+    {
+     "a": "say",
+     "speaker": "general4",
+     "text": "האשכולות נפלו. טסיות בדרך משער היציאה — הביאו אותן לרצפת הפצע ותנו להן לעבוד עשר שניות."
+    }
+   ]
+  },
+  {
+   "id": "sealed",
+   "when": [
+    {
+     "t": "objective",
+     "id": "seal",
+     "is": "active"
+    },
+    {
+     "t": "units_in",
+     "owner": 1,
+     "rect": [
+      44,
+      25,
+      14,
+      10
+     ],
+     "n": 2,
+     "role": "builder"
+    }
+   ],
+   "hold": 200,
+   "do": [
+    {
+     "a": "objective",
+     "id": "seal",
+     "state": "done"
+    },
+    {
+     "a": "stop",
+     "trigger": "wound"
+    },
+    {
+     "a": "say",
+     "speaker": "general4",
+     "text": "הפצע אטום. עבודה טובה, מפקד."
+    },
+    {
+     "a": "win"
+    }
+   ]
+  },
+  {
+   "id": "wiped",
+   "when": [
+    {
+     "t": "no_army",
+     "owner": 1
+    }
+   ],
+   "hold": 900,
+   "do": [
+    {
+     "a": "lose",
+     "reason": "army"
+    }
+   ]
+  }
+ ],
+ "briefing": [
+  {
+   "speaker": "nurse",
+   "text": "מטופל בן 41, נשרט באצבע מגדר חלודה. אודם קל סביב החתך. נראה שגרתי."
+  },
+  {
+   "speaker": "general4",
+   "text": "שום דבר לא שגרתי בפרצה בעור. החיידקים כבר בפנים, והם מתחילים להתיישב. אתם מגיעים מכלי הדם, דרך שערי היציאה."
+  },
+  {
+   "speaker": "general4",
+   "text": "בלי בסיס הפעם — רק נויטרופילים, וזמן. השמידו את האשכולות ואטמו את הפצע. ושימו עין על מד הדלקת: ניצחון שהורג את הרקמה הוא הפסד."
+  }
+ ],
+ "truth": {
+  "title": "נויטרופילים מגיעים ראשונים",
+  "text": "אחרי פציעה, נויטרופילים יוצאים מכלי הדם הקרובים תוך דקות עד שעות ומגיעים ראשונים לפצע. הם בולעים חיידקים, ולפעמים משליכים החוצה רשת של DNA (NET) שלוכדת אותם. טסיות ופיברין סוגרים את הפרצה, והמוגלה היא בעיקר נויטרופילים שסיימו את עבודתם."
+ }
+}

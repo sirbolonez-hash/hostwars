@@ -13,6 +13,9 @@ import { computeVision } from './vision/vision';
 import { computeBiofilm } from './colony/biofilm';
 import { applyBuildAt, applySplit, colonyPhase, type ColonyEvent } from './colony/colony';
 import { antigenPhase, applySample, type AntigenEvent } from './intel/antigen';
+import { applyNet, computePus, hostPhase, type HostEvent } from './host/host';
+import { applyAbility, type AbilityEvent } from './hero/abilities';
+import { missionPhase, type MissionEvent } from './mission/mission';
 import { centreOf, CLASS_SIZE } from './navigation/grid';
 import { nearestPassable } from './navigation/slots';
 import { afterFootprintChange, clearMove, issueMove, moveUnits, processPathQueue, type MoveEvent } from './navigation/movement';
@@ -28,6 +31,9 @@ export type SimEvent =
   | ({ tick: number } & CombatEvent)
   | ({ tick: number } & ColonyEvent)
   | ({ tick: number } & AntigenEvent)
+  | ({ tick: number } & HostEvent)
+  | ({ tick: number } & AbilityEvent)
+  | ({ tick: number } & MissionEvent)
   | { tick: number; type: 'defeated'; player: number }
   | { tick: number; type: 'surrendered'; player: number; reason: string }
   | { tick: number; type: 'match_over'; winnerTeam: number }
@@ -61,6 +67,7 @@ export function step(world: World, ctx: SimContext, commands: CommandEnvelope[])
   // 2. expire timed effects; refresh vision for the start of the tick
   for (const e of world.entities) if (e.slow && e.slow.until <= tick) e.slow = null;
   computeBiofilm(world, ctx);
+  computePus(world, ctx);
   computeVision(world, ctx, false);
 
   // 3. validate and apply commands
@@ -96,7 +103,17 @@ export function step(world: World, ctx: SimContext, commands: CommandEnvelope[])
   for (const a of antigenEvents) events.push({ tick, ...a });
   const buildEvents: BuildEvent[] = [];
   productionPhase(world, ctx, buildEvents);
-  for (const b of buildEvents) events.push({ tick, ...b });
+  for (const b of buildEvents) {
+    events.push({ tick, ...b });
+    // a mission counts what each side has trained
+    if (b.type === 'trained' && world.mission) {
+      const u = world.entities.find((e) => e.id === b.entity);
+      if (u) {
+        const key = `${b.owner}:${u.type}`;
+        world.mission.made[key] = (world.mission.made[key] ?? 0) + 1;
+      }
+    }
+  }
   // 8. targeting, windups, launches
   const combatEvents: CombatEvent[] = [];
   combatPhase(world, ctx, combatEvents);
@@ -125,10 +142,21 @@ export function step(world: World, ctx: SimContext, commands: CommandEnvelope[])
   }
   for (const l of lossEvents) events.push({ tick, ...l });
 
-  // 11. host monitor: inflammation, fever, pressure, saturation              (gate 7)
-  // 12. mission triggers (gate 7); defeat when a player has no critical building left, victory
-  //     when one side is left (a draw when the last sides fall on the same tick); events, hash
-  for (const p of world.players) {
+  // 11. host: pus where neutrophils died; the monitor (missions): inflammation, fever, pressure, tissue
+  const hostEvents: HostEvent[] = [];
+  hostPhase(world, ctx, events, hostEvents);
+  let hostLost = '';
+  for (const h of hostEvents) {
+    events.push({ tick, ...h });
+    if (h.type === 'host_lost' && hostLost === '') hostLost = h.reason;
+  }
+  // 12. a mission's triggers decide its end; otherwise defeat when a player has no critical
+  //     building left, victory when one side is left (a draw when the last fall on the same tick)
+  if (ctx.mission && world.mission) {
+    const missionEvents: MissionEvent[] = [];
+    missionPhase(world, ctx, ctx.mission, hostLost, missionEvents);
+    for (const m of missionEvents) events.push({ tick, ...m });
+  } else for (const p of world.players) {
     if (p.defeated) continue;
     const standing = world.entities.some((e) => e.owner === p.id && e.building && catalog.buildings.get(e.type)?.critical === true);
     if (!standing) {
@@ -136,11 +164,11 @@ export function step(world: World, ctx: SimContext, commands: CommandEnvelope[])
       events.push({ tick, type: 'defeated', player: p.id });
     }
   }
-  if (!world.outcome && world.players.length > 1) {
+  if (!world.outcome && world.players.length > 1 && !world.mission) {
     const teams = new Set(world.players.filter((p) => !p.defeated).map((p) => p.team));
     if (teams.size <= 1) {
       const winnerTeam = teams.size === 1 ? [...teams][0]! : 0;
-      world.outcome = { winnerTeam, tick };
+      world.outcome = { winnerTeam, tick, reason: '' };
       events.push({ tick, type: 'match_over', winnerTeam });
     }
   }
@@ -238,6 +266,18 @@ function applyCommand(world: World, ctx: SimContext, env: CommandEnvelope, index
       for (const e of units) if (e.job || e.cb) endWork(world, e);
       applySample(world, ctx, env.cmd, units);
       break;
+    case 'NET': {
+      const hostEvents: HostEvent[] = [];
+      applyNet(world, ctx, env.cmd, units, hostEvents);
+      for (const h of hostEvents) events.push({ tick: world.tick, ...h });
+      break;
+    }
+    case 'ABILITY': {
+      const abilityEvents: AbilityEvent[] = [];
+      applyAbility(world, ctx, env.cmd, units, abilityEvents);
+      for (const a of abilityEvents) events.push({ tick: world.tick, ...a });
+      break;
+    }
     case 'TRAIN':
     case 'CANCEL':
     case 'QUEUE_BUILD':
@@ -391,7 +431,8 @@ export function hashWorld(world: World, ctx: SimContext): string {
     else h.str(e.job.kind).int(e.job.target).int(e.job.tries).int(e.job.next).str(e.job.build).int(e.job.tx).int(e.job.ty).int(e.job.paid[0]).int(e.job.paid[1]);
     if (!e.morph) h.int(-1);
     else h.str(e.morph.into).int(e.morph.until).int(e.morph.paid[0]).int(e.morph.paid[1]).int(e.morph.extra).bool(e.morph.copy);
-    h.int(e.lastCombat).str(e.sample).str(e.spec).int(e.doneTick);
+    h.int(e.lastCombat).str(e.sample).str(e.spec).int(e.doneTick).int(e.stun).str(e.tag);
+    for (const k of Object.keys(e.ready).sort()) h.str(k).int(e.ready[k]!);
     if (!e.lab) h.int(-1);
     else {
       h.int(e.lab.length);
@@ -406,6 +447,24 @@ export function hashWorld(world: World, ctx: SimContext): string {
   }
   h.int(world.pathQueue.length);
   for (const r of world.pathQueue) h.int(r.id).int(r.prio).int(r.t);
+  const host = world.host;
+  if (!host) h.int(-1);
+  else h.int(host.infl).int(host.pressure).int(host.lastFight).int(host.stormSince).int(host.shockSince).int(host.tissueMax).int(host.tissueOwed);
+  h.int(world.pus.length);
+  for (const p of world.pus) h.int(p.i).int(p.until);
+  h.int(world.reveals.length);
+  for (const r of world.reveals) h.int(r.player).int(r.x).int(r.y).int(r.r).int(r.until);
+  const ms = world.mission;
+  if (!ms) h.int(-1);
+  else {
+    h.str(ms.id).int(ms.gate).int(ms.stopped.length);
+    for (const t of ms.stopped) h.str(t);
+    for (const k of Object.keys(ms.objectives).sort()) h.str(k).str(ms.objectives[k]!);
+    for (const k of Object.keys(ms.fired).sort()) h.str(k).int(ms.fired[k]!);
+    for (const k of Object.keys(ms.since).sort()) h.str(k).int(ms.since[k]!);
+    for (const k of Object.keys(ms.made).sort()) h.str(k).int(ms.made[k]!);
+  }
+  if (world.outcome) h.int(world.outcome.winnerTeam).int(world.outcome.tick).str(world.outcome.reason);
   h.int(world.nextShot).int(world.projectiles.length);
   for (const p of world.projectiles) h.int(p.id).int(p.owner).str(p.weapon).int(p.source).int(p.target).int(p.fromX).int(p.fromY).int(p.x).int(p.y).int(p.launch).int(p.impact).int(p.power).str(p.spec).bool(p.ifn);
   for (const words of world.explored) for (const v of words) h.int(v);

@@ -126,7 +126,9 @@ export class NavGrid {
     const len = isqrt(dx * dx + dy * dy);
     const cos = Math.trunc((dx * this.flowX[i]! + dy * this.flowY[i]!) / len); // −256..256
     const f = 1000 + Math.trunc((s * cos) / 256);
-    return f < 500 ? 500 : f > 2000 ? 2000 : f;
+    // a strong current (a lymph vessel, above 1000) is nearly one-way: up to 3x with it, a quarter against it
+    const lo = s > 1000 ? 250 : 500;
+    return f < lo ? lo : f > 3000 ? 3000 : f;
   }
 
   /** Tile index under a world position (sub-tiles). */
@@ -158,8 +160,9 @@ export function validateMap(m: MapDef): string[] {
   for (const f of m.flows) {
     const [x, y, w, h] = f.rect;
     if (x < 0 || y < 0 || x + w > m.w || y + h > m.h) e.push(`map ${m.id}: flow rect outside the map`);
-    if (!Number.isInteger(f.strength) || f.strength < 0 || f.strength > 1000) e.push(`map ${m.id}: flow strength ${f.strength}`);
+    if (!Number.isInteger(f.strength) || f.strength < 0 || f.strength > 2000) e.push(`map ${m.id}: flow strength ${f.strength}`);
   }
+  for (const z of m.zones ?? []) for (const i of z.tiles) if (!Number.isInteger(i) || i < 0 || i >= m.w * m.h) e.push(`map ${m.id}: zone ${z.kind} tile ${i} outside the map`);
   if (e.length === 0) {
     const nav = new NavGrid(m);
     m.starts.forEach(([sx, sy], k) => {

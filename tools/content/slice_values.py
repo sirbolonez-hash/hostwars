@@ -29,24 +29,26 @@ def weapon(id, kind, damage, cooldown_s, range_t, windup_s=0.2, min_t=0, splash_
 
 
 def unit(id, faction, role, cost, train_s, supply, hp, speed_tps, nav, sight_t, at, weapon=None, armor=0, tags=('biological',),
-         carry=0, life_s=0, requires=(), morphs=None, family='', aura=''):
+         carry=0, life_s=0, requires=(), morphs=None, family='', aura='', abilities=(), sample_s=0):
     # family: the antigen family a sample of it opens (enemies of the White Line); '' for the White Line
     # aura: 'helper' = a CD4 helper (IL-2 for acquired cells, IFN-γ for macrophages, within 6 tiles)
+    # abilities: a hero's special orders; sample_s: how long it takes to sample (0 = the usual 5 s)
     return dict(id=id, faction=faction, role=role, cost=list(cost), trainTicks=S(train_s), supply=supply, hp=hp, armor=armor,
                 speed=V(speed_tps), radius=RADIUS[nav], navClass=nav, sight=T(sight_t), weapon=weapon, tags=list(tags), carry=carry,
-                lifespan=S(life_s), producedAt=at, requires=list(requires), morphsTo=morphs, family=family, aura=aura)
+                lifespan=S(life_s), producedAt=at, requires=list(requires), morphsTo=morphs, family=family, aura=aura, abilities=list(abilities), sampleTicks=S(sample_s))
 
 
 def building(id, faction, role, cost, build_s, hp, fp, sight_t=8, armor=1, supply=0, dropoff=False, produces=(), requires=(),
-             critical=False, on=None, weapon=None, biofilm=False, slots=0, placement=None, art=None, art_scale=1000, family=''):
+             critical=False, on=None, weapon=None, biofilm=False, slots=0, placement=None, art=None, art_scale=1000, family='', zone=''):
     # placement: 'near' = within 8 tiles of an own building; 'builder' = where a platelet squad stands;
     # 'resource' = on a free deposit; 'biofilm' = on own biofilm (gate 6); 'none' = never ordered
+    # zone: on a map that marks zones of this kind, it must stand inside one (B: follicles, T: paracortex)
     if placement is None:
         placement = 'resource' if on else ('biofilm' if biofilm else 'near')
     return dict(id=id, faction=faction, role=role, cost=list(cost), buildTicks=S(build_s), hp=hp, armor=armor, footprint=list(fp),
                 supplyProvided=supply, dropoff=dropoff, produces=list(produces), requires=list(requires), sight=T(sight_t),
                 critical=critical, onResource=on, weapon=weapon, needsBiofilm=biofilm, workSlots=slots, placement=placement,
-                art=art or id, artScale=art_scale, family=family)
+                art=art or id, artScale=art_scale, family=family, zone=zone)
 
 
 def resource(id, kind, stock, fp, slots, harvest_s):
@@ -65,6 +67,7 @@ weapons = [
     weapon('w_nk_strike', 'melee', 20, 1.2, 1, windup_s=0.25, bonus={'infected': 5000}),
     weapon('w_cd4_signal', 'projectile', 5, 1.0, 2, speed_tps=10),
     weapon('w_cd8_perforin', 'melee', 12, 1.0, 1, bonus={'infected': 4000}),
+    weapon('w_bigmac_engulf', 'engulf', 24, 1.4, 1, windup_s=0.3, engulf=200),
     # Colony
     weapon('w_coccus_bite', 'melee', 5, 0.8, 1),
     weapon('w_flagellate_bite', 'melee', 8, 0.8, 1),
@@ -92,6 +95,11 @@ units = [
     unit('unit_wl_cd4', 'wl', 'support', (140, 60), 25, 2, 160, 3, 'medium', 8, 'bld_wl_thymus', weapon='w_cd4_signal', tags=('biological', 'acquired'), aura='helper'),
     unit('unit_wl_cd8', 'wl', 'infantry', (120, 60), 22, 2, 140, 3.4, 'medium', 8, 'bld_wl_thymus', weapon='w_cd8_perforin', tags=('biological', 'acquired')),
     unit('unit_wl_treg', 'wl', 'support', (100, 40), 20, 1, 100, 3, 'medium', 8, 'bld_wl_thymus', tags=('biological', 'acquired')),
+    # heroes: not trained; they come with a mission and its loss loses the mission
+    unit('hero_wl_bigmac', 'wl', 'heavy', (0, 0), 0, 0, 650, 2.6, 'large', 8, '', weapon='w_bigmac_engulf', armor=3,
+         tags=('biological', 'armored', 'hero'), abilities=('big_meal', 'clean')),
+    unit('hero_wl_dendra', 'wl', 'intel', (0, 0), 0, 0, 260, 5.2, 'medium', 11, '', tags=('biological', 'hero'),
+         abilities=('scan',), sample_s=1),
     unit('unit_col_feeder', 'col', 'worker', (50, 0), 12, 1, 50, 3.2, 'small', 6, 'bld_col_biofilm_core', tags=('biological', 'worker'), carry=10, family='staph'),
     unit('unit_col_coccus', 'col', 'infantry', (40, 0), 10, 1, 55, 3.5, 'small', 7, 'bld_col_fission', weapon='w_coccus_bite', family='staph'),
     unit('unit_col_bacillus', 'col', 'infantry', (70, 0), 14, 1, 100, 3, 'small', 7, 'bld_col_fission', weapon='w_bacillus_spit', family='bacillus'),
@@ -117,10 +125,12 @@ buildings = [
              produces=('unit_wl_eosinophil',)),
     building('bld_wl_aminopump', 'wl', 'extractor', (75, 0), 20, 450, (2, 2), on='protein', slots=3),
     building('bld_wl_mastcell', 'wl', 'defense', (140, 0), 30, 500, (2, 2), requires=('bld_wl_marrow',), weapon='w_histamine'),
-    building('bld_wl_germinal', 'wl', 'tech', (250, 100), 60, 900, (3, 3), critical=True, requires=('bld_wl_spleen', 'antigen:any'),
+    building('bld_wl_germinal', 'wl', 'tech', (250, 100), 60, 900, (3, 3), critical=True, requires=('bld_wl_spleen', 'antigen:any'), zone='B',
              produces=('unit_wl_plasma',)),
-    building('bld_wl_thymus', 'wl', 'tech', (200, 100), 45, 900, (3, 3), critical=True, requires=('bld_wl_spleen', 'antigen:any'),
+    building('bld_wl_thymus', 'wl', 'tech', (200, 100), 45, 900, (3, 3), critical=True, requires=('bld_wl_spleen', 'antigen:any'), zone='T',
              produces=('unit_wl_cd4', 'unit_wl_cd8', 'unit_wl_treg')),
+    # host cells: the body's own tissue, nobody's; area damage of either side hurts them (tissue integrity)
+    building('bld_neu_epithelial', 'neu', 'host', (0, 0), 0, 120, (1, 1), sight_t=1, armor=0, placement='none', art_scale=420),
     # a new biofilm core may go anywhere (it spreads biofilm of its own); the rest only on own biofilm
     building('bld_col_biofilm_core', 'col', 'hq', (400, 0), 60, 1400, (4, 4), sight_t=10, supply=20, dropoff=True,
              produces=('unit_col_feeder',), critical=True, placement='anywhere', family='staph'),

@@ -26,7 +26,9 @@
   "requires": [],
   "morphsTo": null,
   "family": "",
-  "aura": ""
+  "aura": "",
+  "abilities": [],
+  "sampleTicks": 0
  },
  {
   "id": "unit_wl_platelets",
@@ -54,7 +56,9 @@
   "requires": [],
   "morphsTo": null,
   "family": "",
-  "aura": ""
+  "aura": "",
+  "abilities": [],
+  "sampleTicks": 0
  },
  {
   "id": "unit_wl_monocyte",
@@ -82,7 +86,9 @@
   "requires": [],
   "morphsTo": "unit_wl_macrophage",
   "family": "",
-  "aura": ""
+  "aura": "",
+  "abilities": [],
+  "sampleTicks": 0
  },
  {
   "id": "unit_wl_neutrophil",
@@ -110,7 +116,9 @@
   "requires": [],
   "morphsTo": null,
   "family": "",
-  "aura": ""
+  "aura": "",
+  "abilities": [],
+  "sampleTicks": 0
  },
  {
   "id": "unit_wl_dendritic",
@@ -138,7 +146,9 @@
   "requires": [],
   "morphsTo": null,
   "family": "",
-  "aura": ""
+  "aura": "",
+  "abilities": [],
+  "sampleTicks": 0
  },
  {
   "id": "unit_wl_eosinophil",
@@ -166,7 +176,9 @@
   "requires": [],
   "morphsTo": null,
   "family": "",
-  "aura": ""
+  "aura": "",
+  "abilities": [],
+  "sampleTicks": 0
  },
  {
   "id": "unit_wl_macrophage",
@@ -197,7 +209,9 @@
   ],
   "morphsTo": null,
   "family": "",
-  "aura": ""
+  "aura": "",
+  "abilities": [],
+  "sampleTicks": 0
  },
  {
   "id": "unit_wl_plasma",
@@ -228,7 +242,9 @@
   ],
   "morphsTo": null,
   "family": "",
-  "aura": ""
+  "aura": "",
+  "abilities": [],
+  "sampleTicks": 0
  },
  {
   "id": "unit_wl_nk",
@@ -258,7 +274,9 @@
   ],
   "morphsTo": null,
   "family": "",
-  "aura": ""
+  "aura": "",
+  "abilities": [],
+  "sampleTicks": 0
  },
  {
   "id": "unit_wl_cd4",
@@ -287,7 +305,9 @@
   "requires": [],
   "morphsTo": null,
   "family": "",
-  "aura": "helper"
+  "aura": "helper",
+  "abilities": [],
+  "sampleTicks": 0
  },
  {
   "id": "unit_wl_cd8",
@@ -316,7 +336,9 @@
   "requires": [],
   "morphsTo": null,
   "family": "",
-  "aura": ""
+  "aura": "",
+  "abilities": [],
+  "sampleTicks": 0
  },
  {
   "id": "unit_wl_treg",
@@ -345,7 +367,77 @@
   "requires": [],
   "morphsTo": null,
   "family": "",
-  "aura": ""
+  "aura": "",
+  "abilities": [],
+  "sampleTicks": 0
+ },
+ {
+  "id": "hero_wl_bigmac",
+  "faction": "wl",
+  "role": "heavy",
+  "cost": [
+   0,
+   0
+  ],
+  "trainTicks": 0,
+  "supply": 0,
+  "hp": 650,
+  "armor": 3,
+  "speed": 33,
+  "radius": 218,
+  "navClass": "large",
+  "sight": 2048,
+  "weapon": "w_bigmac_engulf",
+  "tags": [
+   "biological",
+   "armored",
+   "hero"
+  ],
+  "carry": 0,
+  "lifespan": 0,
+  "producedAt": "",
+  "requires": [],
+  "morphsTo": null,
+  "family": "",
+  "aura": "",
+  "abilities": [
+   "big_meal",
+   "clean"
+  ],
+  "sampleTicks": 0
+ },
+ {
+  "id": "hero_wl_dendra",
+  "faction": "wl",
+  "role": "intel",
+  "cost": [
+   0,
+   0
+  ],
+  "trainTicks": 0,
+  "supply": 0,
+  "hp": 260,
+  "armor": 0,
+  "speed": 67,
+  "radius": 154,
+  "navClass": "medium",
+  "sight": 2816,
+  "weapon": null,
+  "tags": [
+   "biological",
+   "hero"
+  ],
+  "carry": 0,
+  "lifespan": 0,
+  "producedAt": "",
+  "requires": [],
+  "morphsTo": null,
+  "family": "",
+  "aura": "",
+  "abilities": [
+   "scan"
+  ],
+  "sampleTicks": 20
  },
  {
   "id": "unit_col_feeder",
@@ -374,7 +466,9 @@
   "requires": [],
   "morphsTo": null,
   "family": "staph",
-  "aura": ""
+  "aura": "",
+  "abilities": [],
+  "sampleTicks": 0
  },
  {
   "id": "unit_col_coccus",
@@ -402,7 +496,9 @@
   "requires": [],
   "morphsTo": null,
   "family": "staph",
-  "aura": ""
+  "aura": "",
+  "abilities": [],
+  "sampleTicks": 0
  },
  {
   "id": "unit_col_bacillus",
@@ -430,7 +526,9 @@
   "requires": [],
   "morphsTo": null,
   "family": "bacillus",
-  "aura": ""
+  "aura": "",
+  "abilities": [],
+  "sampleTicks": 0
  },
  {
   "id": "unit_col_flagellate",
@@ -458,7 +556,9 @@
   "requires": [],
   "morphsTo": null,
   "family": "enteric",
-  "aura": ""
+  "aura": "",
+  "abilities": [],
+  "sampleTicks": 0
  },
  {
   "id": "unit_col_spirochete",
@@ -486,7 +586,9 @@
   "requires": [],
   "morphsTo": null,
   "family": "spiro",
-  "aura": ""
+  "aura": "",
+  "abilities": [],
+  "sampleTicks": 0
  },
  {
   "id": "unit_col_capsule",
@@ -515,7 +617,9 @@
   "requires": [],
   "morphsTo": null,
   "family": "pneumo",
-  "aura": ""
+  "aura": "",
+  "abilities": [],
+  "sampleTicks": 0
  },
  {
   "id": "unit_col_strep",
@@ -543,7 +647,9 @@
   "requires": [],
   "morphsTo": null,
   "family": "strep",
-  "aura": ""
+  "aura": "",
+  "abilities": [],
+  "sampleTicks": 0
  },
  {
   "id": "unit_col_toxin",
@@ -571,6 +677,8 @@
   "requires": [],
   "morphsTo": null,
   "family": "clostridium",
-  "aura": ""
+  "aura": "",
+  "abilities": [],
+  "sampleTicks": 0
  }
 ]

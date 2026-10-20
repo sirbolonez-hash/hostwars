@@ -72,6 +72,11 @@ function isFoe(world: World, ctx: SimContext, owner: number, t: Entity): boolean
   return t.hp > 0 && t.owner !== 0 && !allied(world, owner, t.owner) && !ctx.catalog.resources.has(t.type);
 }
 
+/** In a mission the Colony feeds on the host's tissue: its units go for host cells when nothing else is there. */
+function eatsTissue(world: World, owner: number, t: Entity): boolean {
+  return world.host !== null && t.owner === 0 && t.building && t.hp > 0 && world.players[owner - 1]?.faction === 'col';
+}
+
 /** Distance between two bodies' edges (a building's edge is its footprint). */
 export function gap(ctx: SimContext, a: Entity, b: Entity): number {
   if (!a.building && !b.building) return Math.max(0, isqrt((a.x - b.x) ** 2 + (a.y - b.y) ** 2) - radiusOf(ctx, a) - radiusOf(ctx, b));
@@ -171,7 +176,7 @@ function priority(ctx: SimContext, t: Entity): number {
   return armed ? 2 : 3;
 }
 
-function acquire(world: World, ctx: SimContext, grid: Spatial, e: Entity, range: number): Entity | null {
+function acquire(world: World, ctx: SimContext, grid: Spatial, e: Entity, range: number, cells: Entity[]): Entity | null {
   let best: Entity | null = null;
   let bp = 0;
   let bd = 0;
@@ -183,6 +188,17 @@ function acquire(world: World, ctx: SimContext, grid: Spatial, e: Entity, range:
     if (!best || p < bp || (p === bp && (d < bd || (d === bd && t.id < best.id)))) {
       best = t;
       bp = p;
+      bd = d;
+    }
+  }
+  if (best || cells.length === 0 || !eatsTissue(world, e.owner, cells[0]!)) return best;
+  // nothing to fight: bacteria feed on the nearest host cell they can reach
+  for (const t of cells) {
+    if (t.hp <= 0) continue;
+    const d = gap(ctx, e, t);
+    if (d > range) continue;
+    if (!best || d < bd || (d === bd && t.id < best.id)) {
+      best = t;
       bd = d;
     }
   }
@@ -255,9 +271,16 @@ export function combatPhase(world: World, ctx: SimContext, events: CombatEvent[]
   const grid = new Spatial(world);
   const tick = world.tick;
   const launches: Entity[] = [];
+  // a mission's host cells, which the Colony feeds on when nothing else is about
+  const cells = world.host ? world.entities.filter((c) => c.owner === 0 && c.building && c.hp > 0 && ctx.catalog.buildings.get(c.type)?.role === 'host') : [];
   for (const e of world.entities) {
     const cb = e.cb;
     if (!cb || e.hp <= 0 || e.build || e.morph) continue;
+    if (e.stun > tick) {
+      // held in a net: no attack, no windup
+      cb.windupEnd = -1;
+      continue;
+    }
     const w = weaponOf(ctx, e);
     if (!w) continue;
     const order = e.order;
@@ -267,7 +290,7 @@ export function combatPhase(world: World, ctx: SimContext, events: CombatEvent[]
       continue;
     }
     const current = cb.target !== 0 ? entityById(world, cb.target) : undefined;
-    const sees = (t: Entity | undefined): t is Entity => t !== undefined && isFoe(world, ctx, e.owner, t) && canSee(ctx, e.owner, t);
+    const sees = (t: Entity | undefined): t is Entity => t !== undefined && (isFoe(world, ctx, e.owner, t) || eatsTissue(world, e.owner, t)) && canSee(ctx, e.owner, t);
     if (order.kind === 'attack') {
       const t = entityById(world, order.target);
       if (!sees(t)) {
@@ -283,7 +306,7 @@ export function combatPhase(world: World, ctx: SimContext, events: CombatEvent[]
     const holding = e.building || order.kind === 'hold';
     const range = holding ? w.range : Math.max(sightOf(ctx, e), w.range);
     let t: Entity | null = sees(current) && gap(ctx, e, current) <= range + (holding ? 0 : KEEP_SLACK) ? current : null;
-    if (!t && (cb.target !== 0 || (tick + e.id) % SCAN_EVERY === 0)) t = acquire(world, ctx, grid, e, range);
+    if (!t && (cb.target !== 0 || (tick + e.id) % SCAN_EVERY === 0)) t = acquire(world, ctx, grid, e, range, cells);
     if (!t) {
       if (cb.target !== 0) stopAttack(e);
       if (order.kind === 'amove' && !e.mv) {
@@ -386,6 +409,8 @@ export function hitPhase(world: World, ctx: SimContext, events: CombatEvent[]): 
   if (landing.length === 0) return;
   world.projectiles = world.projectiles.filter((p) => p.impact > tick);
   const grid = new Spatial(world);
+  // host cells are nobody's: the spatial index leaves them out, area damage looks them up here
+  const hostCells = landing.some((p) => ctx.catalog.weapons.get(p.weapon)!.splash > 0) ? world.entities.filter((e) => e.owner === 0 && e.building && ctx.catalog.buildings.get(e.type)?.role === 'host') : [];
   for (const p of landing) {
     const w = ctx.catalog.weapons.get(p.weapon)!;
     const t = entityById(world, p.target);
@@ -408,6 +433,10 @@ export function hitPhase(world: World, ctx: SimContext, events: CombatEvent[]): 
       for (const o of grid.near(p.x, p.y, w.splash)) {
         if (!isFoe(world, ctx, p.owner, o)) continue;
         if (pointGap(ctx, o, p.x, p.y) <= w.splash) strike(world, ctx, w, p, o, events);
+      }
+      // area damage of either side hurts the host's own cells too (tissue integrity)
+      for (const c of hostCells) {
+        if (c.hp > 0 && pointGap(ctx, c, p.x, p.y) <= w.splash) strike(world, ctx, w, p, c, events);
       }
       continue;
     }

@@ -7,7 +7,7 @@ import { stampBuilding, type SimContext } from '../context';
 import { SUB } from './fixed';
 import { seedRng, type RngState } from './rng';
 
-export const WORLD_VERSION = 6;
+export const WORLD_VERSION = 7;
 export const NEUTRAL = 0;
 
 export interface Player {
@@ -84,6 +84,60 @@ export interface Memory {
 export interface Outcome {
   winnerTeam: number; // 0 = draw
   tick: number;
+  /** why it ended, when a mission or the host decided it ('' otherwise) */
+  reason: string;
+}
+
+/**
+ * The host's monitor (main tab, section 3.2): the patient around the battle. Only in missions.
+ * Points are kept in thousandths so everything stays integer.
+ */
+export interface HostState {
+  /** inflammation, thousandths of a point: 0–100,000 */
+  infl: number;
+  /** mean arterial pressure, thousandths of mmHg (starts at 85,000) */
+  pressure: number;
+  /** the last tick anything was hit anywhere: inflammation calms 10 s after it */
+  lastFight: number;
+  /** when inflammation went above 85 (a cytokine storm), −1 when it is not */
+  stormSince: number;
+  /** when the pressure fell below 50 (shock), −1 when it is not */
+  shockSince: number;
+  /** the host cells' hit points when the mission began: tissue integrity is measured against it */
+  tissueMax: number;
+  /** tissue damage a raging inflammation owes, thousandths of a hit point */
+  tissueOwed: number;
+}
+
+/** Pus on a tile, where neutrophils died: slows everyone; a macrophage cleans it. */
+export interface Pus {
+  i: number; // tile index
+  until: number;
+}
+
+/** A spot a player sees for a while without a unit there (a dendritic scan). */
+export interface Reveal {
+  player: number;
+  x: number; // sub-tiles
+  y: number;
+  r: number; // sub-tiles
+  until: number;
+}
+
+/** A mission under way: where its objectives and triggers stand. */
+export interface MissionState {
+  id: string;
+  objectives: Record<string, 'hidden' | 'active' | 'done' | 'failed'>;
+  /** trigger id → the tick it last fired */
+  fired: Record<string, number>;
+  /** trigger id → since when its conditions have held (for conditions that must hold a while) */
+  since: Record<string, number>;
+  /** triggers switched off */
+  stopped: string[];
+  /** the next exit gate to use */
+  gate: number;
+  /** units trained so far, by "owner:type" */
+  made: Record<string, number>;
 }
 
 /** One unit in a production queue. Paid and its supply reserved when ordered. */
@@ -240,6 +294,12 @@ export interface Entity {
   doneTick: number;
   /** lymph nodes: samples being processed */
   lab: LabItem[] | null;
+  /** stunned (a NET) until this tick: no moving, no attacking */
+  stun: number;
+  /** a mission's name for it ('' = none): triggers ask about tagged things */
+  tag: string;
+  /** a hero's abilities: ability → the tick it is ready again */
+  ready: Record<string, number>;
 }
 
 export interface World {
@@ -266,6 +326,14 @@ export interface World {
   /** per player: what they last saw of buildings and resources not theirs */
   memory: Memory[][];
   outcome: Outcome | null;
+  /** the host's monitor (missions only) */
+  host: HostState | null;
+  /** pus on the ground, by tile */
+  pus: Pus[];
+  /** places seen for a while without a unit (a dendritic scan) */
+  reveals: Reveal[];
+  /** the mission being played (null in a skirmish) */
+  mission: MissionState | null;
 }
 
 export interface MatchSetup {
@@ -273,6 +341,8 @@ export interface MatchSetup {
   map: string;
   dev?: boolean;
   players: { faction: FactionId; team: number; startTile: [number, number] }[];
+  /** a campaign mission: no starting bases, the mission places everything (src/sim/mission) */
+  mission?: string;
 }
 
 export function createWorld(ctx: SimContext, setup: MatchSetup): World {
@@ -299,6 +369,10 @@ export function createWorld(ctx: SimContext, setup: MatchSetup): World {
     explored: [],
     memory: [],
     outcome: null,
+    host: null,
+    pus: [],
+    reveals: [],
+    mission: null,
   };
   setup.players.forEach((p, i) => {
     const f = catalog.factions.get(p.faction);
@@ -311,6 +385,8 @@ export function createWorld(ctx: SimContext, setup: MatchSetup): World {
     const [fw, fh] = catalog.footprints.get(r.type)!;
     spawnResource(world, ctx, r.type, r.tile[0] * SUB + fw * (SUB / 2), r.tile[1] * SUB + fh * (SUB / 2), r.field);
   }
+  // a mission places its own units and buildings (initMission)
+  if (setup.mission) return world;
   setup.players.forEach((p, i) => {
     const f = catalog.factions.get(p.faction)!;
     const owner = i + 1;
@@ -341,7 +417,7 @@ export function supplyCapOf(world: World, catalog: Catalog, owner: number): numb
 
 const BLANK = {
   gather: null, cargo: 0, cargoKind: '' as const, build: null, queue: null, rally: null, buildOrder: null, job: null, morph: null,
-  cb: null, slow: null, lastCombat: -1_000_000, sample: '', spec: '', doneTick: 0, lab: null,
+  cb: null, slow: null, lastCombat: -1_000_000, sample: '', spec: '', doneTick: 0, lab: null, stun: 0, tag: '',
 };
 
 /** A fresh attack state for an armed entity. */
@@ -366,6 +442,7 @@ export function spawnBuilding(world: World, ctx: SimContext, type: string, owner
     building: true, bornTick: world.tick, order: { kind: 'idle' }, mv: null,
     res: def.workSlots > 0 ? { stock: 0, field: 0, slots: new Array<number>(def.workSlots).fill(0), link: 0 } : null,
     ...BLANK,
+    ready: {},
     build: grows ? { progress: 0, total, paid: [...paid] } : null,
     queue: def.produces.length > 0 ? [] : null,
     cb: def.weapon ? newCombat() : null,
@@ -388,6 +465,7 @@ export function spawnResource(world: World, ctx: SimContext, type: string, x: nu
     building: true, bornTick: world.tick, order: { kind: 'idle' }, mv: null,
     res: { stock: def.stock, field: def.kind === 'glucose' ? field : 0, slots: new Array<number>(def.slots).fill(0), link: 0 },
     ...BLANK,
+    ready: {},
   };
   world.entities.push(e);
   stampBuilding(ctx, type, e.x, e.y, 1);
@@ -403,6 +481,7 @@ export function spawnUnit(world: World, catalog: Catalog, type: string, owner: n
     hp: def.hp, maxHp: def.hp, building: false, bornTick: world.tick, order: { kind: 'idle' }, mv: null,
     res: null,
     ...BLANK,
+    ready: {},
     cb: def.weapon ? newCombat() : null,
   };
   world.entities.push(e);

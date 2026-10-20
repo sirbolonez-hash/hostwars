@@ -13,7 +13,7 @@ export const NEAR_TILES = 8;
 /** A builder placing an expansion stands within this many tiles of its footprint. */
 export const BUILDER_TILES = 2;
 
-export type PlaceReason = 'out_of_bounds' | 'bad_ground' | 'site_blocked' | 'too_far' | 'no_builder' | 'blocks_exit' | 'no_deposit' | 'cannot_place' | 'no_biofilm';
+export type PlaceReason = 'out_of_bounds' | 'bad_ground' | 'site_blocked' | 'too_far' | 'no_builder' | 'blocks_exit' | 'no_deposit' | 'cannot_place' | 'no_biofilm' | 'wrong_zone';
 
 export type PlaceCheck = { ok: true; deposit: number; friendlies: number[] } | { ok: false; reason: PlaceReason };
 
@@ -62,6 +62,9 @@ export function checkPlacement(world: World, ctx: SimContext, player: number, ty
         if (nav.terrain[i] !== T_OPEN) return { ok: false, reason: 'bad_ground' };
         if (nav.blocked(x, y)) return { ok: false, reason: 'site_blocked' };
         if (def.placement === 'biofilm' && ctx.biofilm.at(x, y) !== player) return { ok: false, reason: 'no_biofilm' };
+        // on maps that mark this building's zone (a follicle, the paracortex), only inside it
+        const zone = def.zone !== '' ? ctx.zones.get(def.zone) : undefined;
+        if (zone && zone[i] !== 1) return { ok: false, reason: 'wrong_zone' };
       }
     }
   }

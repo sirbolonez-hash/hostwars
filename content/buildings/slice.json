@@ -29,7 +29,8 @@
   "placement": "none",
   "art": "bld_wl_lymphnode",
   "artScale": 1000,
-  "family": ""
+  "family": "",
+  "zone": ""
  },
  {
   "id": "bld_wl_outpost",
@@ -61,7 +62,8 @@
   "placement": "builder",
   "art": "bld_wl_lymphnode",
   "artScale": 750,
-  "family": ""
+  "family": "",
+  "zone": ""
  },
  {
   "id": "bld_wl_capillary",
@@ -93,7 +95,8 @@
   "placement": "near",
   "art": "bld_wl_capillary",
   "artScale": 1000,
-  "family": ""
+  "family": "",
+  "zone": ""
  },
  {
   "id": "bld_wl_mitochondria",
@@ -125,7 +128,8 @@
   "placement": "near",
   "art": "bld_wl_mitochondria",
   "artScale": 1000,
-  "family": ""
+  "family": "",
+  "zone": ""
  },
  {
   "id": "bld_wl_marrow",
@@ -163,7 +167,8 @@
   "placement": "near",
   "art": "bld_wl_marrow",
   "artScale": 1000,
-  "family": ""
+  "family": "",
+  "zone": ""
  },
  {
   "id": "bld_wl_spleen",
@@ -197,7 +202,8 @@
   "placement": "near",
   "art": "bld_wl_spleen",
   "artScale": 1000,
-  "family": ""
+  "family": "",
+  "zone": ""
  },
  {
   "id": "bld_wl_aminopump",
@@ -227,7 +233,8 @@
   "placement": "resource",
   "art": "bld_wl_aminopump",
   "artScale": 1000,
-  "family": ""
+  "family": "",
+  "zone": ""
  },
  {
   "id": "bld_wl_mastcell",
@@ -259,7 +266,8 @@
   "placement": "near",
   "art": "bld_wl_mastcell",
   "artScale": 1000,
-  "family": ""
+  "family": "",
+  "zone": ""
  },
  {
   "id": "bld_wl_germinal",
@@ -294,7 +302,8 @@
   "placement": "near",
   "art": "bld_wl_germinal",
   "artScale": 1000,
-  "family": ""
+  "family": "",
+  "zone": "B"
  },
  {
   "id": "bld_wl_thymus",
@@ -331,7 +340,39 @@
   "placement": "near",
   "art": "bld_wl_thymus",
   "artScale": 1000,
-  "family": ""
+  "family": "",
+  "zone": "T"
+ },
+ {
+  "id": "bld_neu_epithelial",
+  "faction": "neu",
+  "role": "host",
+  "cost": [
+   0,
+   0
+  ],
+  "buildTicks": 0,
+  "hp": 120,
+  "armor": 0,
+  "footprint": [
+   1,
+   1
+  ],
+  "supplyProvided": 0,
+  "dropoff": false,
+  "produces": [],
+  "requires": [],
+  "sight": 256,
+  "critical": false,
+  "onResource": null,
+  "weapon": null,
+  "needsBiofilm": false,
+  "workSlots": 0,
+  "placement": "none",
+  "art": "bld_neu_epithelial",
+  "artScale": 420,
+  "family": "",
+  "zone": ""
  },
  {
   "id": "bld_col_biofilm_core",
@@ -363,7 +404,8 @@
   "placement": "anywhere",
   "art": "bld_col_biofilm_core",
   "artScale": 1000,
-  "family": "staph"
+  "family": "staph",
+  "zone": ""
  },
  {
   "id": "bld_col_fermentation",
@@ -395,7 +437,8 @@
   "placement": "biofilm",
   "art": "bld_col_fermentation",
   "artScale": 1000,
-  "family": "staph"
+  "family": "staph",
+  "zone": ""
  },
  {
   "id": "bld_col_fission",
@@ -430,7 +473,8 @@
   "placement": "biofilm",
   "art": "bld_col_fission",
   "artScale": 1000,
-  "family": "staph"
+  "family": "staph",
+  "zone": ""
  },
  {
   "id": "bld_col_siderophore",
@@ -460,7 +504,8 @@
   "placement": "resource",
   "art": "bld_col_siderophore",
   "artScale": 1000,
-  "family": "staph"
+  "family": "staph",
+  "zone": ""
  },
  {
   "id": "bld_col_flagellum",
@@ -497,7 +542,8 @@
   "placement": "biofilm",
   "art": "bld_col_flagellum",
   "artScale": 1000,
-  "family": "staph"
+  "family": "staph",
+  "zone": ""
  },
  {
   "id": "bld_col_toxinspire",
@@ -529,7 +575,8 @@
   "placement": "biofilm",
   "art": "bld_col_toxinspire",
   "artScale": 1000,
-  "family": "staph"
+  "family": "staph",
+  "zone": ""
  },
  {
   "id": "bld_col_toxinfoundry",
@@ -563,6 +610,7 @@
   "placement": "biofilm",
   "art": "bld_col_toxinfoundry",
   "artScale": 1000,
-  "family": "staph"
+  "family": "staph",
+  "zone": ""
  }
 ]

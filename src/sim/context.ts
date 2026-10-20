@@ -3,7 +3,7 @@
 // world's buildings, so a loaded save gets exactly the grid it was saved with.
 
 import type { Catalog } from './content/catalog';
-import type { MapDef } from './content/types';
+import type { MapDef, MissionDef } from './content/types';
 import type { World } from './core/world';
 import { AStar } from './navigation/astar';
 import { NavGrid, validateMap } from './navigation/grid';
@@ -19,19 +19,33 @@ export interface SimContext {
   vision: Vision;
   /** the Colony's ground this tick: derived from its cores every tick, never saved */
   biofilm: Biofilm;
+  /** the map's special zones: kind → 1 on each tile of that kind */
+  zones: Map<string, Uint8Array>;
+  /** pus on each tile this tick: derived from the world's pus every tick, never saved */
+  pus: Uint8Array;
+  /** the mission being played (null in a skirmish) */
+  mission: MissionDef | null;
 }
 
-export function createContext(catalog: Catalog, map: MapDef): SimContext {
+export function createContext(catalog: Catalog, map: MapDef, mission: MissionDef | null = null): SimContext {
   const errors = [...validateMap(map), ...validateMapResources(map, catalog)];
   if (errors.length) throw new Error('map invalid:\n  ' + errors.join('\n  '));
   const nav = new NavGrid(map);
-  return { catalog, map, nav, astar: new AStar(nav), vision: new Vision(map.w, map.h), biofilm: new Biofilm(map.w, map.h) };
+  const zones = new Map<string, Uint8Array>();
+  for (const z of map.zones ?? []) {
+    const g = zones.get(z.kind) ?? new Uint8Array(map.w * map.h);
+    for (const i of z.tiles) g[i] = 1;
+    zones.set(z.kind, g);
+  }
+  return { catalog, map, nav, astar: new AStar(nav), vision: new Vision(map.w, map.h), biofilm: new Biofilm(map.w, map.h), zones, pus: new Uint8Array(map.w * map.h), mission };
 }
 
 /** Context for a loaded world: fresh grid with every building's footprint stamped. */
-export function contextForWorld(catalog: Catalog, map: MapDef, world: World): SimContext {
+export function contextForWorld(catalog: Catalog, map: MapDef, world: World, mission: MissionDef | null = null): SimContext {
   if (world.map !== map.id) throw new Error(`world is on map ${world.map}, not ${map.id}`);
-  const ctx = createContext(catalog, map);
+  if ((world.mission?.id ?? null) !== (mission?.id ?? null)) throw new Error(`world is in mission ${world.mission?.id ?? 'none'}, not ${mission?.id ?? 'none'}`);
+  const ctx = createContext(catalog, map, mission);
+  for (const p of world.pus) ctx.pus[p.i] = 1;
   for (const e of world.entities) if (e.building) stampBuilding(ctx, e.type, e.x, e.y, 1);
   // derived layers, so a screen or an AI looking before the first tick sees the loaded match
   computeBiofilm(world, ctx);

@@ -101,6 +101,19 @@ export function computeVision(world: World, ctx: SimContext, remember: boolean):
       }
     }
   }
+  // places seen for a while without a unit there (a dendritic scan)
+  for (const r of world.reveals) {
+    const grid = teams.get(world.players[r.player - 1]!.team)!;
+    const rt = Math.floor(r.r / SUB);
+    const cx = Math.floor(r.x / SUB);
+    const cy = Math.floor(r.y / SUB);
+    const d = disc(rt);
+    for (let k = 0; k < d.length; k += 2) {
+      const x = cx + d[k]!;
+      const y = cy + d[k + 1]!;
+      if (x >= 0 && y >= 0 && x < v.w && y < v.h) grid[y * v.w + x] = 1;
+    }
+  }
   world.players.forEach((p, i) => (v.visible[i] = teams.get(p.team)!));
   v.tick = world.tick;
   if (!remember) return;

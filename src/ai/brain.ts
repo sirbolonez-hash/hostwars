@@ -412,7 +412,9 @@ function economy(st: AiState, k: Know, lv: Level, out: Cmd[]): void {
   adv = Math.max(0, adv - reserve[1]);
   let armyValue = 0;
   for (const f of k.fighters) armyValue += k.value(f.type);
-  for (const b of k.buildings) {
+  // the higher tiers first: a thymus or germinal centre is not starved by the marrow
+  const producers = [...k.buildings].sort((a, b) => Number(k.bDef(b.type)?.role === 'tech') - Number(k.bDef(a.type)?.role === 'tech') || a.id - b.id);
+  for (const b of producers) {
     if (armyValue >= lv.armyCap) break;
     if (b.growing) continue;
     const mix = MIX[b.type];
@@ -434,7 +436,17 @@ function economy(st: AiState, k: Know, lv: Level, out: Cmd[]): void {
           break;
         }
       }
-      if (picked < 0) break;
+      if (picked < 0) {
+        // an idle tier-2 building saves for its next unit, so cheaper units do not starve it forever
+        if (k.bDef(b.type)?.role === 'tech' && b.queue.length === 0) {
+          const next = mix.map((t) => k.unitDef(t)!).find((u) => k.requirementsMet(u.requires));
+          if (next) {
+            money -= next.cost[0];
+            adv -= next.cost[1];
+          }
+        }
+        break;
+      }
       const u = k.unitDef(mix[picked]!)!;
       out.push({ type: 'TRAIN', units: [], building: b.id, unit: u.id, count: 1 });
       spend(u.cost);
@@ -538,7 +550,8 @@ function buildNear(st: AiState, k: Know, type: string, at: 'base' | 'front' | 'r
     site = findSite(st, k, type, fx + dx, fy + dy, 8, true);
   } else {
     const off = at === 'front' ? towards(k.home, k.enemyStart, 8 * T) : towards(k.home, k.enemyStart, 3 * T);
-    site = findSite(st, k, type, k.home[0] + off[0], k.home[1] + off[1], 13, true);
+    // a building tied to a zone of the map (a follicle, the paracortex) may have to go further
+    site = findSite(st, k, type, k.home[0] + off[0], k.home[1] + off[1], k.bDef(type)?.zone ? 24 : 13, true);
   }
   if (!site) return 'no_site';
   return orderBuilding(st, k, type, site, out) ? 'ok' : 'busy';

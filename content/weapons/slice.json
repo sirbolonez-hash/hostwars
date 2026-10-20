@@ -189,6 +189,26 @@
   "arcCos": 1000
  },
  {
+  "id": "w_bigmac_engulf",
+  "kind": "engulf",
+  "damage": 24,
+  "cooldown": 28,
+  "windup": 6,
+  "range": 256,
+  "minRange": 0,
+  "splash": 0,
+  "arc": 0,
+  "bonus": {},
+  "maxTargets": 1,
+  "engulfMaxHp": 200,
+  "speed": 0,
+  "onTargetLost": "fizzle",
+  "slow": 0,
+  "slowTicks": 0,
+  "antibody": false,
+  "arcCos": 1000
+ },
+ {
   "id": "w_coccus_bite",
   "kind": "melee",
   "damage": 5,

@@ -254,7 +254,7 @@ describe('combat rules (gate 5)', () => {
     const [a, b] = [h.world.entities.find((e) => e.type === 'bld_wl_lymphnode')!, h.world.entities.find((e) => e.type === 'bld_col_biofilm_core')!];
     h.cmd(1, { type: 'DEV_KILL', units: [], targets: [a.id, b.id] });
     h.run(1);
-    expect(h.world.outcome).toEqual({ winnerTeam: 0, tick: 1 });
+    expect(h.world.outcome).toEqual({ winnerTeam: 0, tick: 1, reason: '' });
     expect(h.world.players.every((p) => p.defeated)).toBe(true);
     const g = field();
     g.cmd(1, { type: 'DEV_KILL', units: [], targets: [g.world.entities.find((e) => e.type === 'bld_col_biofilm_core')!.id] });

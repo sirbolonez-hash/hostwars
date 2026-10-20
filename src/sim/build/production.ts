@@ -12,6 +12,7 @@ import { carryOf, inReach, orderGather, stopGather, validateGather } from '../ec
 import { centreOf, CLASS_SIZE } from '../navigation/grid';
 import { afterFootprintChange, clearMove, issueMove, travelTo } from '../navigation/movement';
 import { checkPlacement, exitTile } from './placement';
+import { productionStalls } from '../host/host';
 
 export const QUEUE_MAX = 5;
 /** Refund for a started unit or a growing building, in thousandths. */
@@ -475,7 +476,7 @@ export function productionPhase(world: World, ctx: SimContext, events: BuildEven
     }
     let fresh = false;
     if (!item.blocked) {
-      item.done++;
+      if (!productionStalls(world)) item.done++;
       if (item.done < u.trainTicks) continue;
       item.blocked = true; // trained: from here on it only waits for room at the exit
       fresh = true;

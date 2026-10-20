@@ -20,6 +20,8 @@ export interface Catalog {
 }
 
 const KINDS: ResourceKind[] = ['glucose', 'protein', 'iron'];
+/** the abilities the simulation knows (src/sim/hero/abilities.ts) */
+export const ABILITIES = ['big_meal', 'clean', 'scan'];
 const TAGS: Tag[] = ['worker', 'biological', 'armored', 'building', 'capsule', 'concealed', 'air', 'hero', 'structure', 'acquired', 'infected'];
 
 export function validateContent(c: ContentFiles, knownAssets?: Set<string>): string[] {
@@ -77,6 +79,8 @@ export function validateContent(c: ContentFiles, knownAssets?: Set<string>): str
     if (u.carry > 0 && u.navClass !== 'small') e(`${at}: carriers must be small bodies`);
     if (typeof u.family !== 'string' || (u.faction !== 'wl' && u.family === '')) e(`${at}: every enemy of the White Line needs an antigen family`);
     if (u.aura !== '' && u.aura !== 'helper') e(`${at}: unknown aura ${String(u.aura)}`);
+    if (!Array.isArray(u.abilities) || !u.abilities.every((a) => ABILITIES.includes(a))) e(`${at}: unknown ability in ${String(u.abilities)}`);
+    ints(at, u, ['sampleTicks']);
     if (knownAssets && !knownAssets.has(u.id)) e(`${at}: no asset with this id`);
   }
 
@@ -98,6 +102,8 @@ export function validateContent(c: ContentFiles, knownAssets?: Set<string>): str
     ints(at, b, ['workSlots', 'artScale'], 0);
     if (!['near', 'builder', 'resource', 'biofilm', 'anywhere', 'none'].includes(b.placement)) e(`${at}: unknown placement ${String(b.placement)}`);
     if (typeof b.family !== 'string') e(`${at}: family must be a string`);
+    if (typeof b.zone !== 'string') e(`${at}: zone must be a string`);
+    if ((b.role === 'host') !== (b.faction === 'neu')) e(`${at}: host cells, and only they, are neutral`);
     if ((b.placement === 'resource') !== (b.onResource !== null)) e(`${at}: an extractor is placed on its resource, and only it`);
     if (b.produces.length > 0 && b.footprint[1] > 4) e(`${at}: production building too tall for its exit rule`);
     if ((b.role === 'extractor') !== (b.onResource !== null)) e(`${at}: only an extractor sits on a resource`);

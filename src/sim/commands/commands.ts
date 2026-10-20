@@ -8,6 +8,8 @@ import { validateBuildingCmd, validateUnitJob } from '../build/production';
 import { validateAttack } from '../combat/combat';
 import { validateBuildAt, validateSplit } from '../colony/colony';
 import { validateSample } from '../intel/antigen';
+import { validateNet } from '../host/host';
+import { validateAbility } from '../hero/abilities';
 import { validateGather } from '../economy/gather';
 
 export const MAX_UNITS_PER_COMMAND = 200;
@@ -33,6 +35,10 @@ export type Cmd =
   | { type: 'SPLIT'; units: number[] }
   /** dendritic cells take a sample from this enemy and carry it to a lymph node */
   | { type: 'SAMPLE'; units: number[]; target: number }
+  /** neutrophils give themselves up in a sticky net that holds the enemies around them */
+  | { type: 'NET'; units: number[] }
+  /** a hero's ability (src/sim/hero/abilities.ts): a target entity, or 0 */
+  | { type: 'ABILITY'; units: number[]; ability: string; target: number }
   // building commands: `units` is empty, `building` names the building
   | { type: 'TRAIN'; units: number[]; building: number; unit: string; count: number }
   /** cancel a queued unit (index; -1 = the last), the growing building itself, or a lymph node's unplaced order */
@@ -67,6 +73,12 @@ export interface CommandEnvelope {
 }
 
 export type RejectReason =
+  | 'wrong_zone'
+  | 'no_ability'
+  | 'cooling_down'
+  | 'out_of_reach'
+  | 'no_neutrophils'
+  | 'mission_only'
   | 'bad_shape'
   | 'late'
   | 'duplicate_seq'
@@ -150,6 +162,10 @@ export function checkShape(env: unknown): env is CommandEnvelope {
       return true;
     case 'SAMPLE':
       return isInt(c.target);
+    case 'NET':
+      return true;
+    case 'ABILITY':
+      return typeof c.ability === 'string' && isInt(c.target);
     case 'BUILD_AT':
       return typeof c.build === 'string' && isInt(c.tx) && isInt(c.ty);
     case 'TRAIN':
@@ -233,6 +249,10 @@ export function validate(world: World, env: CommandEnvelope, index: Map<number, 
   if (env.cmd.type === 'ASSIST_BUILD' || env.cmd.type === 'REPAIR' || env.cmd.type === 'DEPLOY') {
     const live = units.map((id) => index.get(id)).filter((e): e is World['entities'][number] => e !== undefined);
     return validateUnitJob(world, ctx, env.player, env.cmd, live);
+  }
+  if (env.cmd.type === 'NET' || env.cmd.type === 'ABILITY') {
+    const live = units.map((id) => index.get(id)).filter((e): e is World['entities'][number] => e !== undefined);
+    return env.cmd.type === 'NET' ? validateNet(ctx, live) : validateAbility(world, ctx, env.player, env.cmd, live);
   }
   return null;
 }
