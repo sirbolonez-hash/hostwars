@@ -74,7 +74,12 @@
     #perf { bottom: 10px; left: 10px; font-family: ui-monospace, Menlo, monospace; font-size: 12px; direction: ltr; text-align: left; color: var(--muted); }
     #gpu { display: block; }
     #start { position: fixed; inset: 0; display: grid; place-items: center; background: radial-gradient(circle at 50% 40%, rgba(90, 30, 70, 0.75), rgba(20, 8, 18, 0.95)); z-index: 10; }
-    #start[hidden] { display: none; }
+    #start[hidden], #end[hidden] { display: none; }
+    #end { position: fixed; inset: 0; display: grid; place-items: center; background: rgba(20, 8, 18, 0.72); z-index: 9; }
+    #end .card { text-align: center; display: grid; gap: 14px; justify-items: center; }
+    #end h1 { font: 600 56px Fredoka, Assistant, sans-serif; margin: 0; color: var(--gold); text-shadow: 0 4px 0 #3b1530; }
+    #end p { margin: 0; color: var(--ink); font-size: 18px; }
+    #end button { font-size: 17px; padding: 8px 28px; text-align: center; }
     #start .card { max-width: 640px; width: calc(100% - 32px); text-align: center; display: grid; gap: 14px; justify-items: center; }
     #start img { width: min(560px, 100%); height: auto; }
     #start h1 { font: 600 24px Fredoka, Assistant, sans-serif; margin: 0; }
@@ -110,6 +115,10 @@
     <button id="btn-pump" type="button">משאבת אמינו על מרבץ החלבון</button>
     <button id="btn-kill" type="button">הרוס את מה שנבחר</button>
     <button id="btn-grant" type="button">+1,000 ATP ו-200 אמינו</button>
+    <h3>קרב</h3>
+    <button id="btn-army" type="button">צבא תקיפה: 20 נויטרופילים, 6 מקרופאג'ים, 8 אאוזינופילים</button>
+    <button id="btn-defenders" type="button">מגינים לקולוניה: 12 קוקים, 4 דגלונים, 2 שרשראות</button>
+    <button id="btn-reveal" type="button" aria-pressed="false">חשוף את כל המפה</button>
     <h3>תנועה</h3>
     <button id="btn-20" type="button">+20 נויטרופילים</button>
     <button id="btn-80" type="button">+80 נויטרופילים ליד המעבר הצר</button>
@@ -124,7 +133,8 @@
 
   <div id="help" class="panel" hidden>
     <b>גרירה</b> — בחירה בתיבה · <b>לחיצה</b> — בחירת יחידה · <b>לחיצה כפולה</b> — כל היחידות מאותו סוג על המסך ·
-    <b>Shift</b> — הוספה לבחירה · <b>לחיצה ימנית</b> — תזוזה, ועל גביש עם נשאים: כרייה · <b>S</b> — עצור · <b>H</b> — החזק עמדה ·
+    <b>Shift</b> — הוספה לבחירה · <b>לחיצה ימנית</b> — תזוזה; על אויב: תקיפה; על גביש עם נשאים: כרייה ·
+    <b>A ואז לחיצה</b> — תנועה עם קרב בדרך · <b>S</b> — עצור · <b>H</b> — החזק עמדה (יורה בלי לזוז) ·
     <b>לחיצה על מבנה</b> — הפקודות שלו (אימון, בנייה, ביטול) · <b>לחיצה ימנית עם מבנה ייצור נבחר</b> — נקודת התכנסות ·
     <b>לחיצה ימנית עם טסיות</b> — עזרה בבנייה או תיקון · <b>Esc</b> — ביטול הצבה ·
     <b>Ctrl+מספר</b> — שמירת קבוצה · <b>מספר</b> — בחירת קבוצה (פעמיים: מצלמה אליה) · <b>רווח</b> — מצלמה לבחירה ·
@@ -136,11 +146,20 @@
   <div id="start">
     <div class="card">
       <img src="assets/ui/logo.webp" alt="HOST WARS">
-      <h1>שער 4 · בסיס וייצור</h1>
-      <p>הנשאים יוצאים לכרות מיד. לחצו על צומת הלימפה: משם מאמנים נשאים ומזמינים מבנים — משלמים בהזמנה, מציבים על המפה, והמבנה צומח מ-10% עד שהוא מוכן. כל כפתור שעוד אי אפשר ללחוץ עליו אומר למה.</p>
-      <p>מה לבדוק: בנו צומת נימים ומח עצם, אמנו טסיות ושלחו אותן לעזור לבנייה. נסו לבטל, להרוס באמצע, לחסום יציאה — שום דבר לא אמור לחייב פעמיים או להיתקע.</p>
+      <h1>שער 5 · קרב וערפל</h1>
+      <p>הנשאים יוצאים לכרות, והבסיס נבנה מצומת הלימפה. מה שלא רואים מכוסה בערפל: מבנה אויב שראיתם נשאר כזיכרון אפור, ויחידות אויב נעלמות כשיוצאים מטווח הראייה.</p>
+      <p>מה לבדוק: במעבדת הבדיקות — צבא תקיפה ומגינים לקולוניה. סמנו את הצבא, A ולחיצה ליד בסיס הקולוניה, ותראו אותם נלחמים בדרך. הקולוניה רק מתגוננת (אין לה עדיין AI). השמידו את ליבת הביופילם כדי לנצח.</p>
       <button id="start-btn" type="button" disabled>התחל</button>
       <div id="load-status">טוען…</div>
+    </div>
+  </div>
+
+  <div id="end" hidden>
+    <div class="card">
+      <h1 id="end-title"></h1>
+      <p id="end-text"></p>
+      <button id="end-again" type="button">משחק חדש</button>
+      <button id="end-stay" type="button">להמשיך להסתכל</button>
     </div>
   </div>
 

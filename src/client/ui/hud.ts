@@ -66,6 +66,8 @@ export class Hud {
   private readonly incomeLog: number[] = [];
   private incomeAcc = 0;
   private tipUntil = 0;
+  private attackedAt = -1e9;
+  private endShown = false;
 
   constructor(
     private readonly game: Game,
@@ -88,6 +90,29 @@ export class Hud {
     on('btn-grant', () => {
       this.game.issue({ type: 'DEV_GRANT', units: [], basic: 1000, advanced: 200 });
       this.tip('נוספו 1,000 ATP ו-200 אמינו.');
+    });
+    on('btn-army', () => {
+      const [x, y] = this.spots.spawn;
+      this.game.issue({ type: 'DEV_SPAWN', units: [], unit: 'unit_wl_neutrophil', count: 20, x: x + 3 * 256, y });
+      this.game.issue({ type: 'DEV_SPAWN', units: [], unit: 'unit_wl_macrophage', count: 6, x: x + 3 * 256, y: y - 4 * 256 });
+      this.game.issue({ type: 'DEV_SPAWN', units: [], unit: 'unit_wl_eosinophil', count: 8, x: x + 3 * 256, y: y + 4 * 256 });
+      this.tip('הצבא מוכן ליד הבסיס. סמנו אותו בגרירה, לחצו A ואז לחיצה ליד בסיס הקולוניה.');
+    });
+    on('btn-defenders', () => {
+      const core = this.game.world.entities.find((e) => e.owner === 2 && e.building);
+      if (!core) return;
+      this.game.issueAs(2, { type: 'DEV_SPAWN', units: [], unit: 'unit_col_coccus', count: 12, x: core.x - 6 * 256, y: core.y + 2 * 256 });
+      this.game.issueAs(2, { type: 'DEV_SPAWN', units: [], unit: 'unit_col_flagellate', count: 4, x: core.x - 5 * 256, y: core.y - 4 * 256 });
+      this.game.issueAs(2, { type: 'DEV_SPAWN', units: [], unit: 'unit_col_strep', count: 2, x: core.x - 6 * 256, y: core.y + 6 * 256 });
+      this.tip('לקולוניה יש מגינים ליד הליבה. הם לא תוקפים — רק מתגוננים.');
+    });
+    on('btn-reveal', () => {
+      view.fog.off = !view.fog.off;
+      $('btn-reveal').setAttribute('aria-pressed', String(view.fog.off));
+    });
+    on('end-again', () => location.reload());
+    on('end-stay', () => {
+      $('end').hidden = true;
     });
     on('btn-help', () => {
       const h = $('help');
@@ -190,7 +215,9 @@ export class Hud {
 
   private refreshSelection(force = false): void {
     const ids = this.controls.liveSelection();
-    const insp = this.controls.inspected !== null ? entityById(this.game.world, this.controls.inspected) : undefined;
+    let insp = this.controls.inspected !== null ? entityById(this.game.world, this.controls.inspected) : undefined;
+    // an enemy building that slips out of sight is no longer described: nothing hidden leaks
+    if (insp && insp.owner !== 0 && insp.owner !== this.game.me && !this.view.sees(this.game.world, insp)) insp = undefined;
     if (this.controls.inspected !== null && !insp) this.controls.inspected = null;
     const key = ids.join(',') + '|' + this.view.debugOn + '|' + (insp ? `${insp.id}:${insp.res?.stock ?? insp.hp}` : '');
     this.view.inspected = this.controls.inspected;
@@ -295,6 +322,23 @@ export class Hud {
         if (b) this.tip(`${nameOf(b.type)} מוכן`, 4000);
       }
       if (ev.type === 'morphed' && ev.owner === this.game.me) this.tip('ההתמרה הושלמה', 3000);
+      // something of mine is hit: a warning, at most every 15 seconds
+      if (ev.type === 'hit') {
+        const t = entityById(this.game.world, ev.target);
+        if (t && t.owner === this.game.me && performance.now() - this.attackedAt > 15000) {
+          this.attackedAt = performance.now();
+          this.tip(t.building ? `${nameOf(t.type)} מותקף!` : 'היחידות שלכם מותקפות!', 5000);
+        }
+      }
+    }
+    const out = this.game.world.outcome;
+    if (out && !this.endShown) {
+      this.endShown = true;
+      const myTeam = this.game.world.players[this.game.me - 1]!.team;
+      $('end-title').textContent = out.winnerTeam === 0 ? 'תיקו' : out.winnerTeam === myTeam ? 'ניצחון!' : 'הפסד';
+      $('end-text').textContent =
+        out.winnerTeam === 0 ? 'שני הצדדים איבדו את המבנים החיוניים באותו רגע.' : out.winnerTeam === myTeam ? 'כל המבנים החיוניים של הקולוניה הושמדו. הגוף בריא.' : 'המבנים החיוניים שלכם הושמדו.';
+      $('end').hidden = false;
     }
     if (this.tipUntil && performance.now() > this.tipUntil) {
       $('tip').textContent = '';

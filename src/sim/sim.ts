@@ -8,6 +8,8 @@ import { Hasher } from './core/hash';
 import { entityById, removeEntity, spawnBuilding, spawnUnit, supplyCapOf, type Entity, type World } from './core/world';
 import { applyBuildingCmd, applyUnitJob, productionPhase, QUEUE_MAX, settleLoss, type BuildEvent } from './build/production';
 import { carryOf, gatherPhase, isCrystal, isDeposit, isExtractor, orderGather, stopGather, type GatherEvent } from './economy/gather';
+import { combatPhase, hitPhase, stopAttack, type CombatEvent } from './combat/combat';
+import { computeVision } from './vision/vision';
 import { centreOf, CLASS_SIZE } from './navigation/grid';
 import { nearestPassable } from './navigation/slots';
 import { afterFootprintChange, clearMove, issueMove, moveUnits, processPathQueue, type MoveEvent } from './navigation/movement';
@@ -20,8 +22,11 @@ export type SimEvent =
   | { tick: number; type: 'blocked'; entity: number }
   | ({ tick: number } & GatherEvent)
   | ({ tick: number } & BuildEvent)
-  /** `cargo`: the load it was carrying, lost with it */
-  | { tick: number; type: 'died'; entity: number; entityType: string; owner: number; cause: DeathCause; cargo: number };
+  | ({ tick: number } & CombatEvent)
+  | { tick: number; type: 'defeated'; player: number }
+  | { tick: number; type: 'match_over'; winnerTeam: number }
+  /** `cargo`: the load it was carrying, lost with it; (x, y): where it fell */
+  | { tick: number; type: 'died'; entity: number; entityType: string; owner: number; cause: DeathCause; cargo: number; x: number; y: number };
 
 export interface StepStats {
   pathExpansions: number;
@@ -29,7 +34,8 @@ export interface StepStats {
 
 export interface StepResult {
   events: SimEvent[];
-  hash: string;
+  /** the world's hash after this step; computed on first read, which must come before the next step */
+  readonly hash: string;
   stats: StepStats;
 }
 
@@ -46,7 +52,9 @@ export function step(world: World, ctx: SimContext, commands: CommandEnvelope[])
   const tick = world.tick;
 
   // 1. commands for this tick, in canonical order (the queue already sorted them)
-  // 2. expire timed effects; refresh vision for the start of the tick        (gate 5)
+  // 2. expire timed effects; refresh vision for the start of the tick
+  for (const e of world.entities) if (e.slow && e.slow.until <= tick) e.slow = null;
+  computeVision(world, ctx, false);
 
   // 3. validate and apply commands
   let index = indexOf(world);
@@ -67,7 +75,8 @@ export function step(world: World, ctx: SimContext, commands: CommandEnvelope[])
   moveUnits(world, ctx, moveEvents);
   for (const m of moveEvents) events.push({ tick, ...m });
 
-  // 6. spatial index and vision after movement                              (gate 5)
+  // 6. vision after movement: what is seen, explored and remembered
+  computeVision(world, ctx, true);
   // 7. economy: gathering, then morphs, builders, growth and production queues (research: gate 6)
   const gatherEvents: GatherEvent[] = [];
   gatherPhase(world, ctx, gatherEvents);
@@ -75,8 +84,12 @@ export function step(world: World, ctx: SimContext, commands: CommandEnvelope[])
   const buildEvents: BuildEvent[] = [];
   productionPhase(world, ctx, buildEvents);
   for (const b of buildEvents) events.push({ tick, ...b });
-  // 8. targeting, weapon cooldowns, firing                                  (gate 5)
-  // 9. projectiles and hits: damage first, then healing                     (gate 5)
+  // 8. targeting, windups, launches
+  const combatEvents: CombatEvent[] = [];
+  combatPhase(world, ctx, combatEvents);
+  // 9. what lands this tick: damage first, then healing (none in the slice)
+  hitPhase(world, ctx, combatEvents);
+  for (const c of combatEvents) events.push({ tick, ...c });
 
   // 10. death: lifespans, hit points, emptied resources; release supply, footprints,
   //     path requests, work slots and links. A load on the way dies with its carrier.
@@ -95,19 +108,46 @@ export function step(world: World, ctx: SimContext, commands: CommandEnvelope[])
   for (const { e, cause } of dying) {
     settleLoss(world, e, lossEvents);
     removeEntity(world, ctx, e.id);
-    events.push({ tick, type: 'died', entity: e.id, entityType: e.type, owner: e.owner, cause, cargo: e.cargo });
+    events.push({ tick, type: 'died', entity: e.id, entityType: e.type, owner: e.owner, cause, cargo: e.cargo, x: e.x, y: e.y });
   }
   for (const l of lossEvents) events.push({ tick, ...l });
 
   // 11. host monitor: inflammation, fever, pressure, saturation              (gate 7)
-  // 12. mission triggers, victory check, events, hash
+  // 12. mission triggers (gate 7); defeat when a player has no critical building left, victory
+  //     when one side is left (a draw when the last sides fall on the same tick); events, hash
+  for (const p of world.players) {
+    if (p.defeated) continue;
+    const standing = world.entities.some((e) => e.owner === p.id && e.building && catalog.buildings.get(e.type)?.critical === true);
+    if (!standing) {
+      p.defeated = true;
+      events.push({ tick, type: 'defeated', player: p.id });
+    }
+  }
+  if (!world.outcome && world.players.length > 1) {
+    const teams = new Set(world.players.filter((p) => !p.defeated).map((p) => p.team));
+    if (teams.size <= 1) {
+      const winnerTeam = teams.size === 1 ? [...teams][0]! : 0;
+      world.outcome = { winnerTeam, tick };
+      events.push({ tick, type: 'match_over', winnerTeam });
+    }
+  }
   world.tick = tick + 1;
-  return { events, hash: hashWorld(world, ctx), stats: { pathExpansions } };
+  // the hash is computed when read (read it before the next step: it describes the world now)
+  let hash: string | null = null;
+  return {
+    events,
+    get hash() {
+      if (hash === null) hash = hashWorld(world, ctx);
+      return hash;
+    },
+    stats: { pathExpansions },
+  };
 }
 
-/** A new order ends gathering (the slot is released, the load kept) and a builder's job. */
+/** A new order ends gathering (the slot is released, the load kept), a builder's job, and any attack being wound up. */
 function endWork(world: World, e: Entity): void {
   stopGather(world, e);
+  stopAttack(e);
   if (e.job) {
     e.job = null;
     if (e.order.kind === 'job') e.order = { kind: 'idle' };
@@ -139,9 +179,26 @@ function applyCommand(world: World, ctx: SimContext, env: CommandEnvelope, index
       }
       break;
     case 'GATHER':
-      for (const e of units) if (e.job) endWork(world, e);
+      for (const e of units) if (e.job || e.cb) endWork(world, e);
       orderGather(world, ctx, units, index.get(env.cmd.target)!, env.player);
       break;
+    case 'ATTACK': {
+      const target = env.cmd.target;
+      for (const e of units) {
+        if (!e.cb) continue;
+        endWork(world, e);
+        clearMove(world, e);
+        e.order = { kind: 'attack', target };
+      }
+      break;
+    }
+    case 'ATTACK_MOVE': {
+      // the same arrival spots as a move; armed units fight on the way, the rest just walk
+      for (const e of units) endWork(world, e);
+      issueMove(world, ctx, units, env.cmd.x, env.cmd.y);
+      for (const e of units) if (e.cb && e.order.kind === 'move') e.order = { kind: 'amove', x: e.order.x, y: e.order.y };
+      break;
+    }
     case 'ASSIST_BUILD':
     case 'REPAIR':
     case 'DEPLOY':
@@ -256,7 +313,17 @@ export function hashWorld(world: World, ctx: SimContext): string {
       case 'morph':
         h.int(5);
         break;
+      case 'attack':
+        h.int(6).int(e.order.target);
+        break;
+      case 'amove':
+        h.int(7).int(e.order.x).int(e.order.y);
+        break;
     }
+    if (!e.cb) h.int(-1);
+    else h.int(e.cb.target).int(e.cb.windupEnd).int(e.cb.nextLaunch).bool(e.cb.engaged).int(e.cb.anchorX).int(e.cb.anchorY).int(e.cb.chased);
+    if (!e.slow) h.int(-1);
+    else h.int(e.slow.until).int(e.slow.pct);
     if (!e.res) h.int(-1);
     else {
       h.int(e.res.stock).int(e.res.field).int(e.res.link).int(e.res.slots.length);
@@ -290,6 +357,15 @@ export function hashWorld(world: World, ctx: SimContext): string {
   }
   h.int(world.pathQueue.length);
   for (const r of world.pathQueue) h.int(r.id).int(r.prio).int(r.t);
+  h.int(world.nextShot).int(world.projectiles.length);
+  for (const p of world.projectiles) h.int(p.id).int(p.owner).str(p.weapon).int(p.source).int(p.target).int(p.fromX).int(p.fromY).int(p.x).int(p.y).int(p.launch).int(p.impact);
+  for (const words of world.explored) for (const v of words) h.int(v);
+  for (const mem of world.memory) {
+    h.int(mem.length);
+    for (const m of mem) h.int(m.id).str(m.type).int(m.owner).int(m.x).int(m.y).int(m.hp).int(m.maxHp).bool(m.growing).int(m.stock).int(m.tick);
+  }
+  if (!world.outcome) h.int(-1);
+  else h.int(world.outcome.winnerTeam).int(world.outcome.tick);
   h.int(world.nextGroup).int(world.groupPaths.length);
   for (const gp of world.groupPaths) {
     h.int(gp.grp).int(gp.size).int(gp.t).int(gp.tiles.length);
@@ -316,7 +392,8 @@ export function checkInvariants(world: World, ctx: SimContext): string[] {
       if (e.owner > 0) supply.set(e.owner, (supply.get(e.owner) ?? 0) + (catalog.units.get(e.type)?.supply ?? 0));
       if (nav.blocked(Math.floor(e.x / 256), Math.floor(e.y / 256))) out.push(`entity ${e.id}: standing inside a wall or building`);
       if (e.mv) {
-        if (e.order.kind !== 'move' && e.order.kind !== 'gather' && e.order.kind !== 'job') out.push(`entity ${e.id}: has a path but no move, gather or job order`);
+        // a unit travels for an order: moving, gathering, building, attacking, or chasing on its own (idle)
+        if (e.order.kind === 'hold' || e.order.kind === 'morph') out.push(`entity ${e.id}: has a path while ${e.order.kind}`);
         if (e.mv.path.length % 2 !== 0 || e.mv.i % 2 !== 0) out.push(`entity ${e.id}: malformed path`);
         const queued = world.pathQueue.some((r) => r.id === e.id);
         if (e.mv.waiting !== queued) out.push(`entity ${e.id}: waiting=${e.mv.waiting} but queued=${queued}`);
@@ -383,6 +460,20 @@ export function checkInvariants(world: World, ctx: SimContext): string[] {
     if ((e.job !== null) !== (e.order.kind === 'job')) out.push(`entity ${e.id}: job and order disagree`);
     if (e.build && (e.build.progress < 0 || e.build.progress > e.build.total)) out.push(`entity ${e.id}: growth ${e.build.progress}/${e.build.total}`);
     if (e.buildOrder && catalog.factions.get(world.players[e.owner - 1]?.faction ?? 'wl')?.hq !== e.type) out.push(`entity ${e.id}: holds a building order but is not a lymph node`);
+  }
+  // combat: armed exactly when the type has a weapon; projectiles well formed
+  for (const e of world.entities) {
+    const armed = (e.building ? catalog.buildings.get(e.type)?.weapon : catalog.units.get(e.type)?.weapon) ?? null;
+    if ((armed !== null) !== (e.cb !== null)) out.push(`entity ${e.id}: combat state ${e.cb ? 'present' : 'missing'} for weapon ${armed}`);
+    if (e.slow && (e.slow.pct <= 0 || e.slow.pct > 900)) out.push(`entity ${e.id}: slow ${e.slow.pct}`);
+    if (e.order.kind === 'attack' && !e.cb) out.push(`entity ${e.id}: attack order without a weapon`);
+  }
+  let lastShot = 0;
+  for (const p of world.projectiles) {
+    if (p.id <= lastShot || p.id >= world.nextShot) out.push(`projectile ${p.id}: id out of order`);
+    lastShot = p.id;
+    if (p.impact <= world.tick - 1) out.push(`projectile ${p.id}: should have landed at ${p.impact}`);
+    if (!catalog.weapons.has(p.weapon)) out.push(`projectile ${p.id}: unknown weapon`);
   }
   for (const p of world.players) {
     if (p.supplyReserved !== (reserved.get(p.id) ?? 0)) out.push(`player ${p.id}: supplyReserved ${p.supplyReserved} but queues and morphs hold ${reserved.get(p.id) ?? 0}`);

@@ -7,7 +7,7 @@ import { stampBuilding, type SimContext } from '../context';
 import { SUB } from './fixed';
 import { seedRng, type RngState } from './rng';
 
-export const WORLD_VERSION = 4;
+export const WORLD_VERSION = 5;
 export const NEUTRAL = 0;
 
 export interface Player {
@@ -29,7 +29,54 @@ export type Order =
   | { kind: 'hold' }
   | { kind: 'gather' } // details in Entity.gather
   | { kind: 'job' } // a builder helping a building grow or repairing it; details in Entity.job
-  | { kind: 'morph' }; // turning into another unit; details in Entity.morph
+  | { kind: 'morph' } // turning into another unit; details in Entity.morph
+  | { kind: 'attack'; target: number } // attack this one until it dies or is lost from sight
+  | { kind: 'amove'; x: number; y: number }; // move there, fighting whatever comes in sight
+
+/** An armed unit's or building's attack: target, windup and cooldown (architecture tab, section 6). */
+export interface Combat {
+  target: number; // 0 = none
+  windupEnd: number; // tick the attack being wound up launches; -1 = none
+  nextLaunch: number; // the earliest tick of the next launch: the cooldown runs from each launch
+  engaged: boolean; // an idle unit fighting on its own: it keeps to `anchor`
+  anchorX: number;
+  anchorY: number;
+  chased: number; // tick of the last chase path request
+}
+
+/** A launched attack on its way. Melee and arc attacks are projectiles that land on the tick they launch. */
+export interface Projectile {
+  id: number;
+  owner: number;
+  weapon: string;
+  source: number;
+  target: number;
+  fromX: number;
+  fromY: number;
+  x: number; // last known target point
+  y: number;
+  launch: number;
+  impact: number;
+}
+
+/** What a player last saw of a building or resource that is not theirs. */
+export interface Memory {
+  id: number;
+  type: string;
+  owner: number;
+  x: number;
+  y: number;
+  hp: number;
+  maxHp: number;
+  growing: boolean;
+  stock: number;
+  tick: number; // when it was last seen
+}
+
+export interface Outcome {
+  winnerTeam: number; // 0 = draw
+  tick: number;
+}
 
 /** One unit in a production queue. Paid and its supply reserved when ordered. */
 export interface QueueItem {
@@ -156,6 +203,10 @@ export interface Entity {
   /** builders at work */
   job: Job | null;
   morph: Morph | null;
+  /** armed units and buildings */
+  cb: Combat | null;
+  /** a slow on it: speed is cut by `pct` thousandths until `until` */
+  slow: { until: number; pct: number } | null;
 }
 
 export interface World {
@@ -175,6 +226,13 @@ export interface World {
   pathQueue: PathRequest[];
   nextGroup: number;
   groupPaths: GroupPath[];
+  projectiles: Projectile[];
+  nextShot: number;
+  /** per player (index = id − 1): explored tiles as a bitset of 32-bit words */
+  explored: number[][];
+  /** per player: what they last saw of buildings and resources not theirs */
+  memory: Memory[][];
+  outcome: Outcome | null;
 }
 
 export interface MatchSetup {
@@ -203,11 +261,18 @@ export function createWorld(ctx: SimContext, setup: MatchSetup): World {
     pathQueue: [],
     nextGroup: 1,
     groupPaths: [],
+    projectiles: [],
+    nextShot: 1,
+    explored: [],
+    memory: [],
+    outcome: null,
   };
   setup.players.forEach((p, i) => {
     const f = catalog.factions.get(p.faction);
     if (!f) throw new Error(`unknown faction ${p.faction}`);
     world.players.push({ id: i + 1, faction: p.faction, team: p.team, basic: f.basic, advanced: f.advanced, supplyUsed: 0, supplyReserved: 0, supplyCap: 0, defeated: false });
+    world.explored.push(new Array<number>(Math.ceil((map.w * map.h) / 32)).fill(0));
+    world.memory.push([]);
   });
   for (const r of map.resources) {
     const [fw, fh] = catalog.footprints.get(r.type)!;
@@ -240,7 +305,12 @@ export function supplyCapOf(world: World, catalog: Catalog, owner: number): numb
   return Math.min(cap, f.supplyCap);
 }
 
-const BLANK = { gather: null, cargo: 0, cargoKind: '' as const, build: null, queue: null, rally: null, buildOrder: null, job: null, morph: null };
+const BLANK = { gather: null, cargo: 0, cargoKind: '' as const, build: null, queue: null, rally: null, buildOrder: null, job: null, morph: null, cb: null, slow: null };
+
+/** A fresh attack state for an armed entity. */
+export function newCombat(): Combat {
+  return { target: 0, windupEnd: -1, nextLaunch: 0, engaged: false, anchorX: 0, anchorY: 0, chased: -1000 };
+}
 
 /** Hit points a growing building has from growth alone at `progress`: 10% at the start, all at the end. */
 export function growthHp(maxHp: number, progress: number, total: number): number {
@@ -261,6 +331,7 @@ export function spawnBuilding(world: World, ctx: SimContext, type: string, owner
     ...BLANK,
     build: grows ? { progress: 0, total, paid: [...paid] } : null,
     queue: def.produces.length > 0 ? [] : null,
+    cb: def.weapon ? newCombat() : null,
   };
   world.entities.push(e);
   stampBuilding(ctx, type, e.x, e.y, 1);
@@ -292,6 +363,7 @@ export function spawnUnit(world: World, catalog: Catalog, type: string, owner: n
     hp: def.hp, maxHp: def.hp, building: false, bornTick: world.tick, order: { kind: 'idle' }, mv: null,
     res: null,
     ...BLANK,
+    cb: def.weapon ? newCombat() : null,
   };
   world.entities.push(e);
   if (owner !== NEUTRAL) world.players[owner - 1]!.supplyUsed += def.supply;
@@ -324,8 +396,14 @@ export function removeEntity(world: World, ctx: SimContext, id: number): Entity 
     for (const q of e.queue ?? []) p.supplyReserved -= ctx.catalog.units.get(q.unit)?.supply ?? 0;
     if (e.morph) p.supplyReserved -= e.morph.extra;
   }
-  // nobody keeps a rally on it
-  for (const o of world.entities) if (o.rally && o.rally.target === id) o.rally = { x: o.rally.x, y: o.rally.y, target: 0 };
+  // nobody keeps a rally on it, or aims at it
+  for (const o of world.entities) {
+    if (o.rally && o.rally.target === id) o.rally = { x: o.rally.x, y: o.rally.y, target: 0 };
+    if (o.cb && o.cb.target === id) {
+      o.cb.target = 0;
+      o.cb.windupEnd = -1;
+    }
+  }
   return e;
 }
 

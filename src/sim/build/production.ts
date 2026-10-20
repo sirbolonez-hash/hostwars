@@ -7,7 +7,7 @@
 import type { Cmd, RejectReason } from '../commands/commands';
 import { footprintOrigin, type SimContext } from '../context';
 import { SUB } from '../core/fixed';
-import { entityById, removeEntity, spawnBuilding, spawnUnit, supplyCapOf, growthHp, type Entity, type Player, type World } from '../core/world';
+import { entityById, newCombat, removeEntity, spawnBuilding, spawnUnit, supplyCapOf, growthHp, type Entity, type Player, type World } from '../core/world';
 import { carryOf, inReach, orderGather, stopGather, validateGather } from '../economy/gather';
 import { centreOf, CLASS_SIZE } from '../navigation/grid';
 import { afterFootprintChange, clearMove, issueMove, travelTo } from '../navigation/movement';
@@ -358,6 +358,7 @@ export function productionPhase(world: World, ctx: SimContext, events: BuildEven
     u.type = into.id;
     u.morph = null;
     u.order = { kind: 'idle' };
+    u.cb = into.weapon ? newCombat() : null;
     events.push({ type: 'morphed', entity: u.id, owner: u.owner });
   }
 

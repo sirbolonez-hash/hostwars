@@ -6,6 +6,7 @@ Seconds become ticks (x20), tiles become sub-tiles (x256), tiles per second beco
 sub-tiles per tick (x12.8). These are trial values from the architecture tab, section 5.
 """
 import json
+import math
 import os
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
@@ -15,9 +16,15 @@ V = lambda tps: round(tps * 256 / 20)           # tiles/s -> sub-tiles/tick
 RADIUS = {'small': T(0.45), 'medium': T(0.6), 'large': T(0.85)}  # close to the drawn body size
 
 
-def weapon(id, kind, damage, cooldown_s, range_t, windup_s=0.2, min_t=0, splash_t=0, arc=0, bonus=None, targets=1, engulf=0):
+def weapon(id, kind, damage, cooldown_s, range_t, windup_s=0.2, min_t=0, splash_t=0, arc=0, bonus=None, targets=1, engulf=0,
+           speed_tps=0, lost='fizzle', slow=0, slow_s=0):
+    # windup: from the start of an attack to its launch. speed: projectile speed (0 = hits at launch).
+    # lost: what a projectile does when its target dies first ('ground': lands at the last point; 'fizzle': gone).
+    # slow: thousandths taken off the target's speed for slow_s seconds.
     return dict(id=id, kind=kind, damage=damage, cooldown=S(cooldown_s), windup=S(windup_s), range=T(range_t), minRange=T(min_t),
-                splash=T(splash_t), arc=arc, bonus=bonus or {}, maxTargets=targets, engulfMaxHp=engulf)
+                splash=T(splash_t), arc=arc, bonus=bonus or {}, maxTargets=targets, engulfMaxHp=engulf,
+                speed=V(speed_tps), onTargetLost=lost, slow=slow, slowTicks=S(slow_s),
+                arcCos=round(math.cos(math.radians(arc / 2)) * 1000) if arc else 1000)
 
 
 def unit(id, faction, role, cost, train_s, supply, hp, speed_tps, nav, sight_t, at, weapon=None, armor=0, tags=('biological',),
@@ -48,16 +55,16 @@ weapons = [
     # White Line
     weapon('w_monocyte_nip', 'melee', 4, 1.0, 1),
     weapon('w_neutrophil_claw', 'melee', 8, 0.8, 1),
-    weapon('w_eos_granule', 'projectile', 12, 1.5, 4, windup_s=0.3, bonus={'armored': 2000, 'building': 2000}),
+    weapon('w_eos_granule', 'projectile', 12, 1.5, 4, windup_s=0.3, bonus={'armored': 2000, 'building': 2000}, speed_tps=10),
     weapon('w_macro_engulf', 'engulf', 16, 1.5, 1, windup_s=0.3, engulf=150),
-    weapon('w_plasma_volley', 'projectile', 30, 3.0, 10, windup_s=0.5, min_t=3, bonus={'building': 3000}),
-    weapon('w_histamine', 'projectile', 3, 1.0, 5, splash_t=2),
+    weapon('w_plasma_volley', 'projectile', 30, 3.0, 10, windup_s=0.5, min_t=3, bonus={'building': 3000}, speed_tps=12, lost='ground'),
+    weapon('w_histamine', 'projectile', 3, 1.0, 5, splash_t=2, slow=400, slow_s=1.5),
     # Colony
     weapon('w_coccus_bite', 'melee', 5, 0.8, 1),
     weapon('w_flagellate_bite', 'melee', 8, 0.8, 1),
     weapon('w_spiro_drill', 'melee', 12, 1.5, 1, windup_s=0.3, bonus={'armored': 2000, 'building': 2000}),
     weapon('w_strep_whip', 'arc', 14, 1.2, 1.5, windup_s=0.3, arc=120, targets=3),
-    weapon('w_toxin_spit', 'projectile', 28, 3.0, 9, windup_s=0.5, min_t=3, splash_t=0.75, bonus={'building': 3000}),
+    weapon('w_toxin_spit', 'projectile', 28, 3.0, 9, windup_s=0.5, min_t=3, splash_t=0.75, bonus={'building': 3000}, speed_tps=8, lost='ground'),
     weapon('w_toxin_spray', 'projectile', 6, 1.0, 4, splash_t=0.5),
 ]
 

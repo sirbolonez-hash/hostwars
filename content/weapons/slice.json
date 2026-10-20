@@ -11,7 +11,12 @@
   "arc": 0,
   "bonus": {},
   "maxTargets": 1,
-  "engulfMaxHp": 0
+  "engulfMaxHp": 0,
+  "speed": 0,
+  "onTargetLost": "fizzle",
+  "slow": 0,
+  "slowTicks": 0,
+  "arcCos": 1000
  },
  {
   "id": "w_neutrophil_claw",
@@ -25,7 +30,12 @@
   "arc": 0,
   "bonus": {},
   "maxTargets": 1,
-  "engulfMaxHp": 0
+  "engulfMaxHp": 0,
+  "speed": 0,
+  "onTargetLost": "fizzle",
+  "slow": 0,
+  "slowTicks": 0,
+  "arcCos": 1000
  },
  {
   "id": "w_eos_granule",
@@ -42,7 +52,12 @@
    "building": 2000
   },
   "maxTargets": 1,
-  "engulfMaxHp": 0
+  "engulfMaxHp": 0,
+  "speed": 128,
+  "onTargetLost": "fizzle",
+  "slow": 0,
+  "slowTicks": 0,
+  "arcCos": 1000
  },
  {
   "id": "w_macro_engulf",
@@ -56,7 +71,12 @@
   "arc": 0,
   "bonus": {},
   "maxTargets": 1,
-  "engulfMaxHp": 150
+  "engulfMaxHp": 150,
+  "speed": 0,
+  "onTargetLost": "fizzle",
+  "slow": 0,
+  "slowTicks": 0,
+  "arcCos": 1000
  },
  {
   "id": "w_plasma_volley",
@@ -72,7 +92,12 @@
    "building": 3000
   },
   "maxTargets": 1,
-  "engulfMaxHp": 0
+  "engulfMaxHp": 0,
+  "speed": 154,
+  "onTargetLost": "ground",
+  "slow": 0,
+  "slowTicks": 0,
+  "arcCos": 1000
  },
  {
   "id": "w_histamine",
@@ -86,7 +111,12 @@
   "arc": 0,
   "bonus": {},
   "maxTargets": 1,
-  "engulfMaxHp": 0
+  "engulfMaxHp": 0,
+  "speed": 0,
+  "onTargetLost": "fizzle",
+  "slow": 400,
+  "slowTicks": 30,
+  "arcCos": 1000
  },
  {
   "id": "w_coccus_bite",
@@ -100,7 +130,12 @@
   "arc": 0,
   "bonus": {},
   "maxTargets": 1,
-  "engulfMaxHp": 0
+  "engulfMaxHp": 0,
+  "speed": 0,
+  "onTargetLost": "fizzle",
+  "slow": 0,
+  "slowTicks": 0,
+  "arcCos": 1000
  },
  {
   "id": "w_flagellate_bite",
@@ -114,7 +149,12 @@
   "arc": 0,
   "bonus": {},
   "maxTargets": 1,
-  "engulfMaxHp": 0
+  "engulfMaxHp": 0,
+  "speed": 0,
+  "onTargetLost": "fizzle",
+  "slow": 0,
+  "slowTicks": 0,
+  "arcCos": 1000
  },
  {
   "id": "w_spiro_drill",
@@ -131,7 +171,12 @@
    "building": 2000
   },
   "maxTargets": 1,
-  "engulfMaxHp": 0
+  "engulfMaxHp": 0,
+  "speed": 0,
+  "onTargetLost": "fizzle",
+  "slow": 0,
+  "slowTicks": 0,
+  "arcCos": 1000
  },
  {
   "id": "w_strep_whip",
@@ -145,7 +190,12 @@
   "arc": 120,
   "bonus": {},
   "maxTargets": 3,
-  "engulfMaxHp": 0
+  "engulfMaxHp": 0,
+  "speed": 0,
+  "onTargetLost": "fizzle",
+  "slow": 0,
+  "slowTicks": 0,
+  "arcCos": 500
  },
  {
   "id": "w_toxin_spit",
@@ -161,7 +211,12 @@
    "building": 3000
   },
   "maxTargets": 1,
-  "engulfMaxHp": 0
+  "engulfMaxHp": 0,
+  "speed": 102,
+  "onTargetLost": "ground",
+  "slow": 0,
+  "slowTicks": 0,
+  "arcCos": 1000
  },
  {
   "id": "w_toxin_spray",
@@ -175,6 +230,11 @@
   "arc": 0,
   "bonus": {},
   "maxTargets": 1,
-  "engulfMaxHp": 0
+  "engulfMaxHp": 0,
+  "speed": 0,
+  "onTargetLost": "fizzle",
+  "slow": 0,
+  "slowTicks": 0,
+  "arcCos": 1000
  }
 ]

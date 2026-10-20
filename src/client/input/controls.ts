@@ -47,6 +47,8 @@ export class Controls {
   readonly selected = new Set<number>();
   /** a building or resource shown in the selection line (not commanded) */
   inspected: number | null = null;
+  /** A pressed: the next left click attack-moves (or attacks what is under it) */
+  attackMode = false;
   private readonly groups = new Map<number, number[]>();
   private dragStart: [number, number] | null = null;
   private dragging = false;
@@ -92,7 +94,7 @@ export class Controls {
     let best: Entity | null = null;
     let bestD = Infinity;
     for (const e of this.game.world.entities) {
-      if (e.building) continue;
+      if (e.building || !this.view.sees(this.game.world, e)) continue;
       const r = Math.max(16 / this.cam.zoom, (this.game.ctx.catalog.units.get(e.type)?.radius ?? 115) * PX * 1.3);
       const cx = e.x * PX;
       const cy = e.y * PX - r * 0.6; // bodies stand on their feet; aim at the middle
@@ -111,6 +113,7 @@ export class Controls {
     let best: Entity | null = null;
     for (const e of this.game.world.entities) {
       if (!e.building) continue;
+      if (e.owner !== 0 && !this.view.sees(this.game.world, e)) continue; // an enemy building out of sight cannot be picked
       if (e.res && e.res.link !== 0 && isDeposit(ctx, e)) continue; // hidden under its extractor
       const [tx, ty, fw, fh] = footprintOrigin(ctx, e.type, e.x, e.y);
       const x0 = tx * TILE_PX;
@@ -140,6 +143,12 @@ export class Controls {
 
   private down(e: PointerEvent): void {
     const [sx, sy] = this.screen(e);
+    if (this.attackMode && e.button !== 1) {
+      this.attackMode = false;
+      this.canvas.style.cursor = 'default';
+      if (e.button === 0) this.attackAt(sx, sy, true);
+      return;
+    }
     if (this.placer.active && e.button !== 1) {
       // placing a building: left click places, right click puts it back in the order slot
       if (e.button === 0) this.placer.click();
@@ -169,6 +178,7 @@ export class Controls {
       this.placer.hover(wx, wy);
       return;
     }
+    if (this.attackMode) return;
     if (e.target === this.canvas && !this.dragStart) {
       // a hand over something the selected carriers can work
       const [wx, wy] = this.cam.toWorld(sx, sy);
@@ -251,6 +261,36 @@ export class Controls {
     return this.liveSelection().map((id) => entityById(this.game.world, id)).filter((e): e is Entity => e !== undefined);
   }
 
+  /** A visible enemy under a world point: a unit first, then a building. */
+  private foeAt(wx: number, wy: number): Entity | null {
+    const me = this.game.me;
+    const u = this.pick(wx, wy);
+    if (u && u.owner !== me && u.owner !== 0) return u;
+    const b = this.pickBuilding(wx, wy);
+    return b && b.owner !== me && b.owner !== 0 ? b : null;
+  }
+
+  /** Attack what is under the point, or (attack-move) fight one's way there. Returns false if nothing was ordered. */
+  private attackAt(sx: number, sy: number, moveIfNone: boolean): boolean {
+    const units = this.selectedUnits();
+    const armed = units.filter((u) => u.cb !== null).map((u) => u.id);
+    if (armed.length === 0) return false;
+    const [wx, wy] = this.cam.toWorld(sx, sy);
+    const foe = this.foeAt(wx, wy);
+    const rest = units.filter((u) => u.cb === null).map((u) => u.id);
+    const x = Math.round(wx / PX);
+    const y = Math.round(wy / PX);
+    if (foe) {
+      for (let k = 0; k < armed.length; k += 200) this.game.issue({ type: 'ATTACK', units: armed.slice(k, k + 200), target: foe.id });
+    } else if (moveIfNone) {
+      if (x < 0 || y < 0 || x >= this.game.world.mapW || y >= this.game.world.mapH) return false;
+      for (let k = 0; k < armed.length; k += 200) this.game.issue({ type: 'ATTACK_MOVE', units: armed.slice(k, k + 200), x, y });
+    } else return false;
+    if (rest.length) this.game.issue({ type: 'MOVE', units: rest, x, y });
+    this.view.addMarker({ x: wx, y: wy, born: performance.now(), color: 0xe8173f });
+    return true;
+  }
+
   /** The player's building whose rally is being set: an inspected production building of theirs. */
   private rallyBuilding(): Entity | null {
     if (this.inspected === null) return null;
@@ -274,6 +314,8 @@ export class Controls {
       return;
     }
     if (units.length === 0) return;
+    // an enemy under the cursor: armed units attack it, the rest walk there
+    if (this.attackAt(sx, sy, false)) return;
     const ctx = this.game.ctx;
     const on = this.pickBuilding(wx, wy);
     // builders: help a growing building of ours, or repair a damaged one; the rest walk there
@@ -346,7 +388,25 @@ export class Controls {
       case 'KeyH':
         if (this.selected.size) this.game.issue({ type: 'HOLD', units: this.liveSelection() });
         break;
+      case 'KeyA':
+        if (e.ctrlKey || e.metaKey) {
+          // Ctrl+A: every unit of mine
+          for (const u of this.mine()) this.selected.add(u.id);
+          this.inspected = null;
+          e.preventDefault();
+          this.onChange();
+        } else if (this.selectedUnits().some((u) => u.cb !== null)) {
+          // A: the next left click attack-moves
+          this.attackMode = true;
+          this.canvas.style.cursor = 'crosshair';
+        }
+        break;
       case 'Escape':
+        if (this.attackMode) {
+          this.attackMode = false;
+          this.canvas.style.cursor = 'default';
+          break;
+        }
         if (this.placer.active) {
           this.placer.cancel();
           break;
@@ -364,13 +424,6 @@ export class Controls {
         this.view.debugOn = !this.view.debugOn;
         e.preventDefault();
         this.onChange();
-        break;
-      case 'KeyA':
-        if (e.ctrlKey || e.metaKey) {
-          for (const u of this.mine()) this.selected.add(u.id);
-          e.preventDefault();
-          this.onChange();
-        }
         break;
     }
   }

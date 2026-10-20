@@ -67,6 +67,20 @@ Measured: a capillary grows in 399 ticks alone, 267 with one platelet squad, 228
 
 In the browser: click the lymph node for its card (train carriers, order buildings with the reason on every button that cannot be pressed yet), place the ordered building on a green or red ghost, watch it grow; right-click with a production building selected sets its rally (the lymph node starts on the home field); platelets help or repair with a right-click.
 
+## Gate 5 · combat and information — done
+
+Acceptance (`tests/sim/combat.test.ts`): a full fight against a passive opponent, with no information leaking.
+- the White Line's 34 (20 neutrophils, 6 macrophages, 8 eosinophils) march on the Colony's 20 defenders, beat them and destroy the core: victory at 59 s with 30 left; invariants hold every tick.
+- out of sight: an order to attack a hidden unit reads like one at nothing; targeting ignores it; the memory of the Colony's core keeps the hit points it had when last seen, through damage and destruction; a remembered building is forgotten only when its empty site is seen; the placement preview does not react to a hidden unit, and the simulation's refusal says the same as for a visible one.
+
+Also proven: windup and cooldown (a melee blow every cooldown exactly); moving away mid-windup gives no shot and leaves the cooldown as it was, and coming back means a full windup; bonus and armor; projectiles that fizzle and ones that land and splash; engulf and digestion; splash that spares its own side; histamine slows; an arc sweep of up to 3; two units killing each other on one tick; a kept target and the player's order winning; hold, move and leash; attack-move; victory, a draw, and refused orders after defeat; save/resume in the middle of a fight with projectiles in flight.
+
+Measured (2-core Xeon): 200 units crossing and then fighting: tick average 1.8 ms, p95 5.6 ms. 60 carriers mining while 100 units cross: average 0.7 ms.
+
+In the browser: fog with soft edges, enemy units hidden out of sight, remembered buildings in grey; right-click an enemy to attack, A then click to attack-move; impact bursts, projectiles, hit flashes, deaths; a victory, defeat or draw screen. Test lab: an attack army, Colony defenders, reveal the map.
+
+Not yet: the Colony's AI and construction (gate 6), so the Colony only defends.
+
 ## Repository
 - GitHub: `sirbolonez-hash/hostwars`, branch `main`. Claude pushes directly since 20.10.2026.
 

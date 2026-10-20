@@ -11,8 +11,8 @@ export interface WeaponDef {
   id: string;
   kind: WeaponKind;
   damage: number;
-  cooldown: number; // ticks between shots
-  windup: number; // ticks from start of attack to impact
+  cooldown: number; // ticks between launches
+  windup: number; // ticks from the start of an attack to its launch
   range: number; // sub-tiles, edge to edge
   minRange: number;
   splash: number; // sub-tiles radius, 0 = single target
@@ -20,6 +20,11 @@ export interface WeaponDef {
   bonus: Partial<Record<Tag, number>>; // multiplier in thousandths against a tag
   maxTargets: number;
   engulfMaxHp: number; // engulf only: instant kill threshold
+  speed: number; // projectile speed, sub-tiles per tick; 0 = hits at launch
+  onTargetLost: 'fizzle' | 'ground'; // a projectile whose target dies first: gone, or lands at the last point
+  slow: number; // thousandths taken off the target's speed
+  slowTicks: number;
+  arcCos: number; // cos(arc / 2) in thousandths, from the content tool (the simulation has no trigonometry)
 }
 
 export interface UnitDef {

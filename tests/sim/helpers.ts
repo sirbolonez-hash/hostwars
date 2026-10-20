@@ -62,8 +62,10 @@ export function monkey(seed: number, rate = 8): (world: World, tick: number) => 
     // gather targets: any crystal, or the player's own buildings (dropoffs return cargo; others get rejected)
     const targets = world.entities.filter((e) => e.building && (e.owner === 0 || e.owner === player)).map((e) => e.id);
     const cmd =
-      kind < 7
+      kind < 5
         ? { type: 'MOVE' as const, units, x: nextInt(rng, world.mapW), y: nextInt(rng, world.mapH) }
+        : kind < 7
+          ? { type: 'ATTACK_MOVE' as const, units, x: nextInt(rng, world.mapW), y: nextInt(rng, world.mapH) }
         : kind < 10
           ? { type: 'GATHER' as const, units, target: targets[nextInt(rng, targets.length)]! }
           : kind === 10

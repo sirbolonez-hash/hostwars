@@ -4,7 +4,10 @@
 // between the previous and the current tick, so 20 ticks a second still look smooth at 60 fps.
 
 import { AnimatedSprite, Container, Graphics, Sprite, Text, type Texture, TilingSprite } from 'pixi.js';
-import { entityById, type Entity, type World } from '../../sim/core/world';
+import { entityById, type Entity, type Memory, type World } from '../../sim/core/world';
+import { allied, canSee } from '../../sim/vision/vision';
+import { CombatEffects } from './effects';
+import { FogLayer } from './fog';
 import type { SimContext } from '../../sim/context';
 import type { SimEvent } from '../../sim/sim';
 import type { AssetRecord, Manifest } from './assets';
@@ -32,6 +35,7 @@ interface View {
   baseScale: number;
   art: string;
   damaged: boolean;
+  shown: boolean;
 }
 
 export interface Marker {
@@ -82,6 +86,14 @@ export class WorldView {
   /** the inspected building or resource, outlined */
   inspected: number | null = null;
   private readonly inspectBox = new Graphics();
+  readonly fog: FogLayer;
+  private readonly effects: CombatEffects;
+  /** bodies blinking after a hit: id → until (ms) */
+  private readonly flashes = new Map<number, number>();
+  /** buildings remembered after they were destroyed out of sight: drawn from memory */
+  private readonly ghosts = new Map<number, Sprite>();
+  private memo = new Map<number, Memory>();
+  private now = 0;
 
   constructor(
     private readonly ctx: SimContext,
@@ -91,7 +103,9 @@ export class WorldView {
     terrain: Texture,
   ) {
     this.bodies.sortableChildren = true;
-    this.root.addChild(this.ground, this.debugGrid, this.underlay, this.inspectBox, this.bodies, this.overlay, this.debug);
+    this.fog = new FogLayer(ctx);
+    this.effects = new CombatEffects(ctx, manifest, textures);
+    this.root.addChild(this.ground, this.debugGrid, this.underlay, this.inspectBox, this.bodies, this.effects.layer, this.overlay, this.fog.sprite, this.debug);
     this.ground.addChild(new Sprite(terrain));
     for (const f of ctx.map.flows) {
       const [x, y, w, h] = f.rect;
@@ -158,7 +172,7 @@ export class WorldView {
     }
     return {
       body, shadow, ring, mark, cargo: null, cargoKind: '', fx: null, rec, facing: 1,
-      lastX: e.x, lastY: e.y, phase: (e.id * 1.37) % 6.28, moving: 0, baseScale: body.scale.x, art, damaged: false,
+      lastX: e.x, lastY: e.y, phase: (e.id * 1.37) % 6.28, moving: 0, baseScale: body.scale.x, art, damaged: false, shown: true,
     };
   }
 
@@ -188,11 +202,35 @@ export class WorldView {
     return s;
   }
 
+  /** Does the player see this entity now? Their own and their allies' always; the test lab can reveal all. */
+  sees(world: World, e: Entity): boolean {
+    if (this.fog.off || allied(world, e.owner, this.me) && e.owner !== 0) return true;
+    return canSee(this.ctx, this.me, e);
+  }
+
+  /** Whether the player sees a point (sub-tiles). */
+  seesPoint(x: number, y: number): boolean {
+    return this.fog.off || this.ctx.vision.sees(this.me, Math.floor(x / 256), Math.floor(y / 256));
+  }
+
+  private show(v: View, on: boolean): void {
+    if (v.shown === on) return;
+    v.shown = on;
+    v.body.visible = on;
+    if (v.shadow) v.shadow.visible = on;
+    if (v.mark) v.mark.visible = on;
+    if (v.cargo) v.cargo.visible = on;
+    if (v.fx) v.fx.visible = on;
+    if (v.ring && !on) v.ring.visible = false;
+  }
+
   /** Called every frame. `prev` holds positions before the last tick; `alpha` is how far into the next tick we are. */
   sync(world: World, prev: Map<number, [number, number]>, alpha: number, selected: Set<number>, timeMs: number, dtMs: number, events: SimEvent[]): void {
     const seen = new Set<number>();
     const t = timeMs / 1000;
+    this.now = timeMs;
     const { catalog } = this.ctx;
+    this.memo = new Map((world.memory[this.me - 1] ?? []).map((m) => [m.id, m]));
     for (const e of world.entities) {
       seen.add(e.id);
       let v = this.views.get(e.id);
@@ -203,21 +241,36 @@ export class WorldView {
       const p = prev.get(e.id);
       const x = (p ? p[0] + (e.x - p[0]) * alpha : e.x) * PX;
       const y = (p ? p[1] + (e.y - p[1]) * alpha : e.y) * PX;
+      const visible = this.sees(world, e);
       if (e.building) {
+        // a building out of sight is drawn as last seen (greyed); one never seen, not at all.
+        // Crystals never seen are drawn as the map shows them: full.
+        const mem = visible ? undefined : this.memo.get(e.id);
+        const rd = catalog.resources.get(e.type);
+        this.show(v, visible || mem !== undefined || (rd !== undefined && e.owner === 0));
+        if (!v.shown) continue;
         v.body.position.set(x, y);
         v.body.zIndex = y;
-        if (catalog.buildings.has(e.type)) this.syncBuilding(e, v, x, y, t);
-        const rd = catalog.resources.get(e.type);
+        v.body.tint = visible ? 0xffffff : 0x9a8c96;
+        if (catalog.buildings.has(e.type)) {
+          if (visible) this.syncBuilding(e, v, x, y, t);
+          else this.syncBuilding({ ...e, hp: mem!.hp, build: mem!.growing ? e.build : null }, v, x, y, t);
+          const flash = this.flashes.get(e.id);
+          if (flash && flash > timeMs && visible) v.body.tint = 0xff9a9a;
+        }
         if (rd && e.res) {
-          // a crystal shrinks as it is worked; a deposit is hidden under its extractor
-          const left = e.res.stock / rd.stock;
+          // a crystal shrinks as it is worked (as last seen); a deposit is hidden under its extractor
+          const stock = visible ? e.res.stock : (mem?.stock ?? rd.stock);
+          const left = stock / rd.stock;
           const s = v.baseScale * (0.62 + 0.38 * Math.sqrt(left));
           v.body.scale.set(s);
-          v.body.visible = e.res.link === 0;
+          v.body.visible = e.res.link === 0 || !visible;
           v.body.zIndex = y - 1;
         }
         continue;
       }
+      this.show(v, visible);
+      if (!visible) continue;
       const dx = x - v.lastX;
       const dy = y - v.lastY;
       const speed = (Math.hypot(dx, dy) / Math.max(1, dtMs)) * 1000; // px per second
@@ -233,12 +286,19 @@ export class WorldView {
       // procedural life: breathing at rest, a little hop while walking, a bob while harvesting,
       // a slow swell while turning into another unit
       const working = g?.st === 'harvest' || e.job !== null;
-      if (e.morph) v.body.tint = 0xffffff - Math.floor((0.5 + 0.5 * Math.sin(t * 6)) * 0x30) * 0x010100;
+      const flash = this.flashes.get(e.id);
+      if (flash && flash > timeMs) v.body.tint = 0xff8080;
+      else if (e.morph) v.body.tint = 0xffffff - Math.floor((0.5 + 0.5 * Math.sin(t * 6)) * 0x30) * 0x010100;
       else if (v.body.tint !== 0xffffff) v.body.tint = 0xffffff;
+      // winding up: a little lean towards the target
+      const cb = e.cb;
+      const foe = cb && cb.windupEnd >= 0 && cb.target ? entityById(world, cb.target) : undefined;
+      if (foe) v.facing = foe.x > e.x ? -1 : 1;
+      const lean = foe ? 3 : 0;
       const breathe = Math.sin(t * (working ? 7 : 2.6) + v.phase) * (working ? 0.06 : 0.03) * (1 - v.moving);
       const hop = Math.abs(Math.sin(t * 9 + v.phase)) * 3 * v.moving;
       const squash = Math.abs(Math.sin(t * 9 + v.phase)) * 0.05 * v.moving;
-      v.body.position.set(x, y - hop);
+      v.body.position.set(x - v.facing * lean, y - hop);
       v.body.scale.set(v.facing * (1 + squash - breathe * 0.5), 1 + breathe - squash);
       v.body.zIndex = y;
       v.shadow!.position.set(x, y);
@@ -294,6 +354,33 @@ export class WorldView {
         this.views.delete(id);
       }
     }
+    // buildings destroyed out of sight: still standing in the player's memory
+    for (const [id, m] of this.memo) {
+      if (seen.has(id) || this.fog.off) continue;
+      let gs = this.ghosts.get(id);
+      if (!gs) {
+        const bdef = catalog.buildings.get(m.type);
+        const art = bdef?.art ?? m.type;
+        gs = new Sprite(this.textures.get(art) ?? this.shapes.dot);
+        const rec = this.manifest.assets[art];
+        gs.anchor.set(rec?.anchor?.[0] ?? 0.5, rec?.anchor?.[1] ?? 0.5);
+        gs.scale.set((bdef?.artScale ?? 1000) / 1000);
+        gs.tint = 0x9a8c96;
+        gs.position.set(m.x * PX, m.y * PX);
+        gs.zIndex = m.y * PX;
+        this.bodies.addChild(gs);
+        this.ghosts.set(id, gs);
+      }
+    }
+    for (const [id, gs] of this.ghosts) {
+      if (this.memo.has(id) && !seen.has(id) && !this.fog.off) continue;
+      gs.destroy();
+      this.ghosts.delete(id);
+    }
+    // the fight
+    this.effects.update(world, events, world.tick - 1 + alpha, (x, y) => this.seesPoint(x, y), (id) => this.flashes.set(id, timeMs + 120));
+    if (this.flashes.size > 200) for (const [id, until] of this.flashes) if (until < timeMs) this.flashes.delete(id);
+    this.fog.update(world, this.me);
     for (const f of this.flows) {
       f.t.tilePosition.x += (f.vx * dtMs) / 1000;
       f.t.tilePosition.y += (f.vy * dtMs) / 1000;
@@ -361,6 +448,7 @@ export class WorldView {
     const { catalog } = this.ctx;
     for (const e of world.entities) {
       if (e.res && !catalog.buildings.has(e.type)) continue;
+      if (!this.sees(world, e)) continue;
       const own = e.owner === this.me;
       const growing = e.build !== null;
       const hurt = e.hp < e.maxHp;
@@ -500,7 +588,7 @@ export class WorldView {
     const byId = new Map(world.entities.map((e) => [e.id, e]));
     for (const e of world.entities) {
       // the economy: who works what (green), who is bringing a load where (gold), held slots (ring)
-      if (e.gather && (selected.size === 0 || selected.has(e.id))) {
+      if (e.gather && (e.owner === this.me || this.fog.off) && (selected.size === 0 || selected.has(e.id))) {
         const g2 = e.gather;
         const to = byId.get(g2.st === 'toDrop' || g2.st === 'unload' ? g2.drop : g2.target);
         if (to) {
@@ -510,8 +598,8 @@ export class WorldView {
         if (g2.st === 'harvest') g.circle(e.x * PX, e.y * PX, 9).stroke({ width: 2, color: 0x7ee081, alpha: 0.9 });
         if (g2.st === 'wait') g.circle(e.x * PX, e.y * PX, 9).stroke({ width: 2, color: 0xffb347, alpha: 0.9 });
       }
-      // paths of selected units, or all moving units when nothing is selected
-      if (!e.mv) continue;
+      // paths of selected units, or all of mine when nothing is selected (enemy paths only with the map revealed)
+      if (!e.mv || (e.owner !== this.me && !this.fog.off)) continue;
       if (selected.size > 0 && !selected.has(e.id)) continue;
       const mv = e.mv;
       if (mv.waiting) {

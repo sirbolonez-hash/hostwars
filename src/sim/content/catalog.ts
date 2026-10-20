@@ -53,6 +53,11 @@ export function validateContent(c: ContentFiles, knownAssets?: Set<string>): str
       if (!isInt(m) || m < 0) e(`${at}: bonus ${tag} must be an integer in thousandths`);
     }
     if (w.kind === 'engulf' && w.engulfMaxHp < 1) e(`${at}: engulf needs engulfMaxHp`);
+    ints(at, w, ['speed', 'slow', 'slowTicks']);
+    if (!Number.isInteger(w.arcCos) || w.arcCos < -1000 || w.arcCos > 1000) e(`${at}: arcCos must be an integer in thousandths`);
+    if (w.slow > 900) e(`${at}: a slow above 900 would stop units`);
+    if (w.onTargetLost !== 'fizzle' && w.onTargetLost !== 'ground') e(`${at}: onTargetLost must be fizzle or ground`);
+    if ((w.kind === 'melee' || w.kind === 'engulf' || w.kind === 'arc') && w.speed !== 0) e(`${at}: a ${w.kind} weapon hits at launch (speed 0)`);
   }
 
   for (const u of c.units) {

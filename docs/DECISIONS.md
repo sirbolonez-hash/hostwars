@@ -108,3 +108,18 @@ Each entry: the problem, the options, the choice, what it costs, and what would 
 
 ## 2026-10-20 · The Colony builds in gate 6
 - The Colony turns a feeder into a building on its biofilm; the biofilm layer comes with the Colony's gate. Until then the Colony trains from the buildings it has, and `QUEUE_BUILD` belongs to factions that build by order (`construction: 'order'`).
+
+## 2026-10-20 · Projectiles are pending hits; the windup ends at launch
+- The content's `windup` was "start of attack to impact". Choice: windup runs from the start of an attack to its launch; the cooldown starts at launch; flight time is distance ÷ the weapon's `speed` (new content field, 0 = lands at launch). Projectiles home on their target; `onTargetLost` decides whether one whose target died first is gone or lands at the last point.
+
+## 2026-10-20 · Sight is a plain circle in the slice
+- Membranes do not block sight yet: sight discs are cheap and the slice's walls are thin. Line of fire for ranged weapons does check membranes (a separate check, as the architecture says). Revisit for maps with large walls (sight around corners would then feel wrong).
+
+## 2026-10-20 · Vision twice a tick, recomputed rather than saved
+- Visible tiles are derived from the world at the start of the tick and after movement, so a loaded save sees exactly what an uninterrupted match sees. Explored tiles and building memory are world state (saved and hashed). Cost on the arena with 200 units: about 0.2 ms per pass.
+
+## 2026-10-20 · The world hash is computed when read
+- Hashing every tick became 10% of the tick once vision and memory joined the hash. `step` now returns the hash as a lazily computed property (read it before the next step); headless runs read it at checkpoints and at the end.
+
+## 2026-10-20 · Idle units fight back within a leash
+- An idle unit attacks what it sees and chases up to 8 tiles from where the fight began, then walks back without fighting. Attack-move has no leash. The arc's cosine comes from the content tool, since the simulation uses no trigonometry.

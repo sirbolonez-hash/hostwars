@@ -327,7 +327,8 @@ export function moveUnits(world: World, ctx: SimContext, events: MoveEvent[]): v
     }
     const tile = nav.tileAt(e.x, e.y);
     const f = nav.flowFactor(tile, dx, dy);
-    const step = Math.max(1, Math.trunc((def.speed * f) / 1000));
+    const slowed = e.slow && e.slow.until > world.tick ? 1000 - e.slow.pct : 1000;
+    const step = Math.max(1, Math.trunc((Math.trunc((def.speed * f) / 1000) * slowed) / 1000));
     if (d <= step) {
       e.x = wx;
       e.y = wy;

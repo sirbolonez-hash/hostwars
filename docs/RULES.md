@@ -134,3 +134,33 @@ Measured on the arena (5 s harvest, 1 s unload, crystals 4 tiles from the HQ): o
 
 ### Morph
 - `DEPLOY`: a monocyte turns into a macrophage once the spleen stands. It pays the macrophage's price and reserves the extra supply at the order, stands still for the training time and takes no orders, then changes type keeping its share of hit points.
+
+## Combat (gate 5)
+
+### An attack, in four stages
+1. **Target.** An idle unit looks for an enemy it can see within its sight (every 4 ticks, staggered); a holding unit or a defense building only within weapon range. Preference: units that can fight, then other units, then armed buildings, then other buildings; then the nearest; then the lowest id. A target is kept while it is alive, seen, and within the range plus 2 tiles (a holding unit: within weapon range) — no hopping from tick to tick.
+2. **Windup.** In range (body edge to body edge, within minimum range; a ranged weapon also needs no membrane in between), the unit stops and winds up for the weapon's windup. Out of range it chases (an idle unit at most 8 tiles from where its fight began, then it walks back without fighting).
+3. **Launch.** At the end of the windup. The cooldown runs from the launch: the next windup starts so that the next launch comes exactly one cooldown later.
+4. **Landing.** Melee, arc and instant splash weapons land on the launch tick; projectiles after their flight (distance ÷ speed, at least one tick). Everything landing on a tick lands in launch order, before deaths are settled, so two units can kill each other on the same tick.
+
+- Moving away (a new order, or the target leaving range) during a windup cancels that attack: no shot, and the cooldown is left as it was. Coming back means a full windup again — no free shot.
+- `MOVE` only moves; units on gather, build or morph orders never fight. `HOLD` fights from where it stands. `ATTACK` follows one target until it dies or is lost from sight, then the unit goes idle. `ATTACK_MOVE` walks to the point (the same arrival spots as a move), fights whatever it meets on the way with no leash, and goes on when it is clear.
+- `ATTACK` on something the player cannot see is refused with the same reason as on something that does not exist (`unknown_target`).
+
+### Damage
+- Damage = max(1, damage × the weapon's best bonus for the target's tags ÷ 1000 − the target's armor). Buildings carry the tags `building` and `structure`.
+- Splash hits every unit and building of the other side within the splash radius of where it lands (body edge); never one's own side.
+- An arc sweep hits its target and up to `maxTargets − 1` more of the other side within range, inside the arc in front of the attacker.
+- Engulf: a unit at or below the threshold without a capsule dies at once; the macrophage then digests for 3 cooldowns. Otherwise it is an ordinary blow.
+- A projectile whose target dies first: `fizzle` weapons are gone; `ground` weapons land at the last point and splash there.
+- Slow (histamine): speed −40% for 1.5 s; a new slow replaces the old one, they do not add up.
+
+### The end of a match
+- A player with no critical building left (lymph node, bone marrow, spleen, germinal centre; biofilm core and the Colony's production buildings) is defeated on that tick; their orders are refused from then on.
+- When one team is left, it wins; when the last teams fall on the same tick, it is a draw.
+
+## Vision and fog (gate 5)
+- Per player, each tile is unexplored, explored-hidden or visible. Sight is a circle (whole tiles) around each living unit and building; membranes do not block it in the slice. Allies share sight.
+- Vision is worked out at the start of each tick (for orders) and again after movement (for targeting); it is never saved, it is recomputed from the world. Explored tiles are world state.
+- A building or resource of someone else that the player has seen is remembered as it was last seen (type, place, hit points, growth, stock). It does not change while out of sight; it is forgotten when its tile is seen again and it is gone.
+- Nothing hidden reaches the player: units out of sight are not drawn and cannot be picked; remembered buildings are drawn grey as last seen; hit point bars, effects, deaths, projectiles and the debug layer show only what is seen; an inspected enemy building is dropped when it leaves sight; the placement preview ignores what is not seen, and the simulation's refusal uses the same words either way; orders on unseen targets read as orders on nothing.

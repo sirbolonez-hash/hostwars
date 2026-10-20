@@ -5,12 +5,17 @@ import type { SimContext } from '../context';
 import { isInt } from '../core/fixed';
 import type { World } from '../core/world';
 import { validateBuildingCmd, validateUnitJob } from '../build/production';
+import { validateAttack } from '../combat/combat';
 import { validateGather } from '../economy/gather';
 
 export const MAX_UNITS_PER_COMMAND = 200;
 
 export type Cmd =
   | { type: 'MOVE'; units: number[]; x: number; y: number }
+  /** armed units attack this target (an enemy the player can see) */
+  | { type: 'ATTACK'; units: number[]; target: number }
+  /** move there, fighting whatever comes in sight on the way */
+  | { type: 'ATTACK_MOVE'; units: number[]; x: number; y: number }
   | { type: 'STOP'; units: number[] }
   | { type: 'HOLD'; units: number[] }
   /** carriers work `target` (crystal, deposit with an extractor, extractor), or return their load to it (own dropoff) */
@@ -90,7 +95,8 @@ export type RejectReason =
   | 'no_deposit'
   | 'cannot_place'
   | 'nothing_to_do'
-  | 'cannot_deploy';
+  | 'cannot_deploy'
+  | 'no_weapons';
 
 export interface Rejection {
   player: number;
@@ -113,7 +119,10 @@ export function checkShape(env: unknown): env is CommandEnvelope {
   if (!Array.isArray(c.units) || !c.units.every(isInt)) return false;
   switch (c.type) {
     case 'MOVE':
+    case 'ATTACK_MOVE':
       return isInt(c.x) && isInt(c.y);
+    case 'ATTACK':
+      return isInt(c.target);
     case 'STOP':
     case 'HOLD':
       return true;
@@ -179,7 +188,7 @@ export function validate(world: World, env: CommandEnvelope, index: Map<number, 
     if (e && e.owner !== env.player) return 'not_owner';
     if (e && e.building) return 'not_a_unit';
   }
-  if (env.cmd.type === 'MOVE') {
+  if (env.cmd.type === 'MOVE' || env.cmd.type === 'ATTACK_MOVE') {
     const { x, y } = env.cmd;
     if (x < 0 || y < 0 || x >= world.mapW || y >= world.mapH) return 'out_of_bounds';
   }
@@ -187,6 +196,10 @@ export function validate(world: World, env: CommandEnvelope, index: Map<number, 
     const carriers = units.map((id) => index.get(id)).filter((e) => e !== undefined && (ctx.catalog.units.get(e.type)?.carry ?? 0) > 0);
     if (carriers.length === 0) return 'no_carriers';
     return validateGather(world, ctx, env.player, index.get(env.cmd.target));
+  }
+  if (env.cmd.type === 'ATTACK') {
+    const live = units.map((id) => index.get(id)).filter((e): e is World['entities'][number] => e !== undefined);
+    return validateAttack(world, ctx, env.player, live, index.get(env.cmd.target));
   }
   if (env.cmd.type === 'ASSIST_BUILD' || env.cmd.type === 'REPAIR' || env.cmd.type === 'DEPLOY') {
     const live = units.map((id) => index.get(id)).filter((e): e is World['entities'][number] => e !== undefined);

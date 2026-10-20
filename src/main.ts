@@ -50,8 +50,8 @@ async function main(): Promise<void> {
 
   const manifest = await loadManifest();
   const [textures, ground, blood, wall] = await Promise.all([
-    // only the first page of two effect sets: the harvest sparkle and the ATP burst live there
-    loadAtlasGroups(manifest, ['units_wl', 'units_col', 'buildings_wl', 'buildings_col', 'world_neutral', 'icons', 'fx_a:0', 'fx_b:0']),
+    // only the first page of each effect set: harvest, ATP, growth, impacts and deaths live there
+    loadAtlasGroups(manifest, ['units_wl', 'units_col', 'buildings_wl', 'buildings_col', 'world_neutral', 'icons', 'fx_a:0', 'fx_b:0', 'fx_c:0']),
     loadImage('assets/' + manifest.assets['tile_tissue']!.file),
     loadImage('assets/' + manifest.assets['tile_blood']!.file),
     loadImage('assets/' + manifest.assets['tile_bone']!.file),
@@ -82,7 +82,8 @@ async function main(): Promise<void> {
   const cam = new Camera(map.w * TILE_PX, map.h * TILE_PX);
   const [sx, sy] = map.starts[0]!;
   cam.centreOn((sx + 2) * TILE_PX, (sy + 2) * TILE_PX, app.screen.width, app.screen.height);
-  const placer = new Placer(game, textures, () => true);
+  // the placement preview reacts only to what the player can see
+  const placer = new Placer(game, textures, (e) => view.sees(game.world, e));
   view.root.addChild(placer.layer);
   const controls = new Controls(app.canvas, game, view, cam, box, placer);
   // icons for the DOM, cut out of the atlas once and shrunk to button size

@@ -37,7 +37,7 @@ export function runHeadless(ctx: SimContext, setup: MatchSetup, opts: RunOptions
   while (world.tick < end) {
     for (const c of opts.script?.(world, world.tick) ?? []) queue.submit(c, world.tick);
     const res = step(world, ctx, queue.take(world.tick));
-    hash = res.hash;
+    if (world.tick === end || (opts.checkpointEvery && world.tick % opts.checkpointEvery === 0)) hash = res.hash;
     maxPathExpansions = Math.max(maxPathExpansions, res.stats.pathExpansions);
     events.push(...res.events);
     if (opts.invariants) for (const p of checkInvariants(world, ctx)) problems.push(`tick ${world.tick}: ${p}`);

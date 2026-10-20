@@ -7,19 +7,22 @@ import type { MapDef } from './content/types';
 import type { World } from './core/world';
 import { AStar } from './navigation/astar';
 import { NavGrid, validateMap } from './navigation/grid';
+import { Vision } from './vision/vision';
 
 export interface SimContext {
   catalog: Catalog;
   map: MapDef;
   nav: NavGrid;
   astar: AStar;
+  /** who sees what this tick: derived from the world every tick, never saved */
+  vision: Vision;
 }
 
 export function createContext(catalog: Catalog, map: MapDef): SimContext {
   const errors = [...validateMap(map), ...validateMapResources(map, catalog)];
   if (errors.length) throw new Error('map invalid:\n  ' + errors.join('\n  '));
   const nav = new NavGrid(map);
-  return { catalog, map, nav, astar: new AStar(nav) };
+  return { catalog, map, nav, astar: new AStar(nav), vision: new Vision(map.w, map.h) };
 }
 
 /** Context for a loaded world: fresh grid with every building's footprint stamped. */
