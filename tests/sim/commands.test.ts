@@ -2,20 +2,21 @@ import { describe, expect, it } from 'vitest';
 import { CommandQueue, MAX_UNITS_PER_COMMAND, type CommandEnvelope } from '../../src/sim/commands/commands';
 import { createWorld } from '../../src/sim/core/world';
 import { step } from '../../src/sim/sim';
-import { catalog, setup } from './helpers';
+import { newCtx, setup } from './helpers';
 
 function fresh() {
-  const world = createWorld(catalog, setup);
+  const ctx = newCtx();
+  const world = createWorld(ctx, setup);
   const mine = world.entities.filter((e) => e.owner === 1 && !e.building).map((e) => e.id);
   const theirs = world.entities.filter((e) => e.owner === 2 && !e.building).map((e) => e.id);
   const hq = world.entities.find((e) => e.owner === 1 && e.building)!.id;
-  return { world, mine, theirs, hq };
+  return { ctx, world, mine, theirs, hq };
 }
 
 function rejectionOf(env: CommandEnvelope, prep?: (w: ReturnType<typeof fresh>) => void) {
   const f = fresh();
   prep?.(f);
-  const res = step(f.world, catalog, [env]);
+  const res = step(f.world, f.ctx, [env]);
   const r = res.events.find((e) => e.type === 'rejected');
   return r && r.type === 'rejected' ? r.rejection.reason : null;
 }
@@ -49,10 +50,11 @@ describe('command validation', () => {
     expect(rejectionOf(base({ type: 'STOP', units: mine }), (f) => { f.world.players[0]!.defeated = true; })).toBe('player_defeated');
   });
   it('a rejected command changes nothing', () => {
-    const f = fresh();
-    const before = JSON.stringify(f.world.entities);
-    step(f.world, catalog, [base({ type: 'MOVE', units: theirs, x: 1, y: 1 })]);
-    expect(JSON.stringify(f.world.entities)).toBe(before);
+    const withCmd = fresh();
+    const without = fresh();
+    const a = step(withCmd.world, withCmd.ctx, [base({ type: 'MOVE', units: theirs, x: 1, y: 1 })]);
+    const b = step(without.world, without.ctx, []);
+    expect(a.hash).toBe(b.hash);
   });
 });
 
@@ -75,5 +77,21 @@ describe('command queue', () => {
     expect(q.take(1).map((c) => c.seq)).toEqual([2]);
     expect(q.take(2).map((c) => c.player)).toEqual([1, 2]);
     expect(q.size).toBe(0);
+  });
+});
+
+describe('dev spawn', () => {
+  it('works only in a dev match, and puts units on open ground', () => {
+    const f = fresh();
+    const cmd = { player: 1, seq: 1, tick: 0, cmd: { type: 'DEV_SPAWN' as const, units: [], unit: 'unit_wl_neutrophil', count: 9, x: 15 * 256, y: 20 * 256 } };
+    const r = step(f.world, f.ctx, [cmd]);
+    expect(r.events.some((e) => e.type === 'rejected' && e.rejection.reason === 'not_a_dev_match')).toBe(true);
+    const ctx = newCtx();
+    const world = createWorld(ctx, { ...setup, dev: true });
+    const before = world.entities.length;
+    step(world, ctx, [cmd]);
+    expect(world.entities.length).toBe(before + 9);
+    step(world, ctx, [{ ...cmd, seq: 2, tick: 1, cmd: { ...cmd.cmd, unit: 'unit_nope' } }]);
+    expect(world.entities.length).toBe(before + 9);
   });
 });

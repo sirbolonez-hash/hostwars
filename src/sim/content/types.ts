@@ -81,3 +81,23 @@ export interface ContentFiles {
   weapons: WeaponDef[];
   factions: FactionDef[];
 }
+
+export type TerrainKind = 'open' | 'wall' | 'blood';
+
+export interface FlowDef {
+  rect: [number, number, number, number]; // tile x, y, w, h
+  dir: [number, number]; // any length; normalized when compiled
+  strength: number; // thousandths: 1000 = twice as fast downstream, half upstream
+}
+
+export interface MapDef {
+  id: string;
+  name: string;
+  w: number; // tiles
+  h: number;
+  ground: string; // tile asset id
+  legend: Record<string, TerrainKind>;
+  rows: string[];
+  flows: FlowDef[];
+  starts: [number, number][]; // HQ top-left tile per start position
+}

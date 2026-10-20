@@ -1,18 +1,46 @@
-import { loadCatalog } from '../../src/sim/content/load';
+import { loadCatalog, loadMap, newMatchContext } from '../../src/sim/content/load';
+import type { MapDef } from '../../src/sim/content/types';
 import type { CommandEnvelope } from '../../src/sim/commands/commands';
+import { createContext, type SimContext } from '../../src/sim/context';
 import { nextInt, seedRng } from '../../src/sim/core/rng';
-import type { MatchSetup, World } from '../../src/sim/core/world';
+import { createWorld, type MatchSetup, type World } from '../../src/sim/core/world';
 
 export const catalog = loadCatalog();
+export const arena = loadMap('arena');
+
+/** A fresh context per match: the nav grid carries that match's building footprints. */
+export function newCtx(): SimContext {
+  return newMatchContext('arena', catalog);
+}
 
 export const setup: MatchSetup = {
   seed: 20261019,
-  mapTiles: [104, 58],
+  map: 'arena',
   players: [
-    { faction: 'wl', team: 1, startTile: [8, 24] },
-    { faction: 'col', team: 2, startTile: [90, 24] },
+    { faction: 'wl', team: 1, startTile: arena.starts[0]! },
+    { faction: 'col', team: 2, startTile: arena.starts[1]! },
   ],
 };
+
+/** Builds a test map from ASCII rows ('.' open, '#' wall, '~' blood) with two corner starts. */
+export function asciiMap(id: string, rows: string[], flows: MapDef['flows'] = []): MapDef {
+  const h = rows.length;
+  const w = rows[0]!.length;
+  return { id, name: id, w, h, ground: 'tile_tissue', legend: { '.': 'open', '#': 'wall', '~': 'blood' }, rows, flows, starts: [[1, 1], [w - 7, 1]] };
+}
+
+export function matchOn(map: MapDef, seed = 1): { ctx: SimContext; world: World } {
+  const ctx = createContext(catalog, map);
+  const world = createWorld(ctx, {
+    seed,
+    map: map.id,
+    players: [
+      { faction: 'wl', team: 1, startTile: map.starts[0]! },
+      { faction: 'col', team: 2, startTile: map.starts[1]! },
+    ],
+  });
+  return { ctx, world };
+}
 
 /** A seeded "monkey" that orders random groups to random points, from both players. */
 export function monkey(seed: number, rate = 8): (world: World, tick: number) => CommandEnvelope[] {

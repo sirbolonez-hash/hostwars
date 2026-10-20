@@ -9,7 +9,11 @@ export const MAX_UNITS_PER_COMMAND = 200;
 export type Cmd =
   | { type: 'MOVE'; units: number[]; x: number; y: number }
   | { type: 'STOP'; units: number[] }
-  | { type: 'HOLD'; units: number[] };
+  | { type: 'HOLD'; units: number[] }
+  /** test matches only: puts `count` units of `unit` around (x, y), ignoring cost and supply */
+  | { type: 'DEV_SPAWN'; units: number[]; unit: string; count: number; x: number; y: number };
+
+export const MAX_DEV_SPAWN = 100;
 
 export interface CommandEnvelope {
   player: number;
@@ -30,7 +34,10 @@ export type RejectReason =
   | 'not_owner'
   | 'not_a_unit'
   | 'unknown_unit'
-  | 'out_of_bounds';
+  | 'out_of_bounds'
+  | 'not_a_dev_match'
+  | 'unknown_type'
+  | 'bad_count';
 
 export interface Rejection {
   player: number;
@@ -57,16 +64,30 @@ export function checkShape(env: unknown): env is CommandEnvelope {
     case 'STOP':
     case 'HOLD':
       return true;
+    case 'DEV_SPAWN':
+      return typeof c.unit === 'string' && isInt(c.count) && isInt(c.x) && isInt(c.y) && (c.units as unknown[]).length === 0;
     default:
       return false;
   }
 }
 
 /** Validates against the current world. Returns null when the command may run. */
-export function validate(world: World, env: CommandEnvelope, index: Map<number, World['entities'][number]>): RejectReason | null {
+export function validate(
+  world: World,
+  env: CommandEnvelope,
+  index: Map<number, World['entities'][number]>,
+  knownUnit: (type: string) => boolean = () => true,
+): RejectReason | null {
   const p = world.players[env.player - 1];
   if (!p) return 'unknown_player';
   if (p.defeated) return 'player_defeated';
+  if (env.cmd.type === 'DEV_SPAWN') {
+    if (!world.dev) return 'not_a_dev_match';
+    if (!knownUnit(env.cmd.unit)) return 'unknown_type';
+    if (env.cmd.count < 1 || env.cmd.count > MAX_DEV_SPAWN) return 'bad_count';
+    if (env.cmd.x < 0 || env.cmd.y < 0 || env.cmd.x >= world.mapW || env.cmd.y >= world.mapH) return 'out_of_bounds';
+    return null;
+  }
   const units = env.cmd.units;
   if (units.length === 0) return 'no_units';
   if (units.length > MAX_UNITS_PER_COMMAND) return 'too_many_units';

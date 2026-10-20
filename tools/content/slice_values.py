@@ -12,7 +12,7 @@ ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
 T = lambda tiles: round(tiles * 256)            # tiles -> sub-tiles
 S = lambda sec: round(sec * 20)                 # seconds -> ticks
 V = lambda tps: round(tps * 256 / 20)           # tiles/s -> sub-tiles/tick
-RADIUS = {'small': T(0.3), 'medium': T(0.4), 'large': T(0.55)}
+RADIUS = {'small': T(0.45), 'medium': T(0.6), 'large': T(0.85)}  # close to the drawn body size
 
 
 def weapon(id, kind, damage, cooldown_s, range_t, windup_s=0.2, min_t=0, splash_t=0, arc=0, bonus=None, targets=1, engulf=0):

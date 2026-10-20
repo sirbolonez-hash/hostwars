@@ -19,7 +19,24 @@ Also proven by tests:
 - no forbidden API in `src/sim` (`tests/sim/purity.test.ts`);
 - slice content validates, with art for every unit and building (`tests/content.test.ts`).
 
-Not yet: navigation (gate 2), economy (3), construction and production (4), combat and vision (5).
+## Gate 2 · control and movement — done, waiting for Yakir's play test
+
+Acceptance (`tests/sim/navigation.test.ts`):
+- 80 units pass a 2-tile choke: all arrive, none stuck, none inside a wall, within 284 ticks (14.2 s) headless; in the browser 224 ticks (11 s).
+- units go around obstacles without a repeated order: out of the U-shaped cup to a point behind it; around the HQ.
+- a large body takes the 2-tile gap, a small one the 1-tile gap; an unreachable goal ends at the closest reachable point; a group spreads over separate spots; the current makes downstream 2x faster and upstream 2x slower (67 / 133 / 270 ticks over 40 tiles).
+
+Also: determinism and save/resume still hold with navigation (shared paths and the path queue are saved).
+
+Measured (headless, 2-core Xeon 2.1 GHz, 200 units crossing the arena toward each other, 900 ticks): tick average 0.9 ms, p95 1.6–4.3 ms across runs, p99 6.6–9 ms; first ticks after a 200-unit order are the heaviest. Faster A* and group path sharing halved the search work of that run (260k → 128k node expansions) and cut the cost per expansion to a third.
+
+Play test (Yakir, on the reference machine): open the Netlify build, press F3, send groups around; the line at the bottom left shows fps and tick time.
+
+Known limits:
+- two big crowds sent through each other in a narrow pass can still jam; combat (gate 5) will usually settle this before it happens.
+- unit art is wider than unit bodies, so tight crowds overlap visually.
+
+Not yet: economy (gate 3), construction and production (4), combat and vision (5).
 
 ## Repository
 - GitHub: `sirbolonez-hash/hostwars`, branch `main`. Claude pushes directly since 20.10.2026.

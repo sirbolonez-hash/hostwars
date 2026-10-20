@@ -52,3 +52,17 @@ Asset ids follow `<kind>_<faction>_<name>`, with factions `wl` (White Line), `co
 The slice files are generated from `tools/content/slice_values.py`, which keeps the numbers in human units (seconds, tiles, tiles per second) next to the conversion. Edit the table there and rerun it; do not hand-edit the JSON.
 
 `src/sim/content/catalog.ts` validates everything before a match: integer types and ranges, unique ids, known weapons, tags and buildings, producers that list what they produce, an acyclic requirement graph, starting units that fit the HQ's supply, and (in tests) an asset for every unit and building.
+
+## Maps (`content/maps/*.json`)
+
+| Field | Meaning |
+| --- | --- |
+| `id`, `name` | map id; Hebrew display name |
+| `w`, `h` | size in tiles (8–256) |
+| `ground` | tile asset drawn under everything |
+| `legend` | character → `open`, `wall` or `blood` |
+| `rows` | `h` strings of `w` characters |
+| `flows` | currents: `rect` [x, y, w, h] in tiles, `dir` [dx, dy] (normalized when loaded), `strength` 0–1000 ‰ |
+| `starts` | HQ top-left tile per start position; each needs 6x6 open tiles |
+
+`tools/content/make_arena.py` generates the gate 2 test arena. `validateMap` (in `src/sim/navigation/grid.ts`) runs before every match.

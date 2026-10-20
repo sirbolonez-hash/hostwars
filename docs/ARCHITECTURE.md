@@ -17,6 +17,17 @@ content/ ──► src/sim ◄── commands ◄── src/client/input, src/ai
 - `src/sim` imports nothing from `pixi.js`, the DOM or audio. A headless run of 1,000 ticks must give the same hash every time.
 - `src/ai` imports only the observation types from `src/sim/visibility` and the command types from `src/sim/commands`.
 - `src/client/render` maps asset ids to sprites through `public/assets/manifest.json`; it never hard-codes sizes or file names.
+- A match runs on a `SimContext` (`src/sim/context.ts`): the content catalog, the map and the navigation grid derived from them. The grid holds building footprints, so it is rebuilt from the map and the world when a save is loaded; it is never saved itself.
+
+## Client (gate 2)
+
+| Module | Job |
+| --- | --- |
+| `src/client/game.ts` | owns the world and the command queue; runs the fixed 20 Hz clock from real time (at most 5 ticks per frame, then drops time); keeps the previous positions for interpolation |
+| `src/client/render/terrain.ts` | draws the map once into a canvas (ground, blood, membrane walls) → one texture |
+| `src/client/render/worldView.ts` | sprites for every entity, interpolated between ticks; procedural breathing and hop; selection rings, team markers, move markers; navigation debug layer (F3) |
+| `src/client/input/controls.ts` | camera (arrows, screen edge, middle drag, wheel zoom 0.6–1.6), selection (click, box, shift, double-click), right-click move, S/H, control groups |
+| `src/client/ui/hud.ts` | Hebrew HUD in the DOM: resources, selection, dev buttons, performance line |
 
 ## Simulation clock
 
