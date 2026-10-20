@@ -50,6 +50,8 @@ export type Cmd =
   | { type: 'DEV_SPAWN'; units: number[]; unit: string; count: number; x: number; y: number }
   /** test matches only: destroys the listed entities at the end of the tick (any owner, resources too) */
   | { type: 'DEV_KILL'; units: number[]; targets: number[] }
+  /** a player gives up (the AI, with its reason; a player from the menu): defeated at once */
+  | { type: 'SURRENDER'; units: number[]; reason: string }
   /** test matches only: adds resources */
   | { type: 'DEV_GRANT'; units: number[]; basic: number; advanced: number };
 
@@ -160,6 +162,8 @@ export function checkShape(env: unknown): env is CommandEnvelope {
       return isInt(c.building) && isInt(c.tx) && isInt(c.ty) && (c.units as unknown[]).length === 0;
     case 'SET_RALLY':
       return isInt(c.building) && isInt(c.x) && isInt(c.y) && isInt(c.target) && (c.units as unknown[]).length === 0;
+    case 'SURRENDER':
+      return typeof c.reason === 'string' && c.reason.length <= 40 && (c.units as unknown[]).length === 0;
     case 'DEV_GRANT':
       return isInt(c.basic) && isInt(c.advanced) && c.basic >= 0 && c.advanced >= 0 && (c.units as unknown[]).length === 0;
     case 'DEV_SPAWN':
@@ -185,6 +189,7 @@ export function validate(world: World, env: CommandEnvelope, index: Map<number, 
     return null;
   }
   if (env.cmd.type === 'DEV_GRANT') return world.dev ? null : 'not_a_dev_match';
+  if (env.cmd.type === 'SURRENDER') return null;
   if (BUILDING_CMDS.has(env.cmd.type)) return validateBuildingCmd(world, ctx, env.player, env.cmd as Parameters<typeof validateBuildingCmd>[3]);
   if (env.cmd.type === 'DEV_KILL') {
     if (!world.dev) return 'not_a_dev_match';

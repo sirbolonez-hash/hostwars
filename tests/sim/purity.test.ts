@@ -30,3 +30,23 @@ describe('simulation purity', () => {
     });
   }
 });
+
+describe('AI purity', () => {
+  const sources = [...files('src/ai'), ...files('src/match')];
+  it('has source files to check', () => expect(sources.length).toBeGreaterThan(2));
+  for (const f of sources) {
+    it(f, () => {
+      const text = readFileSync(f, 'utf8').replace(/\/\/.*$/gm, '');
+      const hits = FORBIDDEN.filter(([re]) => re.test(text)).map(([, why]) => why);
+      expect(hits).toEqual([]);
+    });
+  }
+  // the AI sees an observation and sends commands; it never touches the world
+  for (const f of files('src/ai')) {
+    it(`${f} imports only types from the simulation`, () => {
+      const text = readFileSync(f, 'utf8');
+      const bad = [...text.matchAll(/^import\s+(?!type\b)[^;]*from\s+['"](\.\.\/sim[^'"]*)['"]/gm)].map((m) => m[1]);
+      expect(bad).toEqual([]);
+    });
+  }
+});

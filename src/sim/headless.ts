@@ -13,6 +13,10 @@ export interface RunOptions {
   invariants?: boolean;
   start?: World;
   queue?: CommandQueue;
+  /** computer players (src/match/aiPlayer.ts): each sees the world before a tick and submits commands */
+  players?: { tick(world: World, ctx: SimContext, queue: CommandQueue): void }[];
+  /** stop early once the match is over */
+  untilOver?: boolean;
 }
 
 export interface RunResult {
@@ -35,6 +39,7 @@ export function runHeadless(ctx: SimContext, setup: MatchSetup, opts: RunOptions
   let maxPathExpansions = 0;
   const end = world.tick + opts.ticks;
   while (world.tick < end) {
+    for (const ai of opts.players ?? []) ai.tick(world, ctx, queue);
     for (const c of opts.script?.(world, world.tick) ?? []) queue.submit(c, world.tick);
     const res = step(world, ctx, queue.take(world.tick));
     if (world.tick === end || (opts.checkpointEvery && world.tick % opts.checkpointEvery === 0)) hash = res.hash;
@@ -42,6 +47,10 @@ export function runHeadless(ctx: SimContext, setup: MatchSetup, opts: RunOptions
     events.push(...res.events);
     if (opts.invariants) for (const p of checkInvariants(world, ctx)) problems.push(`tick ${world.tick}: ${p}`);
     if (opts.checkpointEvery && world.tick % opts.checkpointEvery === 0) checkpoints.push({ tick: world.tick, hash });
+    if (opts.untilOver && world.outcome) {
+      hash = res.hash;
+      break;
+    }
   }
   for (const r of queue.rejected) events.push({ tick: world.tick, type: 'rejected', rejection: r });
   return { world, finalHash: hash, checkpoints, events, problems, queue, maxPathExpansions };

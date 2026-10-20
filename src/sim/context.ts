@@ -7,8 +7,8 @@ import type { MapDef } from './content/types';
 import type { World } from './core/world';
 import { AStar } from './navigation/astar';
 import { NavGrid, validateMap } from './navigation/grid';
-import { Vision } from './vision/vision';
-import { Biofilm } from './colony/biofilm';
+import { computeVision, Vision } from './vision/vision';
+import { Biofilm, computeBiofilm } from './colony/biofilm';
 
 export interface SimContext {
   catalog: Catalog;
@@ -33,6 +33,9 @@ export function contextForWorld(catalog: Catalog, map: MapDef, world: World): Si
   if (world.map !== map.id) throw new Error(`world is on map ${world.map}, not ${map.id}`);
   const ctx = createContext(catalog, map);
   for (const e of world.entities) if (e.building) stampBuilding(ctx, e.type, e.x, e.y, 1);
+  // derived layers, so a screen or an AI looking before the first tick sees the loaded match
+  computeBiofilm(world, ctx);
+  computeVision(world, ctx, false);
   return ctx;
 }
 

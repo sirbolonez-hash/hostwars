@@ -307,13 +307,14 @@ export function moveUnits(world: World, ctx: SimContext, events: MoveEvent[]): v
       continue;
     }
     const def = ctx.catalog.units.get(e.type)!;
-    // an intermediate waypoint is done once the unit is close to it, or once the next one
-    // is already in reach: in a crowd nobody has to touch the exact point
+    // an intermediate waypoint is done once the unit is close to it and the way on to the
+    // next one is clear for its body: in a crowd nobody has to touch the exact point, and
+    // nobody cuts a corner into a wall
     if (mv.i + 2 < mv.path.length) {
       const cx = mv.path[mv.i]! - e.x;
       const cy = mv.path[mv.i + 1]! - e.y;
       const cd = isqrt(cx * cx + cy * cy);
-      if (cd <= def.radius || (cd <= WAYPOINT_LOOKAHEAD && bodyClear(nav, e.x, e.y, mv.path[mv.i + 2]!, mv.path[mv.i + 3]!, checkRadius(CLASS_SIZE[def.navClass], def.radius)))) {
+      if (cd <= WAYPOINT_LOOKAHEAD && bodyClear(nav, e.x, e.y, mv.path[mv.i + 2]!, mv.path[mv.i + 3]!, checkRadius(CLASS_SIZE[def.navClass], def.radius))) {
         mv.i += 2;
       }
     }
@@ -455,8 +456,17 @@ export function moveUnits(world: World, ctx: SimContext, events: MoveEvent[]): v
     e.x = Math.min(Math.max(e.x, 0), world.mapW - 1);
     e.y = Math.min(Math.max(e.y, 0), world.mapH - 1);
     if (nav.blocked(Math.floor(e.x / SUB), Math.floor(e.y / SUB))) {
-      e.x = startX.get(e.id)!;
-      e.y = startY.get(e.id)!;
+      // into a wall: slide along it (keep the part of the step that stays on open ground)
+      const sx = startX.get(e.id)!;
+      const sy = startY.get(e.id)!;
+      const keepX = !nav.blocked(Math.floor(e.x / SUB), Math.floor(sy / SUB));
+      const keepY = !nav.blocked(Math.floor(sx / SUB), Math.floor(e.y / SUB));
+      if (keepX && (!keepY || Math.abs(e.x - sx) >= Math.abs(e.y - sy))) e.y = sy;
+      else if (keepY) e.x = sx;
+      else {
+        e.x = sx;
+        e.y = sy;
+      }
     }
   }
 

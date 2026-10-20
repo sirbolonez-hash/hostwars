@@ -29,6 +29,7 @@ export type SimEvent =
   | ({ tick: number } & ColonyEvent)
   | ({ tick: number } & AntigenEvent)
   | { tick: number; type: 'defeated'; player: number }
+  | { tick: number; type: 'surrendered'; player: number; reason: string }
   | { tick: number; type: 'match_over'; winnerTeam: number }
   /** `cargo`: the load it was carrying, lost with it; (x, y): where it fell */
   | { tick: number; type: 'died'; entity: number; entityType: string; owner: number; cause: DeathCause; cargo: number; x: number; y: number };
@@ -245,6 +246,13 @@ function applyCommand(world: World, ctx: SimContext, env: CommandEnvelope, index
       applyBuildingCmd(world, ctx, env.player, env.cmd, buildEvents);
       for (const b of buildEvents) events.push({ tick: world.tick, ...b });
       break;
+    case 'SURRENDER': {
+      const p = world.players[env.player - 1]!;
+      p.defeated = true;
+      events.push({ tick: world.tick, type: 'surrendered', player: p.id, reason: env.cmd.reason });
+      events.push({ tick: world.tick, type: 'defeated', player: p.id });
+      break;
+    }
     case 'DEV_GRANT': {
       const p = world.players[env.player - 1]!;
       p.basic += env.cmd.basic;
