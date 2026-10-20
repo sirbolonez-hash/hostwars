@@ -75,7 +75,7 @@ describe('combat rules (gate 5)', () => {
     const h = field();
     const core = h.world.entities.find((e) => e.type === 'bld_col_biofilm_core')!;
     expect(damageOf(h.ctx, eos, macro)).toBe(12 * 2 - 2); // armored ×2, armor 2
-    expect(damageOf(h.ctx, eos, core)).toBe(12 * 2 - 1); // building ×2, armor 1
+    expect(damageOf(h.ctx, eos, core)).toBe(Math.floor((12 * 2 * 750) / 1000) - 1); // building ×2, on its own biofilm ×0.75, armor 1
     expect(damageOf(h.ctx, eos, coccus)).toBe(12);
     expect(damageOf(h.ctx, W('w_monocyte_nip'), macro)).toBe(2);
     expect(damageOf(h.ctx, { ...W('w_monocyte_nip'), damage: 1 }, macro)).toBe(1);

@@ -10,6 +10,9 @@ import { applyBuildingCmd, applyUnitJob, productionPhase, QUEUE_MAX, settleLoss,
 import { carryOf, gatherPhase, isCrystal, isDeposit, isExtractor, orderGather, stopGather, type GatherEvent } from './economy/gather';
 import { combatPhase, hitPhase, stopAttack, type CombatEvent } from './combat/combat';
 import { computeVision } from './vision/vision';
+import { computeBiofilm } from './colony/biofilm';
+import { applyBuildAt, applySplit, colonyPhase, type ColonyEvent } from './colony/colony';
+import { antigenPhase, applySample, type AntigenEvent } from './intel/antigen';
 import { centreOf, CLASS_SIZE } from './navigation/grid';
 import { nearestPassable } from './navigation/slots';
 import { afterFootprintChange, clearMove, issueMove, moveUnits, processPathQueue, type MoveEvent } from './navigation/movement';
@@ -23,6 +26,8 @@ export type SimEvent =
   | ({ tick: number } & GatherEvent)
   | ({ tick: number } & BuildEvent)
   | ({ tick: number } & CombatEvent)
+  | ({ tick: number } & ColonyEvent)
+  | ({ tick: number } & AntigenEvent)
   | { tick: number; type: 'defeated'; player: number }
   | { tick: number; type: 'match_over'; winnerTeam: number }
   /** `cargo`: the load it was carrying, lost with it; (x, y): where it fell */
@@ -54,6 +59,7 @@ export function step(world: World, ctx: SimContext, commands: CommandEnvelope[])
   // 1. commands for this tick, in canonical order (the queue already sorted them)
   // 2. expire timed effects; refresh vision for the start of the tick
   for (const e of world.entities) if (e.slow && e.slow.until <= tick) e.slow = null;
+  computeBiofilm(world, ctx);
   computeVision(world, ctx, false);
 
   // 3. validate and apply commands
@@ -81,6 +87,12 @@ export function step(world: World, ctx: SimContext, commands: CommandEnvelope[])
   const gatherEvents: GatherEvent[] = [];
   gatherPhase(world, ctx, gatherEvents);
   for (const g of gatherEvents) events.push({ tick, ...g });
+  const colonyEvents: ColonyEvent[] = [];
+  colonyPhase(world, ctx, colonyEvents);
+  for (const c of colonyEvents) events.push({ tick, ...c });
+  const antigenEvents: AntigenEvent[] = [];
+  antigenPhase(world, ctx, antigenEvents);
+  for (const a of antigenEvents) events.push({ tick, ...a });
   const buildEvents: BuildEvent[] = [];
   productionPhase(world, ctx, buildEvents);
   for (const b of buildEvents) events.push({ tick, ...b });
@@ -144,11 +156,20 @@ export function step(world: World, ctx: SimContext, commands: CommandEnvelope[])
   };
 }
 
-/** A new order ends gathering (the slot is released, the load kept), a builder's job, and any attack being wound up. */
+/**
+ * A new order ends gathering (the slot is released, the load kept), a job (a feeder's paid
+ * building order comes back; a carried sample stays with its dendritic cell), and any attack
+ * being wound up.
+ */
 function endWork(world: World, e: Entity): void {
   stopGather(world, e);
   stopAttack(e);
   if (e.job) {
+    if (e.job.kind === 'build_at') {
+      const p = world.players[e.owner - 1]!;
+      p.basic += e.job.paid[0];
+      p.advanced += e.job.paid[1];
+    }
     e.job = null;
     if (e.order.kind === 'job') e.order = { kind: 'idle' };
   }
@@ -202,7 +223,19 @@ function applyCommand(world: World, ctx: SimContext, env: CommandEnvelope, index
     case 'ASSIST_BUILD':
     case 'REPAIR':
     case 'DEPLOY':
+      for (const e of units) if (e.job && env.cmd.type !== 'DEPLOY') endWork(world, e);
       applyUnitJob(world, ctx, env.player, env.cmd, units);
+      break;
+    case 'BUILD_AT':
+      for (const e of units) if (e.job) endWork(world, e);
+      applyBuildAt(world, ctx, env.player, env.cmd, units);
+      break;
+    case 'SPLIT':
+      applySplit(world, ctx, env.player, units);
+      break;
+    case 'SAMPLE':
+      for (const e of units) if (e.job || e.cb) endWork(world, e);
+      applySample(world, ctx, env.cmd, units);
       break;
     case 'TRAIN':
     case 'CANCEL':
@@ -290,6 +323,8 @@ export function hashWorld(world: World, ctx: SimContext): string {
   h.int(world.rng.a).int(world.rng.b).int(world.rng.c).int(world.rng.d);
   for (const p of world.players) {
     h.int(p.id).str(p.faction).int(p.team).int(p.basic).int(p.advanced).int(p.supplyUsed).int(p.supplyReserved).int(p.supplyCap).bool(p.defeated);
+    h.int(p.antigens.length);
+    for (const a of p.antigens) h.str(a);
   }
   h.int(world.entities.length);
   for (const e of world.entities) {
@@ -345,9 +380,15 @@ export function hashWorld(world: World, ctx: SimContext): string {
     if (!e.buildOrder) h.int(-1);
     else h.str(e.buildOrder.type).int(e.buildOrder.paid[0]).int(e.buildOrder.paid[1]);
     if (!e.job) h.int(-1);
-    else h.str(e.job.kind).int(e.job.target).int(e.job.tries).int(e.job.next);
+    else h.str(e.job.kind).int(e.job.target).int(e.job.tries).int(e.job.next).str(e.job.build).int(e.job.tx).int(e.job.ty).int(e.job.paid[0]).int(e.job.paid[1]);
     if (!e.morph) h.int(-1);
-    else h.str(e.morph.into).int(e.morph.until).int(e.morph.paid[0]).int(e.morph.paid[1]).int(e.morph.extra);
+    else h.str(e.morph.into).int(e.morph.until).int(e.morph.paid[0]).int(e.morph.paid[1]).int(e.morph.extra).bool(e.morph.copy);
+    h.int(e.lastCombat).str(e.sample).str(e.spec).int(e.doneTick);
+    if (!e.lab) h.int(-1);
+    else {
+      h.int(e.lab.length);
+      for (const l of e.lab) h.str(l.family).int(l.until);
+    }
     const mv = e.mv;
     if (!mv) h.int(-1);
     else {
@@ -358,7 +399,7 @@ export function hashWorld(world: World, ctx: SimContext): string {
   h.int(world.pathQueue.length);
   for (const r of world.pathQueue) h.int(r.id).int(r.prio).int(r.t);
   h.int(world.nextShot).int(world.projectiles.length);
-  for (const p of world.projectiles) h.int(p.id).int(p.owner).str(p.weapon).int(p.source).int(p.target).int(p.fromX).int(p.fromY).int(p.x).int(p.y).int(p.launch).int(p.impact);
+  for (const p of world.projectiles) h.int(p.id).int(p.owner).str(p.weapon).int(p.source).int(p.target).int(p.fromX).int(p.fromY).int(p.x).int(p.y).int(p.launch).int(p.impact).int(p.power).str(p.spec).bool(p.ifn);
   for (const words of world.explored) for (const v of words) h.int(v);
   for (const mem of world.memory) {
     h.int(mem.length);
@@ -461,6 +502,14 @@ export function checkInvariants(world: World, ctx: SimContext): string[] {
     if (e.build && (e.build.progress < 0 || e.build.progress > e.build.total)) out.push(`entity ${e.id}: growth ${e.build.progress}/${e.build.total}`);
     if (e.buildOrder && catalog.factions.get(world.players[e.owner - 1]?.faction ?? 'wl')?.hq !== e.type) out.push(`entity ${e.id}: holds a building order but is not a lymph node`);
   }
+  // the Colony and antigens: samples only on dendritic cells, labs only on lymph nodes that order buildings
+  for (const e of world.entities) {
+    if (e.sample !== '' && catalog.units.get(e.type)?.role !== 'intel') out.push(`entity ${e.id}: carries a sample but is not a dendritic cell`);
+    if (e.lab && !(e.owner > 0 && catalog.factions.get(world.players[e.owner - 1]!.faction)?.hq === e.type)) out.push(`entity ${e.id}: a lab outside a lymph node`);
+    if (e.spec !== '' && !catalog.units.get(e.type)?.tags.includes('acquired')) out.push(`entity ${e.id}: specificity on an innate unit`);
+    if (e.job?.kind === 'build_at' && catalog.units.get(e.type)?.role !== 'worker') out.push(`entity ${e.id}: building by morph but not a worker`);
+  }
+
   // combat: armed exactly when the type has a weapon; projectiles well formed
   for (const e of world.entities) {
     const armed = (e.building ? catalog.buildings.get(e.type)?.weapon : catalog.units.get(e.type)?.weapon) ?? null;

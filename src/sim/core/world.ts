@@ -7,7 +7,7 @@ import { stampBuilding, type SimContext } from '../context';
 import { SUB } from './fixed';
 import { seedRng, type RngState } from './rng';
 
-export const WORLD_VERSION = 5;
+export const WORLD_VERSION = 6;
 export const NEUTRAL = 0;
 
 export interface Player {
@@ -21,6 +21,8 @@ export interface Player {
   supplyReserved: number;
   supplyCap: number;
   defeated: boolean;
+  /** antigen families processed at a lymph node, in the order they opened (the White Line's tier 2) */
+  antigens: string[];
 }
 
 export type Order =
@@ -57,6 +59,12 @@ export interface Projectile {
   y: number;
   launch: number;
   impact: number;
+  /** the attacker's boost at launch, thousandths (IFN-γ for a macrophage near a helper) */
+  power: number;
+  /** the antigen family the attacker was trained against ('' = innate) */
+  spec: string;
+  /** IFN-γ: a macrophage helped by a CD4 can swallow capsules too */
+  ifn: boolean;
 }
 
 /** What a player last saw of a building or resource that is not theirs. */
@@ -107,19 +115,34 @@ export interface BuildOrder {
   paid: [number, number];
 }
 
-/** A builder's work: helping a building grow, or repairing it. */
+/**
+ * A unit's errand: a builder helping a building grow or repairing it; a dendritic cell taking
+ * a sample and carrying it home; a feeder walking to a site to become a building.
+ */
 export interface Job {
-  kind: 'assist' | 'repair';
-  target: number;
+  kind: 'assist' | 'repair' | 'sample' | 'deliver' | 'build_at';
+  target: number; // the building, the sampled enemy, the lymph node; 0 for build_at
   tries: number;
-  next: number; // tick of the next repair step
+  next: number; // repair: tick of the next step; sample: tick sampling began (-1 = not yet)
+  build: string; // build_at: the building
+  tx: number; // build_at: its top-left tile
+  ty: number;
+  paid: [number, number]; // build_at: paid at the order, refunded if the site is lost
 }
 
+/** Turning into another unit (monocyte → macrophage), or splitting in two (`copy`: the Colony). */
 export interface Morph {
   into: string;
   until: number;
   paid: [number, number];
   extra: number; // supply reserved on top of the unit's own
+  copy: boolean; // true: a second unit of the same type appears; the first stays as it is
+}
+
+/** One antigen sample at a lymph node: processed for 30 s, then its family opens. */
+export interface LabItem {
+  family: string;
+  until: number; // 0 = waiting its turn
 }
 
 /**
@@ -207,6 +230,16 @@ export interface Entity {
   cb: Combat | null;
   /** a slow on it: speed is cut by `pct` thousandths until `until` */
   slow: { until: number; pct: number } | null;
+  /** the last tick it attacked or was hit (the Colony splits only out of combat) */
+  lastCombat: number;
+  /** a dendritic cell's carried sample: an antigen family, or '' */
+  sample: string;
+  /** an acquired unit's specificity: the family it was trained against, or '' */
+  spec: string;
+  /** buildings: the tick they were finished (biofilm spreads from it) */
+  doneTick: number;
+  /** lymph nodes: samples being processed */
+  lab: LabItem[] | null;
 }
 
 export interface World {
@@ -270,7 +303,7 @@ export function createWorld(ctx: SimContext, setup: MatchSetup): World {
   setup.players.forEach((p, i) => {
     const f = catalog.factions.get(p.faction);
     if (!f) throw new Error(`unknown faction ${p.faction}`);
-    world.players.push({ id: i + 1, faction: p.faction, team: p.team, basic: f.basic, advanced: f.advanced, supplyUsed: 0, supplyReserved: 0, supplyCap: 0, defeated: false });
+    world.players.push({ id: i + 1, faction: p.faction, team: p.team, basic: f.basic, advanced: f.advanced, supplyUsed: 0, supplyReserved: 0, supplyCap: 0, defeated: false, antigens: [] });
     world.explored.push(new Array<number>(Math.ceil((map.w * map.h) / 32)).fill(0));
     world.memory.push([]);
   });
@@ -283,7 +316,8 @@ export function createWorld(ctx: SimContext, setup: MatchSetup): World {
     const owner = i + 1;
     const [sx, sy] = p.startTile;
     const hq = catalog.buildings.get(f.hq)!;
-    spawnBuilding(world, ctx, f.hq, owner, sx * SUB + hq.footprint[0] * (SUB / 2), sy * SUB + hq.footprint[1] * (SUB / 2));
+    const base = spawnBuilding(world, ctx, f.hq, owner, sx * SUB + hq.footprint[0] * (SUB / 2), sy * SUB + hq.footprint[1] * (SUB / 2));
+    base.doneTick = -1_000_000; // a starting base has long been there: its biofilm is fully spread
     // starting units in rows of six below the HQ, in a fixed order
     let k = 0;
     for (const s of f.start) {
@@ -305,7 +339,10 @@ export function supplyCapOf(world: World, catalog: Catalog, owner: number): numb
   return Math.min(cap, f.supplyCap);
 }
 
-const BLANK = { gather: null, cargo: 0, cargoKind: '' as const, build: null, queue: null, rally: null, buildOrder: null, job: null, morph: null, cb: null, slow: null };
+const BLANK = {
+  gather: null, cargo: 0, cargoKind: '' as const, build: null, queue: null, rally: null, buildOrder: null, job: null, morph: null,
+  cb: null, slow: null, lastCombat: -1_000_000, sample: '', spec: '', doneTick: 0, lab: null,
+};
 
 /** A fresh attack state for an armed entity. */
 export function newCombat(): Combat {
@@ -332,6 +369,9 @@ export function spawnBuilding(world: World, ctx: SimContext, type: string, owner
     build: grows ? { progress: 0, total, paid: [...paid] } : null,
     queue: def.produces.length > 0 ? [] : null,
     cb: def.weapon ? newCombat() : null,
+    doneTick: world.tick,
+    // a lymph node that orders buildings also processes antigen samples
+    lab: ctx.catalog.factions.get(world.players[owner - 1]?.faction ?? 'wl')?.hq === type && ctx.catalog.factions.get(world.players[owner - 1]!.faction)!.construction === 'order' ? [] : null,
   };
   world.entities.push(e);
   stampBuilding(ctx, type, e.x, e.y, 1);

@@ -6,6 +6,8 @@ import { isInt } from '../core/fixed';
 import type { World } from '../core/world';
 import { validateBuildingCmd, validateUnitJob } from '../build/production';
 import { validateAttack } from '../combat/combat';
+import { validateBuildAt, validateSplit } from '../colony/colony';
+import { validateSample } from '../intel/antigen';
 import { validateGather } from '../economy/gather';
 
 export const MAX_UNITS_PER_COMMAND = 200;
@@ -25,6 +27,12 @@ export type Cmd =
   | { type: 'REPAIR'; units: number[]; target: number }
   /** units that can turn into another (monocyte → macrophage) start turning */
   | { type: 'DEPLOY'; units: number[] }
+  /** the Colony: the first feeder in the list walks to the site and becomes the building (top-left tile tx, ty) */
+  | { type: 'BUILD_AT'; units: number[]; build: string; tx: number; ty: number }
+  /** the Colony: fighters on their own biofilm, out of combat, split in two */
+  | { type: 'SPLIT'; units: number[] }
+  /** dendritic cells take a sample from this enemy and carry it to a lymph node */
+  | { type: 'SAMPLE'; units: number[]; target: number }
   // building commands: `units` is empty, `building` names the building
   | { type: 'TRAIN'; units: number[]; building: number; unit: string; count: number }
   /** cancel a queued unit (index; -1 = the last), the growing building itself, or a lymph node's unplaced order */
@@ -96,7 +104,12 @@ export type RejectReason =
   | 'cannot_place'
   | 'nothing_to_do'
   | 'cannot_deploy'
-  | 'no_weapons';
+  | 'no_weapons'
+  | 'no_biofilm'
+  | 'no_feeder'
+  | 'cannot_split'
+  | 'no_dendritic'
+  | 'no_family';
 
 export interface Rejection {
   player: number;
@@ -131,7 +144,12 @@ export function checkShape(env: unknown): env is CommandEnvelope {
     case 'REPAIR':
       return isInt(c.target);
     case 'DEPLOY':
+    case 'SPLIT':
       return true;
+    case 'SAMPLE':
+      return isInt(c.target);
+    case 'BUILD_AT':
+      return typeof c.build === 'string' && isInt(c.tx) && isInt(c.ty);
     case 'TRAIN':
       return isInt(c.building) && typeof c.unit === 'string' && isInt(c.count) && (c.units as unknown[]).length === 0;
     case 'CANCEL':
@@ -200,6 +218,12 @@ export function validate(world: World, env: CommandEnvelope, index: Map<number, 
   if (env.cmd.type === 'ATTACK') {
     const live = units.map((id) => index.get(id)).filter((e): e is World['entities'][number] => e !== undefined);
     return validateAttack(world, ctx, env.player, live, index.get(env.cmd.target));
+  }
+  if (env.cmd.type === 'BUILD_AT' || env.cmd.type === 'SPLIT' || env.cmd.type === 'SAMPLE') {
+    const live = units.map((id) => index.get(id)).filter((e): e is World['entities'][number] => e !== undefined);
+    if (env.cmd.type === 'BUILD_AT') return validateBuildAt(world, ctx, env.player, env.cmd, live);
+    if (env.cmd.type === 'SPLIT') return validateSplit(world, ctx, env.player, live);
+    return validateSample(world, ctx, env.player, env.cmd, live);
   }
   if (env.cmd.type === 'ASSIST_BUILD' || env.cmd.type === 'REPAIR' || env.cmd.type === 'DEPLOY') {
     const live = units.map((id) => index.get(id)).filter((e): e is World['entities'][number] => e !== undefined);

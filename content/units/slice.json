@@ -24,7 +24,9 @@
   "lifespan": 0,
   "producedAt": "bld_wl_lymphnode",
   "requires": [],
-  "morphsTo": null
+  "morphsTo": null,
+  "family": "",
+  "aura": ""
  },
  {
   "id": "unit_wl_platelets",
@@ -50,7 +52,9 @@
   "lifespan": 0,
   "producedAt": "bld_wl_marrow",
   "requires": [],
-  "morphsTo": null
+  "morphsTo": null,
+  "family": "",
+  "aura": ""
  },
  {
   "id": "unit_wl_monocyte",
@@ -76,7 +80,9 @@
   "lifespan": 0,
   "producedAt": "bld_wl_marrow",
   "requires": [],
-  "morphsTo": "unit_wl_macrophage"
+  "morphsTo": "unit_wl_macrophage",
+  "family": "",
+  "aura": ""
  },
  {
   "id": "unit_wl_neutrophil",
@@ -102,7 +108,9 @@
   "lifespan": 3600,
   "producedAt": "bld_wl_marrow",
   "requires": [],
-  "morphsTo": null
+  "morphsTo": null,
+  "family": "",
+  "aura": ""
  },
  {
   "id": "unit_wl_dendritic",
@@ -128,7 +136,9 @@
   "lifespan": 0,
   "producedAt": "bld_wl_marrow",
   "requires": [],
-  "morphsTo": null
+  "morphsTo": null,
+  "family": "",
+  "aura": ""
  },
  {
   "id": "unit_wl_eosinophil",
@@ -154,7 +164,9 @@
   "lifespan": 0,
   "producedAt": "bld_wl_spleen",
   "requires": [],
-  "morphsTo": null
+  "morphsTo": null,
+  "family": "",
+  "aura": ""
  },
  {
   "id": "unit_wl_macrophage",
@@ -183,7 +195,9 @@
   "requires": [
    "bld_wl_spleen"
   ],
-  "morphsTo": null
+  "morphsTo": null,
+  "family": "",
+  "aura": ""
  },
  {
   "id": "unit_wl_plasma",
@@ -203,7 +217,8 @@
   "sight": 2048,
   "weapon": "w_plasma_volley",
   "tags": [
-   "biological"
+   "biological",
+   "acquired"
   ],
   "carry": 0,
   "lifespan": 0,
@@ -211,7 +226,126 @@
   "requires": [
    "antigen:any"
   ],
-  "morphsTo": null
+  "morphsTo": null,
+  "family": "",
+  "aura": ""
+ },
+ {
+  "id": "unit_wl_nk",
+  "faction": "wl",
+  "role": "commando",
+  "cost": [
+   160,
+   40
+  ],
+  "trainTicks": 520,
+  "supply": 2,
+  "hp": 130,
+  "armor": 0,
+  "speed": 58,
+  "radius": 154,
+  "navClass": "medium",
+  "sight": 2304,
+  "weapon": "w_nk_strike",
+  "tags": [
+   "biological"
+  ],
+  "carry": 0,
+  "lifespan": 0,
+  "producedAt": "bld_wl_marrow",
+  "requires": [
+   "bld_wl_spleen"
+  ],
+  "morphsTo": null,
+  "family": "",
+  "aura": ""
+ },
+ {
+  "id": "unit_wl_cd4",
+  "faction": "wl",
+  "role": "support",
+  "cost": [
+   140,
+   60
+  ],
+  "trainTicks": 500,
+  "supply": 2,
+  "hp": 160,
+  "armor": 0,
+  "speed": 38,
+  "radius": 154,
+  "navClass": "medium",
+  "sight": 2048,
+  "weapon": "w_cd4_signal",
+  "tags": [
+   "biological",
+   "acquired"
+  ],
+  "carry": 0,
+  "lifespan": 0,
+  "producedAt": "bld_wl_thymus",
+  "requires": [],
+  "morphsTo": null,
+  "family": "",
+  "aura": "helper"
+ },
+ {
+  "id": "unit_wl_cd8",
+  "faction": "wl",
+  "role": "infantry",
+  "cost": [
+   120,
+   60
+  ],
+  "trainTicks": 440,
+  "supply": 2,
+  "hp": 140,
+  "armor": 0,
+  "speed": 44,
+  "radius": 154,
+  "navClass": "medium",
+  "sight": 2048,
+  "weapon": "w_cd8_perforin",
+  "tags": [
+   "biological",
+   "acquired"
+  ],
+  "carry": 0,
+  "lifespan": 0,
+  "producedAt": "bld_wl_thymus",
+  "requires": [],
+  "morphsTo": null,
+  "family": "",
+  "aura": ""
+ },
+ {
+  "id": "unit_wl_treg",
+  "faction": "wl",
+  "role": "support",
+  "cost": [
+   100,
+   40
+  ],
+  "trainTicks": 400,
+  "supply": 1,
+  "hp": 100,
+  "armor": 0,
+  "speed": 38,
+  "radius": 154,
+  "navClass": "medium",
+  "sight": 2048,
+  "weapon": null,
+  "tags": [
+   "biological",
+   "acquired"
+  ],
+  "carry": 0,
+  "lifespan": 0,
+  "producedAt": "bld_wl_thymus",
+  "requires": [],
+  "morphsTo": null,
+  "family": "",
+  "aura": ""
  },
  {
   "id": "unit_col_feeder",
@@ -238,7 +372,9 @@
   "lifespan": 0,
   "producedAt": "bld_col_biofilm_core",
   "requires": [],
-  "morphsTo": null
+  "morphsTo": null,
+  "family": "staph",
+  "aura": ""
  },
  {
   "id": "unit_col_coccus",
@@ -264,7 +400,37 @@
   "lifespan": 0,
   "producedAt": "bld_col_fission",
   "requires": [],
-  "morphsTo": null
+  "morphsTo": null,
+  "family": "staph",
+  "aura": ""
+ },
+ {
+  "id": "unit_col_bacillus",
+  "faction": "col",
+  "role": "infantry",
+  "cost": [
+   70,
+   0
+  ],
+  "trainTicks": 280,
+  "supply": 1,
+  "hp": 100,
+  "armor": 0,
+  "speed": 38,
+  "radius": 115,
+  "navClass": "small",
+  "sight": 1792,
+  "weapon": "w_bacillus_spit",
+  "tags": [
+   "biological"
+  ],
+  "carry": 0,
+  "lifespan": 0,
+  "producedAt": "bld_col_fission",
+  "requires": [],
+  "morphsTo": null,
+  "family": "bacillus",
+  "aura": ""
  },
  {
   "id": "unit_col_flagellate",
@@ -290,7 +456,9 @@
   "lifespan": 0,
   "producedAt": "bld_col_flagellum",
   "requires": [],
-  "morphsTo": null
+  "morphsTo": null,
+  "family": "enteric",
+  "aura": ""
  },
  {
   "id": "unit_col_spirochete",
@@ -316,7 +484,38 @@
   "lifespan": 0,
   "producedAt": "bld_col_flagellum",
   "requires": [],
-  "morphsTo": null
+  "morphsTo": null,
+  "family": "spiro",
+  "aura": ""
+ },
+ {
+  "id": "unit_col_capsule",
+  "faction": "col",
+  "role": "heavy",
+  "cost": [
+   120,
+   20
+  ],
+  "trainTicks": 440,
+  "supply": 2,
+  "hp": 150,
+  "armor": 0,
+  "speed": 38,
+  "radius": 154,
+  "navClass": "medium",
+  "sight": 1792,
+  "weapon": "w_capsule_bite",
+  "tags": [
+   "biological",
+   "capsule"
+  ],
+  "carry": 0,
+  "lifespan": 0,
+  "producedAt": "bld_col_flagellum",
+  "requires": [],
+  "morphsTo": null,
+  "family": "pneumo",
+  "aura": ""
  },
  {
   "id": "unit_col_strep",
@@ -342,7 +541,9 @@
   "lifespan": 0,
   "producedAt": "bld_col_flagellum",
   "requires": [],
-  "morphsTo": null
+  "morphsTo": null,
+  "family": "strep",
+  "aura": ""
  },
  {
   "id": "unit_col_toxin",
@@ -368,6 +569,8 @@
   "lifespan": 0,
   "producedAt": "bld_col_toxinfoundry",
   "requires": [],
-  "morphsTo": null
+  "morphsTo": null,
+  "family": "clostridium",
+  "aura": ""
  }
 ]

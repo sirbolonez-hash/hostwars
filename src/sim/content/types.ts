@@ -5,7 +5,7 @@
 export type FactionId = 'wl' | 'col' | 'crn';
 export type NavClass = 'small' | 'medium' | 'large';
 export type WeaponKind = 'melee' | 'projectile' | 'arc' | 'engulf';
-export type Tag = 'worker' | 'biological' | 'armored' | 'building' | 'capsule' | 'concealed' | 'air' | 'hero' | 'structure';
+export type Tag = 'worker' | 'biological' | 'armored' | 'building' | 'capsule' | 'concealed' | 'air' | 'hero' | 'structure' | 'acquired' | 'infected';
 
 export interface WeaponDef {
   id: string;
@@ -25,12 +25,13 @@ export interface WeaponDef {
   slow: number; // thousandths taken off the target's speed
   slowTicks: number;
   arcCos: number; // cos(arc / 2) in thousandths, from the content tool (the simulation has no trigonometry)
+  antibody: boolean; // antibodies lose 60% against anything standing on biofilm
 }
 
 export interface UnitDef {
   id: string; // also the asset id
   faction: FactionId;
-  role: 'worker' | 'builder' | 'scout' | 'infantry' | 'antiarmor' | 'heavy' | 'intel' | 'siege';
+  role: 'worker' | 'builder' | 'scout' | 'infantry' | 'antiarmor' | 'heavy' | 'intel' | 'siege' | 'commando' | 'support';
   cost: [number, number];
   trainTicks: number;
   supply: number;
@@ -47,6 +48,8 @@ export interface UnitDef {
   producedAt: string;
   requires: string[]; // building ids or "antigen:<family>"
   morphsTo: string | null; // monocyte → macrophage
+  family: string; // antigen family a sample of it opens; '' for the White Line
+  aura: '' | 'helper'; // helper: IL-2 for acquired cells and IFN-γ for macrophages nearby
 }
 
 export interface BuildingDef {
@@ -72,9 +75,10 @@ export interface BuildingDef {
   placement: Placement;
   art: string; // asset drawn for it (usually its own id)
   artScale: number; // thousandths
+  family: string; // antigen family a sample of it opens
 }
 
-export type Placement = 'near' | 'builder' | 'resource' | 'biofilm' | 'none';
+export type Placement = 'near' | 'builder' | 'resource' | 'biofilm' | 'anywhere' | 'none';
 
 export type ResourceKind = 'glucose' | 'protein' | 'iron';
 

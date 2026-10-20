@@ -8,6 +8,7 @@ import type { Entity, MoveState, World } from '../core/world';
 import { centreOf, CLASS_SIZE, nodeOf } from './grid';
 import { bodyClear, checkRadius, nodesClear, smoothPath } from './los';
 import { assignSlots, nearestPassable } from './slots';
+import { BIOFILM_DRAG } from '../colony/biofilm';
 
 /** Node expansions allowed per tick across all searches (one search may finish past it). */
 export const PATH_BUDGET = 8000;
@@ -327,7 +328,10 @@ export function moveUnits(world: World, ctx: SimContext, events: MoveEvent[]): v
     }
     const tile = nav.tileAt(e.x, e.y);
     const f = nav.flowFactor(tile, dx, dy);
-    const slowed = e.slow && e.slow.until > world.tick ? 1000 - e.slow.pct : 1000;
+    let slowed = e.slow && e.slow.until > world.tick ? 1000 - e.slow.pct : 1000;
+    // immune cells wade through someone else's biofilm
+    const bf = ctx.biofilm.under(e);
+    if (bf !== 0 && bf !== e.owner && world.players[e.owner - 1]?.faction === 'wl') slowed = Math.trunc((slowed * BIOFILM_DRAG) / 1000);
     const step = Math.max(1, Math.trunc((Math.trunc((def.speed * f) / 1000) * slowed) / 1000));
     if (d <= step) {
       e.x = wx;

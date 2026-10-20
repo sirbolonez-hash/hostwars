@@ -32,6 +32,7 @@ export type BuildEvent =
   | { type: 'built'; entity: number; owner: number }
   | { type: 'refunded'; owner: number; basic: number; advanced: number; reason: 'cancel' | 'lost' }
   | { type: 'morphed'; entity: number; owner: number }
+  | { type: 'split'; entity: number; copy: number; owner: number }
   | { type: 'job_ended'; entity: number; reason: 'done' | 'gone' | 'path_blocked' };
 
 type BuildingCmd = Extract<Cmd, { type: 'TRAIN' | 'CANCEL' | 'QUEUE_BUILD' | 'PLACE_BUILD' | 'SET_RALLY' }>;
@@ -65,9 +66,14 @@ export function hasComplete(world: World, owner: number, type: string): boolean 
   return world.entities.some((e) => e.owner === owner && e.type === type && e.building && isComplete(e));
 }
 
-/** Building requirements; an antigen requirement opens only through a delivered sample (gate 6). */
+/** Requirements: finished buildings, and antigen families processed at a lymph node ('antigen:any' = at least one). */
 export function requirementsMet(world: World, owner: number, reqs: string[]): boolean {
-  return reqs.every((r) => !r.startsWith('antigen:') && hasComplete(world, owner, r));
+  const opened = world.players[owner - 1]?.antigens ?? [];
+  return reqs.every((r) => {
+    if (!r.startsWith('antigen:')) return hasComplete(world, owner, r);
+    const fam = r.slice('antigen:'.length);
+    return fam === 'any' ? opened.length > 0 : opened.includes(fam);
+  });
 }
 
 /** Can this player's lymph node order buildings? (The Colony builds with feeders, the Crown hijacks: gate 6.) */
@@ -229,7 +235,7 @@ export function applyUnitJob(world: World, ctx: SimContext, player: number, cmd:
       u.job = null;
       pay(p, into.cost);
       p.supplyReserved += extra;
-      u.morph = { into: into.id, until: world.tick + into.trainTicks, paid: [...into.cost], extra };
+      u.morph = { into: into.id, until: world.tick + into.trainTicks, paid: [...into.cost], extra, copy: false };
       u.order = { kind: 'morph' };
     }
     return;
@@ -240,7 +246,7 @@ export function applyUnitJob(world: World, ctx: SimContext, player: number, cmd:
     if (catalog.units.get(u.type)?.role !== 'builder' || u.morph) continue;
     stopGather(world, u);
     clearMove(world, u);
-    u.job = { kind, target: t.id, tries: 0, next: world.tick };
+    u.job = { kind, target: t.id, tries: 0, next: world.tick, build: '', tx: 0, ty: 0, paid: [0, 0] };
     u.order = { kind: 'job' };
     headFor(world, ctx, u, t);
   }
@@ -322,6 +328,22 @@ function spawnSpot(ctx: SimContext, b: Entity, unit: string): [number, number] |
   return best ? centreOf(best[0], best[1], size) : null;
 }
 
+/** A free spot next to a unit (a split's twin): the nearest tile around it a body that size fits. */
+function nearestFreeNear(world: World, ctx: SimContext, u: Entity, size: number): [number, number] | null {
+  void world;
+  const tx = Math.floor(u.x / SUB);
+  const ty = Math.floor(u.y / SUB);
+  for (let r = 1; r <= 3; r++) {
+    for (let dy = -r; dy <= r; dy++) {
+      for (let dx = -r; dx <= r; dx++) {
+        if (Math.max(Math.abs(dx), Math.abs(dy)) !== r) continue;
+        if (ctx.nav.passable(tx + dx, ty + dy, size)) return centreOf(tx + dx, ty + dy, size);
+      }
+    }
+  }
+  return null;
+}
+
 /** A new unit goes to the building's rally: a crystal to mine (carriers), a unit to join, or a point. */
 function sendToRally(world: World, ctx: SimContext, b: Entity, u: Entity): void {
   const r = b.rally;
@@ -345,12 +367,25 @@ export function productionPhase(world: World, ctx: SimContext, events: BuildEven
   const { catalog } = ctx;
   const tick = world.tick;
 
-  // morphs that are done
+  // morphs that are done; a split leaves the unit as it was and adds a second one beside it
   for (const u of world.entities) {
     if (!u.morph || u.hp <= 0 || tick < u.morph.until) continue;
     const from = catalog.units.get(u.type)!;
     const into = catalog.units.get(u.morph.into)!;
     const p = playerOf(world, u.owner);
+    if (u.morph.copy) {
+      const size = CLASS_SIZE[from.navClass];
+      const node = nearestFreeNear(world, ctx, u, size);
+      p.supplyReserved -= u.morph.extra;
+      u.morph = null;
+      u.order = { kind: 'idle' };
+      if (node) {
+        const twin = spawnUnit(world, catalog, u.type, u.owner, node[0], node[1]);
+        twin.lastCombat = u.lastCombat;
+        events.push({ type: 'split', entity: u.id, copy: twin.id, owner: u.owner });
+      } else refund(world, u.owner, from.cost, 1000, 'cancel', events);
+      continue;
+    }
     p.supplyUsed += into.supply - from.supply;
     p.supplyReserved -= u.morph.extra;
     u.hp = Math.max(1, Math.floor((u.hp * into.hp) / u.maxHp));
@@ -366,7 +401,7 @@ export function productionPhase(world: World, ctx: SimContext, events: BuildEven
   const helpers = new Map<number, number>(); // building → builder squads at work on it
   for (const u of world.entities) {
     const job = u.job;
-    if (!job || u.hp <= 0) continue;
+    if (!job || u.hp <= 0 || (job.kind !== 'assist' && job.kind !== 'repair')) continue;
     const t = entityById(world, job.target);
     if (!t || t.hp <= 0 || t.owner !== u.owner) {
       endJob(u, 'gone', world, events);
@@ -416,6 +451,7 @@ export function productionPhase(world: World, ctx: SimContext, events: BuildEven
     b.hp = Math.min(b.maxHp, b.hp + growthHp(b.maxHp, g.progress, g.total) - before);
     if (g.progress >= g.total) {
       b.build = null;
+      b.doneTick = tick;
       playerOf(world, b.owner).supplyCap = supplyCapOf(world, catalog, b.owner);
       events.push({ type: 'built', entity: b.id, owner: b.owner });
     }
@@ -453,6 +489,8 @@ export function productionPhase(world: World, ctx: SimContext, events: BuildEven
     p.supplyReserved -= u.supply;
     training.set(b.owner, (training.get(b.owner) ?? 0) - u.supply);
     const nu = spawnUnit(world, catalog, u.id, b.owner, spot[0], spot[1]);
+    // acquired cells are trained against the family opened last
+    if (u.tags.includes('acquired')) nu.spec = p.antigens[p.antigens.length - 1] ?? '';
     events.push({ type: 'trained', entity: nu.id, building: b.id, owner: b.owner });
     sendToRally(world, ctx, b, nu);
   }
@@ -465,6 +503,8 @@ export function productionPhase(world: World, ctx: SimContext, events: BuildEven
  */
 export function settleLoss(world: World, e: Entity, events: BuildEvent[]): void {
   if (e.owner === 0) return;
+  // a feeder that dies on its way to a site never built anything: the order is refunded
+  if (e.job?.kind === 'build_at') refund(world, e.owner, e.job.paid, 1000, 'lost', events);
   for (const q of e.queue ?? []) if (!q.started) refund(world, e.owner, q.paid, 1000, 'lost', events);
   if (e.buildOrder) refund(world, e.owner, e.buildOrder.paid, 1000, 'lost', events);
 }

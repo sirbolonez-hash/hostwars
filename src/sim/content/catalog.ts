@@ -20,7 +20,7 @@ export interface Catalog {
 }
 
 const KINDS: ResourceKind[] = ['glucose', 'protein', 'iron'];
-const TAGS: Tag[] = ['worker', 'biological', 'armored', 'building', 'capsule', 'concealed', 'air', 'hero', 'structure'];
+const TAGS: Tag[] = ['worker', 'biological', 'armored', 'building', 'capsule', 'concealed', 'air', 'hero', 'structure', 'acquired', 'infected'];
 
 export function validateContent(c: ContentFiles, knownAssets?: Set<string>): string[] {
   const errors: string[] = [];
@@ -56,6 +56,7 @@ export function validateContent(c: ContentFiles, knownAssets?: Set<string>): str
     ints(at, w, ['speed', 'slow', 'slowTicks']);
     if (!Number.isInteger(w.arcCos) || w.arcCos < -1000 || w.arcCos > 1000) e(`${at}: arcCos must be an integer in thousandths`);
     if (w.slow > 900) e(`${at}: a slow above 900 would stop units`);
+    if (typeof w.antibody !== 'boolean') e(`${at}: antibody must be true or false`);
     if (w.onTargetLost !== 'fizzle' && w.onTargetLost !== 'ground') e(`${at}: onTargetLost must be fizzle or ground`);
     if ((w.kind === 'melee' || w.kind === 'engulf' || w.kind === 'arc') && w.speed !== 0) e(`${at}: a ${w.kind} weapon hits at launch (speed 0)`);
   }
@@ -74,6 +75,8 @@ export function validateContent(c: ContentFiles, knownAssets?: Set<string>): str
     for (const r of u.requires) if (!r.startsWith('antigen:') && !buildings.has(r)) e(`${at}: requires unknown ${r}`);
     if (u.role === 'worker' && u.carry < 1) e(`${at}: a worker must carry something`);
     if (u.carry > 0 && u.navClass !== 'small') e(`${at}: carriers must be small bodies`);
+    if (typeof u.family !== 'string' || (u.faction !== 'wl' && u.family === '')) e(`${at}: every enemy of the White Line needs an antigen family`);
+    if (u.aura !== '' && u.aura !== 'helper') e(`${at}: unknown aura ${String(u.aura)}`);
     if (knownAssets && !knownAssets.has(u.id)) e(`${at}: no asset with this id`);
   }
 
@@ -93,7 +96,8 @@ export function validateContent(c: ContentFiles, knownAssets?: Set<string>): str
     if (b.weapon !== null && !weapons.has(b.weapon)) e(`${at}: unknown weapon ${b.weapon}`);
     if (knownAssets && !knownAssets.has(b.art)) e(`${at}: no asset ${b.art} to draw it`);
     ints(at, b, ['workSlots', 'artScale'], 0);
-    if (!['near', 'builder', 'resource', 'biofilm', 'none'].includes(b.placement)) e(`${at}: unknown placement ${String(b.placement)}`);
+    if (!['near', 'builder', 'resource', 'biofilm', 'anywhere', 'none'].includes(b.placement)) e(`${at}: unknown placement ${String(b.placement)}`);
+    if (typeof b.family !== 'string') e(`${at}: family must be a string`);
     if ((b.placement === 'resource') !== (b.onResource !== null)) e(`${at}: an extractor is placed on its resource, and only it`);
     if (b.produces.length > 0 && b.footprint[1] > 4) e(`${at}: production building too tall for its exit rule`);
     if ((b.role === 'extractor') !== (b.onResource !== null)) e(`${at}: only an extractor sits on a resource`);

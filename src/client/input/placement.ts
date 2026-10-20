@@ -19,6 +19,7 @@ export const PLACE_TEXT: Record<PlaceReason, string> = {
   blocks_exit: 'זה יחסום יציאה של מבנה ייצור',
   no_deposit: 'רק על מרבץ פנוי',
   cannot_place: 'אי אפשר לבנות את זה כאן',
+  no_biofilm: 'רק על ביופילם שלכם',
 };
 
 export class Placer {

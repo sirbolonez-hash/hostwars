@@ -8,6 +8,7 @@ import type { World } from './core/world';
 import { AStar } from './navigation/astar';
 import { NavGrid, validateMap } from './navigation/grid';
 import { Vision } from './vision/vision';
+import { Biofilm } from './colony/biofilm';
 
 export interface SimContext {
   catalog: Catalog;
@@ -16,13 +17,15 @@ export interface SimContext {
   astar: AStar;
   /** who sees what this tick: derived from the world every tick, never saved */
   vision: Vision;
+  /** the Colony's ground this tick: derived from its cores every tick, never saved */
+  biofilm: Biofilm;
 }
 
 export function createContext(catalog: Catalog, map: MapDef): SimContext {
   const errors = [...validateMap(map), ...validateMapResources(map, catalog)];
   if (errors.length) throw new Error('map invalid:\n  ' + errors.join('\n  '));
   const nav = new NavGrid(map);
-  return { catalog, map, nav, astar: new AStar(nav), vision: new Vision(map.w, map.h) };
+  return { catalog, map, nav, astar: new AStar(nav), vision: new Vision(map.w, map.h), biofilm: new Biofilm(map.w, map.h) };
 }
 
 /** Context for a loaded world: fresh grid with every building's footprint stamped. */

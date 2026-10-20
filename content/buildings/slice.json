@@ -28,7 +28,8 @@
   "workSlots": 0,
   "placement": "none",
   "art": "bld_wl_lymphnode",
-  "artScale": 1000
+  "artScale": 1000,
+  "family": ""
  },
  {
   "id": "bld_wl_outpost",
@@ -59,7 +60,8 @@
   "workSlots": 0,
   "placement": "builder",
   "art": "bld_wl_lymphnode",
-  "artScale": 750
+  "artScale": 750,
+  "family": ""
  },
  {
   "id": "bld_wl_capillary",
@@ -90,7 +92,8 @@
   "workSlots": 0,
   "placement": "near",
   "art": "bld_wl_capillary",
-  "artScale": 1000
+  "artScale": 1000,
+  "family": ""
  },
  {
   "id": "bld_wl_mitochondria",
@@ -121,7 +124,8 @@
   "workSlots": 0,
   "placement": "near",
   "art": "bld_wl_mitochondria",
-  "artScale": 1000
+  "artScale": 1000,
+  "family": ""
  },
  {
   "id": "bld_wl_marrow",
@@ -144,7 +148,8 @@
    "unit_wl_neutrophil",
    "unit_wl_monocyte",
    "unit_wl_dendritic",
-   "unit_wl_platelets"
+   "unit_wl_platelets",
+   "unit_wl_nk"
   ],
   "requires": [
    "bld_wl_capillary"
@@ -157,7 +162,8 @@
   "workSlots": 0,
   "placement": "near",
   "art": "bld_wl_marrow",
-  "artScale": 1000
+  "artScale": 1000,
+  "family": ""
  },
  {
   "id": "bld_wl_spleen",
@@ -190,7 +196,8 @@
   "workSlots": 0,
   "placement": "near",
   "art": "bld_wl_spleen",
-  "artScale": 1000
+  "artScale": 1000,
+  "family": ""
  },
  {
   "id": "bld_wl_aminopump",
@@ -219,7 +226,8 @@
   "workSlots": 3,
   "placement": "resource",
   "art": "bld_wl_aminopump",
-  "artScale": 1000
+  "artScale": 1000,
+  "family": ""
  },
  {
   "id": "bld_wl_mastcell",
@@ -250,7 +258,8 @@
   "workSlots": 0,
   "placement": "near",
   "art": "bld_wl_mastcell",
-  "artScale": 1000
+  "artScale": 1000,
+  "family": ""
  },
  {
   "id": "bld_wl_germinal",
@@ -284,7 +293,45 @@
   "workSlots": 0,
   "placement": "near",
   "art": "bld_wl_germinal",
-  "artScale": 1000
+  "artScale": 1000,
+  "family": ""
+ },
+ {
+  "id": "bld_wl_thymus",
+  "faction": "wl",
+  "role": "tech",
+  "cost": [
+   200,
+   100
+  ],
+  "buildTicks": 900,
+  "hp": 900,
+  "armor": 1,
+  "footprint": [
+   3,
+   3
+  ],
+  "supplyProvided": 0,
+  "dropoff": false,
+  "produces": [
+   "unit_wl_cd4",
+   "unit_wl_cd8",
+   "unit_wl_treg"
+  ],
+  "requires": [
+   "bld_wl_spleen",
+   "antigen:any"
+  ],
+  "sight": 2048,
+  "critical": true,
+  "onResource": null,
+  "weapon": null,
+  "needsBiofilm": false,
+  "workSlots": 0,
+  "placement": "near",
+  "art": "bld_wl_thymus",
+  "artScale": 1000,
+  "family": ""
  },
  {
   "id": "bld_col_biofilm_core",
@@ -313,9 +360,10 @@
   "weapon": null,
   "needsBiofilm": false,
   "workSlots": 0,
-  "placement": "biofilm",
+  "placement": "anywhere",
   "art": "bld_col_biofilm_core",
-  "artScale": 1000
+  "artScale": 1000,
+  "family": "staph"
  },
  {
   "id": "bld_col_fermentation",
@@ -346,7 +394,8 @@
   "workSlots": 0,
   "placement": "biofilm",
   "art": "bld_col_fermentation",
-  "artScale": 1000
+  "artScale": 1000,
+  "family": "staph"
  },
  {
   "id": "bld_col_fission",
@@ -366,7 +415,8 @@
   "supplyProvided": 0,
   "dropoff": false,
   "produces": [
-   "unit_col_coccus"
+   "unit_col_coccus",
+   "unit_col_bacillus"
   ],
   "requires": [
    "bld_col_biofilm_core"
@@ -379,7 +429,8 @@
   "workSlots": 0,
   "placement": "biofilm",
   "art": "bld_col_fission",
-  "artScale": 1000
+  "artScale": 1000,
+  "family": "staph"
  },
  {
   "id": "bld_col_siderophore",
@@ -408,7 +459,8 @@
   "workSlots": 3,
   "placement": "resource",
   "art": "bld_col_siderophore",
-  "artScale": 1000
+  "artScale": 1000,
+  "family": "staph"
  },
  {
   "id": "bld_col_flagellum",
@@ -430,6 +482,7 @@
   "produces": [
    "unit_col_flagellate",
    "unit_col_spirochete",
+   "unit_col_capsule",
    "unit_col_strep"
   ],
   "requires": [
@@ -443,7 +496,8 @@
   "workSlots": 0,
   "placement": "biofilm",
   "art": "bld_col_flagellum",
-  "artScale": 1000
+  "artScale": 1000,
+  "family": "staph"
  },
  {
   "id": "bld_col_toxinspire",
@@ -474,7 +528,8 @@
   "workSlots": 0,
   "placement": "biofilm",
   "art": "bld_col_toxinspire",
-  "artScale": 1000
+  "artScale": 1000,
+  "family": "staph"
  },
  {
   "id": "bld_col_toxinfoundry",
@@ -507,6 +562,7 @@
   "workSlots": 0,
   "placement": "biofilm",
   "art": "bld_col_toxinfoundry",
-  "artScale": 1000
+  "artScale": 1000,
+  "family": "staph"
  }
 ]

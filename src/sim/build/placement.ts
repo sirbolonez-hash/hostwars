@@ -13,7 +13,7 @@ export const NEAR_TILES = 8;
 /** A builder placing an expansion stands within this many tiles of its footprint. */
 export const BUILDER_TILES = 2;
 
-export type PlaceReason = 'out_of_bounds' | 'bad_ground' | 'site_blocked' | 'too_far' | 'no_builder' | 'blocks_exit' | 'no_deposit' | 'cannot_place';
+export type PlaceReason = 'out_of_bounds' | 'bad_ground' | 'site_blocked' | 'too_far' | 'no_builder' | 'blocks_exit' | 'no_deposit' | 'cannot_place' | 'no_biofilm';
 
 export type PlaceCheck = { ok: true; deposit: number; friendlies: number[] } | { ok: false; reason: PlaceReason };
 
@@ -42,7 +42,7 @@ function exitOf(type: string, tx: number, ty: number, fw: number, fh: number): [
 export function checkPlacement(world: World, ctx: SimContext, player: number, type: string, tx: number, ty: number, canSee?: (e: Entity) => boolean): PlaceCheck {
   const { catalog, nav } = ctx;
   const def = catalog.buildings.get(type);
-  if (!def || def.placement === 'none' || def.placement === 'biofilm') return { ok: false, reason: 'cannot_place' };
+  if (!def || def.placement === 'none') return { ok: false, reason: 'cannot_place' };
   const [fw, fh] = def.footprint;
   if (tx < 0 || ty < 0 || tx + fw > nav.w || ty + fh > nav.h) return { ok: false, reason: 'out_of_bounds' };
 
@@ -61,6 +61,7 @@ export function checkPlacement(world: World, ctx: SimContext, player: number, ty
         const i = y * nav.w + x;
         if (nav.terrain[i] !== T_OPEN) return { ok: false, reason: 'bad_ground' };
         if (nav.blocked(x, y)) return { ok: false, reason: 'site_blocked' };
+        if (def.placement === 'biofilm' && ctx.biofilm.at(x, y) !== player) return { ok: false, reason: 'no_biofilm' };
       }
     }
   }

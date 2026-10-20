@@ -16,6 +16,7 @@
   "onTargetLost": "fizzle",
   "slow": 0,
   "slowTicks": 0,
+  "antibody": false,
   "arcCos": 1000
  },
  {
@@ -35,6 +36,7 @@
   "onTargetLost": "fizzle",
   "slow": 0,
   "slowTicks": 0,
+  "antibody": false,
   "arcCos": 1000
  },
  {
@@ -57,6 +59,7 @@
   "onTargetLost": "fizzle",
   "slow": 0,
   "slowTicks": 0,
+  "antibody": false,
   "arcCos": 1000
  },
  {
@@ -76,6 +79,7 @@
   "onTargetLost": "fizzle",
   "slow": 0,
   "slowTicks": 0,
+  "antibody": false,
   "arcCos": 1000
  },
  {
@@ -97,6 +101,7 @@
   "onTargetLost": "ground",
   "slow": 0,
   "slowTicks": 0,
+  "antibody": true,
   "arcCos": 1000
  },
  {
@@ -116,6 +121,71 @@
   "onTargetLost": "fizzle",
   "slow": 400,
   "slowTicks": 30,
+  "antibody": false,
+  "arcCos": 1000
+ },
+ {
+  "id": "w_nk_strike",
+  "kind": "melee",
+  "damage": 20,
+  "cooldown": 24,
+  "windup": 5,
+  "range": 256,
+  "minRange": 0,
+  "splash": 0,
+  "arc": 0,
+  "bonus": {
+   "infected": 5000
+  },
+  "maxTargets": 1,
+  "engulfMaxHp": 0,
+  "speed": 0,
+  "onTargetLost": "fizzle",
+  "slow": 0,
+  "slowTicks": 0,
+  "antibody": false,
+  "arcCos": 1000
+ },
+ {
+  "id": "w_cd4_signal",
+  "kind": "projectile",
+  "damage": 5,
+  "cooldown": 20,
+  "windup": 4,
+  "range": 512,
+  "minRange": 0,
+  "splash": 0,
+  "arc": 0,
+  "bonus": {},
+  "maxTargets": 1,
+  "engulfMaxHp": 0,
+  "speed": 128,
+  "onTargetLost": "fizzle",
+  "slow": 0,
+  "slowTicks": 0,
+  "antibody": false,
+  "arcCos": 1000
+ },
+ {
+  "id": "w_cd8_perforin",
+  "kind": "melee",
+  "damage": 12,
+  "cooldown": 20,
+  "windup": 4,
+  "range": 256,
+  "minRange": 0,
+  "splash": 0,
+  "arc": 0,
+  "bonus": {
+   "infected": 4000
+  },
+  "maxTargets": 1,
+  "engulfMaxHp": 0,
+  "speed": 0,
+  "onTargetLost": "fizzle",
+  "slow": 0,
+  "slowTicks": 0,
+  "antibody": false,
   "arcCos": 1000
  },
  {
@@ -135,6 +205,7 @@
   "onTargetLost": "fizzle",
   "slow": 0,
   "slowTicks": 0,
+  "antibody": false,
   "arcCos": 1000
  },
  {
@@ -154,6 +225,7 @@
   "onTargetLost": "fizzle",
   "slow": 0,
   "slowTicks": 0,
+  "antibody": false,
   "arcCos": 1000
  },
  {
@@ -176,6 +248,7 @@
   "onTargetLost": "fizzle",
   "slow": 0,
   "slowTicks": 0,
+  "antibody": false,
   "arcCos": 1000
  },
  {
@@ -195,6 +268,7 @@
   "onTargetLost": "fizzle",
   "slow": 0,
   "slowTicks": 0,
+  "antibody": false,
   "arcCos": 500
  },
  {
@@ -216,6 +290,7 @@
   "onTargetLost": "ground",
   "slow": 0,
   "slowTicks": 0,
+  "antibody": false,
   "arcCos": 1000
  },
  {
@@ -235,6 +310,47 @@
   "onTargetLost": "fizzle",
   "slow": 0,
   "slowTicks": 0,
+  "antibody": false,
+  "arcCos": 1000
+ },
+ {
+  "id": "w_bacillus_spit",
+  "kind": "projectile",
+  "damage": 8,
+  "cooldown": 20,
+  "windup": 4,
+  "range": 512,
+  "minRange": 0,
+  "splash": 0,
+  "arc": 0,
+  "bonus": {},
+  "maxTargets": 1,
+  "engulfMaxHp": 0,
+  "speed": 115,
+  "onTargetLost": "fizzle",
+  "slow": 0,
+  "slowTicks": 0,
+  "antibody": false,
+  "arcCos": 1000
+ },
+ {
+  "id": "w_capsule_bite",
+  "kind": "melee",
+  "damage": 10,
+  "cooldown": 24,
+  "windup": 4,
+  "range": 256,
+  "minRange": 0,
+  "splash": 0,
+  "arc": 0,
+  "bonus": {},
+  "maxTargets": 1,
+  "engulfMaxHp": 0,
+  "speed": 0,
+  "onTargetLost": "fizzle",
+  "slow": 0,
+  "slowTicks": 0,
+  "antibody": false,
   "arcCos": 1000
  }
 ]

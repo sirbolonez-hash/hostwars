@@ -9,11 +9,12 @@
 import type { RejectReason } from '../commands/commands';
 import { footprintOrigin, type SimContext } from '../context';
 import { isqrt, SUB } from '../core/fixed';
-import { entityById, type Entity, type World } from '../core/world';
+import { entityById, type Entity, type Projectile, type World } from '../core/world';
 import type { Tag, WeaponDef } from '../content/types';
 import { T_WALL } from '../navigation/grid';
 import { clearMove, travelTo } from '../navigation/movement';
 import { allied, canSee } from '../vision/vision';
+import { BIOFILM_GUARD, BIOFILM_VS_ANTIBODY } from '../colony/biofilm';
 
 /** An idle unit chases this far from where its fight began, then goes back. */
 export const LEASH = 8 * SUB;
@@ -26,6 +27,15 @@ const CHASE_REPATH = 10;
 /** Digesting after an engulf takes this many cooldowns. */
 const DIGEST = 3;
 const CELL = 4 * SUB;
+/** A CD4 helper's signals reach this far (centre to centre). */
+export const AURA_RANGE = 6 * SUB;
+/** IL-2: acquired cells near a helper attack faster (cooldown, thousandths). */
+export const IL2_COOLDOWN = 833;
+/** IFN-γ: macrophages near a helper hit harder (thousandths) and can swallow capsules. */
+export const IFN_POWER = 1500;
+/** Specificity: an acquired cell against the family it was trained on, and against anything else. */
+export const SPEC_FOR = 1500;
+export const SPEC_AGAINST = 700;
 
 export type CombatEvent =
   | { type: 'launched'; entity: number; target: number; weapon: string; impact: number }
@@ -37,6 +47,11 @@ export type CombatEvent =
 export function weaponOf(ctx: SimContext, e: Entity): WeaponDef | null {
   const id = e.building ? ctx.catalog.buildings.get(e.type)?.weapon : ctx.catalog.units.get(e.type)?.weapon;
   return id ? (ctx.catalog.weapons.get(id) ?? null) : null;
+}
+
+/** The antigen family a sample of `e` opens, and the one specific cells are trained against ('' if none). */
+export function familyOf(ctx: SimContext, e: Entity): string {
+  return (e.building ? ctx.catalog.buildings.get(e.type)?.family : ctx.catalog.units.get(e.type)?.family) ?? '';
 }
 
 function tagsOf(ctx: SimContext, e: Entity): Tag[] {
@@ -300,25 +315,65 @@ export function combatPhase(world: World, ctx: SimContext, events: CombatEvent[]
     const w = weaponOf(ctx, e)!;
     const t = entityById(world, cb.target)!;
     const flight = w.speed > 0 ? Math.max(1, Math.ceil(isqrt((e.x - t.x) ** 2 + (e.y - t.y) ** 2) / w.speed)) : 0;
-    world.projectiles.push({ id: world.nextShot++, owner: e.owner, weapon: w.id, source: e.id, target: t.id, fromX: e.x, fromY: e.y, x: t.x, y: t.y, launch: tick, impact: tick + flight });
-    cb.nextLaunch = tick + w.cooldown;
+    const def = e.building ? undefined : ctx.catalog.units.get(e.type);
+    const help = def !== undefined && helped(ctx, grid, e);
+    const il2 = help && def.tags.includes('acquired');
+    const ifn = help && w.kind === 'engulf';
+    world.projectiles.push({
+      id: world.nextShot++, owner: e.owner, weapon: w.id, source: e.id, target: t.id, fromX: e.x, fromY: e.y, x: t.x, y: t.y,
+      launch: tick, impact: tick + flight, power: ifn ? IFN_POWER : 1000, spec: e.spec, ifn,
+    });
+    cb.nextLaunch = tick + (il2 ? Math.max(1, Math.floor((w.cooldown * IL2_COOLDOWN) / 1000)) : w.cooldown);
     cb.windupEnd = -1;
+    e.lastCombat = tick;
     events.push({ type: 'launched', entity: e.id, target: t.id, weapon: w.id, impact: tick + flight });
   }
 }
 
-// ---------------------------------------------------------------- phase 9
-
-/** Damage after the weapon's bonus against the target's tags and the target's armor; never below 1. */
-export function damageOf(ctx: SimContext, w: WeaponDef, t: Entity): number {
-  let mult = 1000;
-  for (const tag of tagsOf(ctx, t)) mult = Math.max(mult, w.bonus[tag] ?? 1000);
-  return Math.max(1, Math.floor((w.damage * mult) / 1000) - armorOf(ctx, t));
+/** Is a helper (a CD4) of the same owner within its signal reach of `e`? */
+function helped(ctx: SimContext, grid: Spatial, e: Entity): boolean {
+  for (const o of grid.near(e.x, e.y, AURA_RANGE)) {
+    if (o.owner !== e.owner || o.building || o.id === e.id || o.morph || o.build) continue;
+    if (ctx.catalog.units.get(o.type)?.aura !== 'helper') continue;
+    if ((o.x - e.x) ** 2 + (o.y - e.y) ** 2 <= AURA_RANGE * AURA_RANGE) return true;
+  }
+  return false;
 }
 
-function strike(world: World, ctx: SimContext, w: WeaponDef, source: number, t: Entity, events: CombatEvent[]): void {
-  const amount = damageOf(ctx, w, t);
+// ---------------------------------------------------------------- phase 9
+
+/** What the attacker brought to a shot: its boost and the family it was trained against. */
+export interface Shot {
+  power: number;
+  spec: string;
+}
+
+/**
+ * Damage, in this order: the weapon's best bonus against the target's tags; the attacker's
+ * boost; specificity; biofilm under the target (antibodies lose 60% against anything on it,
+ * and the Colony takes a quarter less on its own); then the target's armor. Never below 1.
+ */
+export function damageOf(ctx: SimContext, w: WeaponDef, t: Entity, by?: Shot): number {
+  let mult = 1000;
+  for (const tag of tagsOf(ctx, t)) mult = Math.max(mult, w.bonus[tag] ?? 1000);
+  let d = Math.floor((w.damage * mult) / 1000);
+  if (by) {
+    if (by.power !== 1000) d = Math.floor((d * by.power) / 1000);
+    if (by.spec !== '') d = Math.floor((d * (familyOf(ctx, t) === by.spec ? SPEC_FOR : SPEC_AGAINST)) / 1000);
+  }
+  const bf = ctx.biofilm.under(t);
+  if (bf !== 0) {
+    if (w.antibody) d = Math.floor((d * BIOFILM_VS_ANTIBODY) / 1000);
+    if (bf === t.owner) d = Math.floor((d * BIOFILM_GUARD) / 1000);
+  }
+  return Math.max(1, d - armorOf(ctx, t));
+}
+
+function strike(world: World, ctx: SimContext, w: WeaponDef, p: Projectile, t: Entity, events: CombatEvent[]): void {
+  const source = p.source;
+  const amount = damageOf(ctx, w, t, p);
   t.hp -= amount;
+  t.lastCombat = world.tick;
   if (w.slow > 0 && !t.building) t.slow = { until: world.tick + w.slowTicks, pct: w.slow };
   events.push({ type: 'hit', entity: source, target: t.id, weapon: w.id, amount, x: t.x, y: t.y });
 }
@@ -340,9 +395,10 @@ export function hitPhase(world: World, ctx: SimContext, events: CombatEvent[]): 
       p.y = t.y;
     } else if (w.onTargetLost === 'fizzle' || w.splash === 0) continue;
     const src = entityById(world, p.source);
-    if (w.kind === 'engulf' && alive && !t.building && t.hp <= w.engulfMaxHp && !tagsOf(ctx, t).includes('capsule')) {
+    if (w.kind === 'engulf' && alive && !t.building && t.hp <= w.engulfMaxHp && (p.ifn || !tagsOf(ctx, t).includes('capsule'))) {
       // swallowed whole; the macrophage then digests for a while
       t.hp = 0;
+      t.lastCombat = tick;
       events.push({ type: 'engulfed', entity: p.source, target: t.id });
       if (src?.cb) src.cb.nextLaunch = Math.max(src.cb.nextLaunch, tick + w.cooldown * DIGEST);
       continue;
@@ -351,12 +407,12 @@ export function hitPhase(world: World, ctx: SimContext, events: CombatEvent[]): 
       // everything of the other side within the splash, around where it lands
       for (const o of grid.near(p.x, p.y, w.splash)) {
         if (!isFoe(world, ctx, p.owner, o)) continue;
-        if (pointGap(ctx, o, p.x, p.y) <= w.splash) strike(world, ctx, w, p.source, o, events);
+        if (pointGap(ctx, o, p.x, p.y) <= w.splash) strike(world, ctx, w, p, o, events);
       }
       continue;
     }
     if (!alive) continue;
-    strike(world, ctx, w, p.source, t, events);
+    strike(world, ctx, w, p, t, events);
     if (w.kind === 'arc' && src && w.maxTargets > 1) {
       // a sweep: more targets within range, in front of the attacker
       const fx = t.x - src.x;
@@ -370,7 +426,7 @@ export function hitPhase(world: World, ctx: SimContext, events: CombatEvent[]): 
         const oy = o.y - src.y;
         const ol = Math.max(1, isqrt(ox * ox + oy * oy));
         if (Math.trunc(((fx * ox + fy * oy) * 1000) / (fl * ol)) < w.arcCos) continue;
-        strike(world, ctx, w, p.source, o, events);
+        strike(world, ctx, w, p, o, events);
         more--;
       }
     }
