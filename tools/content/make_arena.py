@@ -12,7 +12,8 @@ Layout, west to east:
   - Colony base (x 82-100), HQ at tile (90, 24)
 Resources (gate 3), mirrored between the bases:
   - a home field of 8 glucose crystals (4 small 600, 4 large 1,800) in a crescent behind each HQ
-  - one deposit per base (protein for the White Line, iron for the Colony), worked through an extractor
+  - two deposits per base, one of each kind (protein for the White Line, iron for the Colony), so
+    either faction can start on either side; each is worked through its faction's extractor
   - a smaller expansion field to the north of each base, far enough that a depot there pays off
 """
 import json
@@ -86,6 +87,7 @@ NORTH = [  # expansion: 2 large and 3 small, about 15 tiles from the HQ
     (LARGE, 12, 4), (SMALL, 14, 3), (SMALL, 16, 3), (LARGE, 18, 4), (SMALL, 20, 6),
 ]
 DEPOSIT_WL = ('res_protein', 13, 19)
+DEPOSIT_2 = ('res_iron', 17, 34)  # south-east of the base, clear of the start area: the other kind
 
 
 def mirror(kind, x, y):
@@ -107,6 +109,9 @@ for kind, x, y in NORTH:
 resources.append({'type': DEPOSIT_WL[0], 'tile': [DEPOSIT_WL[1], DEPOSIT_WL[2]], 'field': 0})
 _, ix, iy = mirror(*DEPOSIT_WL)
 resources.append({'type': 'res_iron', 'tile': [ix, iy], 'field': 0})
+resources.append({'type': DEPOSIT_2[0], 'tile': [DEPOSIT_2[1], DEPOSIT_2[2]], 'field': 0})
+_, px, py = mirror(*DEPOSIT_2)
+resources.append({'type': 'res_protein', 'tile': [px, py], 'field': 0})
 
 # sanity: no overlaps, nothing on a wall, nothing in a 6x6 start area
 taken = {}

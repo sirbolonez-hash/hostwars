@@ -187,7 +187,7 @@ describe('gathering (gate 3)', () => {
     const h = arena();
     const north = crystals(h.world, 3);
     // a bone marrow (critical) keeps the White Line in the game when its lymph node falls later
-    h.cmd(1, { type: 'DEV_SPAWN', units: [], unit: 'bld_wl_marrow', count: 1, x: 18 * T + 128, y: 33 * T + 128 });
+    h.cmd(1, { type: 'DEV_SPAWN', units: [], unit: 'bld_wl_marrow', count: 1, x: 22 * T + 128, y: 33 * T + 128 });
     h.run(1);
     // a mitochondria next to the far field shortens the trip
     h.cmd(1, { type: 'DEV_SPAWN', units: [], unit: 'bld_wl_mitochondria', count: 1, x: 16 * T + 128, y: 10 * T + 128 });

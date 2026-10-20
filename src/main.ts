@@ -1,5 +1,5 @@
-// The test arena: White Line against a Colony that only mines. Select, move, gather, build,
-// train; the Colony has no AI yet (gate 6).
+// A skirmish on the arena: the player picks a side and the opponent's difficulty; the
+// other side is played by the AI under the same rules.
 
 import { Application, Assets, Container, Graphics, Sprite, Texture } from 'pixi.js';
 import { loadCatalog, loadMap } from './sim/content/load';
@@ -13,6 +13,8 @@ import { WorldView } from './client/render/worldView';
 import { Hud } from './client/ui/hud';
 import { CommandCard } from './client/ui/commandCard';
 import { Placer } from './client/input/placement';
+import { AiPlayer } from './match/aiPlayer';
+import type { Difficulty } from './ai/types';
 
 const status = document.getElementById('load-status')!;
 
@@ -57,19 +59,47 @@ async function main(): Promise<void> {
     loadImage('assets/' + manifest.assets['tile_bone']!.file),
   ]);
 
+  // the menu: a side, a difficulty, the test lab
+  const choice = { faction: 'wl', level: 'normal' as Difficulty };
+  const pick = (cls: string, attr: string, set: (v: string) => void) => {
+    const btns = [...document.querySelectorAll<HTMLButtonElement>(`#start .${cls}`)];
+    for (const b of btns) {
+      b.addEventListener('click', () => {
+        for (const o of btns) o.setAttribute('aria-pressed', String(o === b));
+        set(b.dataset[attr]!);
+      });
+    }
+  };
+  pick('side', 'faction', (v) => (choice.faction = v));
+  pick('level', 'level', (v) => (choice.level = v as Difficulty));
+  status.textContent = '';
+  const startBtn = document.getElementById('start-btn') as HTMLButtonElement;
+  startBtn.disabled = false;
+  startBtn.focus();
+  await new Promise<void>((res) => startBtn.addEventListener('click', () => res(), { once: true }));
+  const dev = (document.getElementById('pick-dev') as HTMLInputElement).checked;
+
   status.textContent = 'בונה את הזירה…';
   const catalog = loadCatalog();
   const map = loadMap('arena');
   const ctx = createContext(catalog, map);
-  const game = new Game(ctx, {
-    seed: (Date.now() >>> 0) % 1_000_000,
-    map: map.id,
-    dev: true,
-    players: [
-      { faction: 'wl', team: 1, startTile: map.starts[0]! },
-      { faction: 'col', team: 2, startTile: map.starts[1]! },
-    ],
-  });
+  const other = choice.faction === 'wl' ? 'col' : 'wl';
+  // the player is always player 1 at the western start; the AI is player 2
+  const ai = AiPlayer.create(2, other, choice.level, map.starts[1]!);
+  const game = new Game(
+    ctx,
+    {
+      seed: (Date.now() >>> 0) % 1_000_000,
+      map: map.id,
+      dev,
+      players: [
+        { faction: choice.faction as 'wl' | 'col', team: 1, startTile: map.starts[0]! },
+        { faction: other as 'wl' | 'col', team: 2, startTile: map.starts[1]! },
+      ],
+    },
+    1,
+    [ai],
+  );
   const terrain = Texture.from(drawTerrain(map, ctx.nav, { ground, blood, wall }));
   const shapes = makeShapes(app.renderer);
   const view = new WorldView(ctx, manifest, textures, shapes, terrain);
@@ -107,33 +137,21 @@ async function main(): Promise<void> {
     }
     return url;
   };
-  const icons = { atp: iconOf('icon_atp'), amino: iconOf('icon_amino') };
+  const icons = { atp: iconOf('icon_atp'), advanced: iconOf(choice.faction === 'wl' ? 'icon_amino' : 'icon_iron') };
   const card = new CommandCard(game, controls, placer, iconOf);
   const hud = new Hud(game, controls, view, gpu, { spawn: [(sx + 8) * 256, (sy + 6) * 256], depot: [16 * 256 + 128, 10 * 256 + 128] }, icons);
+  document.getElementById('dev')!.hidden = !dev;
 
-  // nothing runs until the player presses start
-  game.paused = true;
-  const overlay = document.getElementById('start')!;
+  document.getElementById('start')!.hidden = true;
   status.textContent = '';
-  const startBtn = document.getElementById('start-btn') as HTMLButtonElement;
-  startBtn.disabled = false;
-  startBtn.focus();
-  startBtn.addEventListener('click', () => {
-    overlay.hidden = true;
-    game.paused = false;
-    // both sides start mining at once: the White Line by the player's hand, the Colony
-    // by the test lab (it has no AI before gate 6)
-    for (const player of [1, 2]) {
-      const carriers = game.world.entities.filter((e) => e.owner === player && (catalog.units.get(e.type)?.carry ?? 0) > 0);
-      const hq = game.world.entities.find((e) => e.owner === player && e.building);
-      const crystal = game.world.entities
-        .filter((e) => e.res && e.res.field > 0)
-        .sort((a, b) => (hq ? Math.hypot(a.x - hq.x, a.y - hq.y) - Math.hypot(b.x - hq.x, b.y - hq.y) : 0))[0];
-      if (carriers.length && crystal) game.issueAs(player, { type: 'GATHER', units: carriers.map((e) => e.id), target: crystal.id });
-      // new carriers from the lymph node go mining too
-      if (hq && crystal) game.issueAs(player, { type: 'SET_RALLY', units: [], building: hq.id, x: crystal.x, y: crystal.y, target: crystal.id });
-    }
-  });
+  // the player's carriers start mining the nearest crystal, and new ones go there too
+  const carriers = game.world.entities.filter((e) => e.owner === 1 && (catalog.units.get(e.type)?.carry ?? 0) > 0);
+  const hq = game.world.entities.find((e) => e.owner === 1 && e.building);
+  const crystal = game.world.entities
+    .filter((e) => e.res && e.res.field > 0)
+    .sort((a, b) => (hq ? Math.hypot(a.x - hq.x, a.y - hq.y) - Math.hypot(b.x - hq.x, b.y - hq.y) : 0))[0];
+  if (carriers.length && crystal) game.issue({ type: 'GATHER', units: carriers.map((e) => e.id), target: crystal.id });
+  if (hq && crystal) game.issue({ type: 'SET_RALLY', units: [], building: hq.id, x: crystal.x, y: crystal.y, target: crystal.id });
 
   app.ticker.add((ticker) => {
     const dt = ticker.deltaMS;
@@ -146,7 +164,7 @@ async function main(): Promise<void> {
   });
 
   // expose for quick checks from the browser console
-  (window as unknown as { hostwars: unknown }).hostwars = { game, view, controls, placer, card, assets: Assets };
+  (window as unknown as { hostwars: unknown }).hostwars = { game, view, controls, placer, card, ai, assets: Assets };
 }
 
 main().catch((e: unknown) => {

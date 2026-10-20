@@ -2,7 +2,8 @@
 // written on every button that cannot be pressed right now. Buttons only send commands; the
 // simulation decides. Reasons come from the simulation's own validation functions.
 
-import { QUEUE_MAX, validateBuildingCmd, validateUnitJob } from '../../sim/build/production';
+import { QUEUE_MAX, requirementsMet, validateBuildingCmd, validateUnitJob } from '../../sim/build/production';
+import { canSplit, validateSplit } from '../../sim/colony/colony';
 import type { Cmd, RejectReason } from '../../sim/commands/commands';
 import { entityById, type Entity } from '../../sim/core/world';
 import type { Game } from '../game';
@@ -20,6 +21,7 @@ const REASON: Partial<Record<RejectReason, string>> = {
   cannot_produce: 'לא כאן',
   requirements: 'חסר מבנה דרוש',
   cannot_deploy: 'אין מה להתמיר',
+  cannot_split: 'רק על ביופילם שלכם, אחרי כמה שניות בלי קרב',
 };
 
 type Btn = { label: string; icon: string; cost: [number, number]; cmd: Cmd | null; reason: string | null; key: string; then?: () => void };
@@ -76,8 +78,8 @@ export class CommandCard {
       }
     }
     if (this.placer.active) {
-      const hq = this.placer.hq !== null ? entityById(world, this.placer.hq) : undefined;
-      if (!hq || !hq.buildOrder) this.placer.cancel();
+      const src = this.placer.hq !== null ? entityById(world, this.placer.hq) : undefined;
+      if (!src || (this.placer.mode === 'order' && !src.buildOrder) || (this.placer.mode === 'feeder' && src.hp <= 0)) this.placer.cancel();
     }
 
     const b = this.controls.inspected !== null ? entityById(world, this.controls.inspected) : undefined;
@@ -86,7 +88,7 @@ export class CommandCard {
     const p = world.players[me - 1]!;
     const key = [
       mineB ? `${mineB.id}|${mineB.build ? 'g' : 'c'}|${(mineB.queue ?? []).map((q) => q.unit + (q.started ? 's' : '') + (q.blocked ? 'b' : '')).join(',')}|${mineB.buildOrder?.type ?? ''}` : '',
-      units.map((u) => u.id + u.type + (u.morph ? 'm' : '')).join(','),
+      units.map((u) => u.id + u.type + (u.morph ? 'm' : '') + (u.job ? 'j' : '') + (canSplit(world, this.game.ctx, u) ? 's' : '')).join(','),
       p.basic >= 0 ? Math.floor(p.basic / 5) : 0, p.advanced, p.supplyUsed, p.supplyReserved, p.supplyCap,
       world.entities.filter((e) => e.owner === me && e.building && !e.build).length,
       this.placer.active,
@@ -175,7 +177,36 @@ export class CommandCard {
         btns.push({ label: `התמרה ל${nameOf(into.id)}`, icon: this.iconOf(into.id), cost: [into.cost[0] * morphers.length, into.cost[1] * morphers.length], cmd, reason: this.reason(validateUnitJob(world, ctx, me, cmd, morphers), into.requires), key: 'deploy' });
       }
       if (units.some((u) => ctx.catalog.units.get(u.type)?.role === 'builder')) html.push('<div class="hint">טסיות: לחיצה ימנית על מבנה בצמיחה — עזרה בבנייה; על מבנה פגוע — תיקון (בתשלום)</div>');
-      if (units.some((u) => u.morph)) html.push('<div class="hint">מתמיר… לא זז עד שיסיים</div>');
+      if (units.some((u) => u.morph)) html.push(`<div class="hint">${units.some((u) => u.morph?.copy) ? 'מתחלק… לא זז עד שהעותק השני מוכן' : 'מתמיר… לא זז עד שיסיים'}</div>`);
+      const faction = world.players[me - 1]!.faction;
+      // the Colony: a feeder walks to a site and becomes the building
+      const feeder = ctx.catalog.factions.get(faction)?.construction === 'morph' ? units.find((u) => ctx.catalog.units.get(u.type)?.role === 'worker' && !u.morph) : undefined;
+      if (feeder) {
+        html.push('<div class="hint">מזין: בחרו מבנה ומקום על הביופילם — המזין הולך לשם והופך למבנה (התשלום בהזמנה)</div>');
+        const p = world.players[me - 1]!;
+        for (const t of ctx.catalog.buildings.values()) {
+          if (t.faction !== faction || t.placement === 'none') continue;
+          const reason = !requirementsMet(world, me, t.requires) ? this.reqText(t.requires) || REASON.requirements! : p.basic < t.cost[0] || p.advanced < t.cost[1] ? REASON.no_resources! : null;
+          btns.push({ label: nameOf(t.id), icon: this.iconOf(t.art), cost: t.cost, cmd: null, reason, key: t.id, then: () => this.placer.start(feeder.id, t.id, 'feeder') });
+        }
+      }
+      // the Colony: fighters on their own biofilm split in two
+      const fighters = faction === 'col' ? units.filter((u) => u.cb !== null && !u.morph) : [];
+      if (fighters.length) {
+        const ready = fighters.filter((u) => canSplit(world, ctx, u));
+        const cost: [number, number] = [0, 0];
+        for (const u of ready) {
+          const d = ctx.catalog.units.get(u.type)!;
+          cost[0] += d.cost[0];
+          cost[1] += d.cost[1];
+        }
+        const cmd: Cmd = { type: 'SPLIT', units: fighters.map((u) => u.id) };
+        btns.push({ label: ready.length > 1 ? `חלוקה (${ready.length})` : 'חלוקה', icon: this.iconOf(fighters[0]!.type), cost, cmd, reason: this.reason(validateSplit(world, ctx, me, fighters)), key: 'split' });
+      }
+      if (units.some((u) => ctx.catalog.units.get(u.type)?.role === 'intel')) {
+        const carrying = units.find((u) => u.sample !== '');
+        html.push(`<div class="hint">${carrying ? 'נושא דגימה בדרך לצומת הלימפה' : 'תא דנדריטי: לחיצה ימנית על אויב — דגימת אנטיגן (5 שניות לידו), ואז הוא מביא אותה לצומת הלימפה'}</div>`);
+      }
     }
     const offset = this.actions.length;
     btns.forEach((btn) => this.actions.push({ cmd: btn.cmd, ...(btn.then ? { then: btn.then } : {}) }));

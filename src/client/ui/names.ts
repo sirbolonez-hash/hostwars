@@ -9,6 +9,12 @@ export const NAMES: Record<string, string> = {
   unit_wl_eosinophil: 'אאוזינופיל',
   unit_wl_macrophage: "מקרופאג'",
   unit_wl_plasma: 'תא פלזמה',
+  unit_wl_nk: 'תא NK',
+  unit_wl_cd4: 'תא T מסייע (CD4)',
+  unit_wl_cd8: 'תא T קוטל (CD8)',
+  unit_wl_treg: 'תא T מווסת',
+  unit_col_bacillus: 'בצילוס',
+  unit_col_capsule: 'פנאומוקוק עטוף',
   unit_col_feeder: 'מזין',
   unit_col_coccus: 'קוקוס',
   unit_col_flagellate: 'דגלון',
@@ -24,6 +30,7 @@ export const NAMES: Record<string, string> = {
   bld_wl_aminopump: 'משאבת אמינו',
   bld_wl_mastcell: 'מגדל תא פיטום',
   bld_wl_germinal: 'מרכז נבט',
+  bld_wl_thymus: 'אקדמיית התימוס',
   bld_col_biofilm_core: 'ליבת ביופילם',
   bld_col_fermentation: 'בור תסיסה',
   bld_col_fission: 'צבר חלוקה',
@@ -39,5 +46,16 @@ export const NAMES: Record<string, string> = {
 
 /** what a load of each resource is called */
 export const KIND_NAME: Record<string, string> = { glucose: 'גלוקוז', protein: 'חלבון', iron: 'ברזל' };
+
+/** antigen families, as the interface names them */
+export const FAMILY_NAME: Record<string, string> = {
+  staph: 'סטפילוקוק',
+  bacillus: 'בצילוס',
+  enteric: 'חיידקי מעיים',
+  spiro: 'ספירוכטות',
+  pneumo: 'פנאומוקוק',
+  strep: 'סטרפטוקוק',
+  clostridium: 'קלוסטרידיום',
+};
 
 export const nameOf = (id: string): string => NAMES[id] ?? id;

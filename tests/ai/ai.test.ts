@@ -68,6 +68,15 @@ describe('AI matches (gate 6)', () => {
     }, 120_000);
   }
 
+  it('sides swapped: a White Line AI in the east beats a Colony in the west that does nothing', () => {
+    const swapped = { ...setup, players: [{ ...setup.players[0]!, faction: 'col' as const }, { ...setup.players[1]!, faction: 'wl' as const }] };
+    const wl = AiPlayer.create(2, 'wl', 'normal', arena.starts[1]!);
+    const r = runHeadless(newCtx(), swapped, { ticks: 18 * MIN, players: [wl], untilOver: true });
+    expect(r.world.outcome?.winnerTeam).toBe(2);
+    // it built its extractor on the protein deposit on its own side
+    expect(own(r.world, 2).some((e) => e.type === 'bld_wl_aminopump')).toBe(true);
+  }, 120_000);
+
   it('save and resume in the middle of a match: the AI goes on exactly as if never stopped', () => {
     const players = () => [ai(1, 'normal'), ai(2, 'hard')];
     const full = runHeadless(newCtx(), setup, { ticks: 5000, players: players() });
@@ -168,8 +177,16 @@ describe('AI recovery (gate 6)', () => {
       const key = `${x.tx},${x.ty}`;
       if (blocked.has(key)) return;
       blocked.add(key);
-      // someone else's building appears on the chosen site
-      return [{ player: 1, seq: 0, tick, cmd: { type: 'DEV_SPAWN', units: [], unit: 'bld_wl_capillary', count: 1, x: (x.tx + 1) * T + 128, y: (x.ty + 1) * T + 128 } }];
+      // someone else's building appears on the chosen site (where no unit stands in the way of it)
+      const units = world.entities.filter((e) => !e.building);
+      for (let dy = 0; dy <= 2; dy++) {
+        for (let dx = 0; dx <= 2; dx++) {
+          const [ox, oy] = [x.tx + dx, x.ty + dy];
+          const near = units.some((u) => Math.floor(u.x / T) >= ox - 1 && Math.floor(u.x / T) <= ox + 2 && Math.floor(u.y / T) >= oy - 1 && Math.floor(u.y / T) <= oy + 2);
+          if (!near) return [{ player: 1, seq: 0, tick, cmd: { type: 'DEV_SPAWN', units: [], unit: 'bld_wl_capillary', count: 1, x: ox * T + 128, y: oy * T + 128 } }];
+        }
+      }
+      return;
     });
     expect(blocked.size).toBeGreaterThanOrEqual(1);
     expect(colony.state.badFields.length).toBeGreaterThanOrEqual(1);

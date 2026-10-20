@@ -318,6 +318,22 @@
     19
    ],
    "field": 0
+  },
+  {
+   "type": "res_iron",
+   "tile": [
+    17,
+    34
+   ],
+   "field": 0
+  },
+  {
+   "type": "res_protein",
+   "tile": [
+    83,
+    34
+   ],
+   "field": 0
   }
  ],
  "fields": [

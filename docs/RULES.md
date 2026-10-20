@@ -156,7 +156,7 @@ Measured on the arena (5 s harvest, 1 s unload, crystals 4 tiles from the HQ): o
 - Slow (histamine): speed −40% for 1.5 s; a new slow replaces the old one, they do not add up.
 
 ### The end of a match
-- A player with no critical building left (lymph node, bone marrow, spleen, germinal centre; biofilm core and the Colony's production buildings) is defeated on that tick; their orders are refused from then on.
+- A player with no critical building left (lymph node, bone marrow, spleen, germinal centre, thymus academy; biofilm core and the Colony's production buildings) is defeated on that tick; their orders are refused from then on. A player who surrenders is defeated on that tick too.
 - When one team is left, it wins; when the last teams fall on the same tick, it is a draw.
 
 ## Vision and fog (gate 5)
@@ -164,3 +164,33 @@ Measured on the arena (5 s harvest, 1 s unload, crystals 4 tiles from the HQ): o
 - Vision is worked out at the start of each tick (for orders) and again after movement (for targeting); it is never saved, it is recomputed from the world. Explored tiles are world state.
 - A building or resource of someone else that the player has seen is remembered as it was last seen (type, place, hit points, growth, stock). It does not change while out of sight; it is forgotten when its tile is seen again and it is gone.
 - Nothing hidden reaches the player: units out of sight are not drawn and cannot be picked; remembered buildings are drawn grey as last seen; hit point bars, effects, deaths, projectiles and the debug layer show only what is seen; an inspected enemy building is dropped when it leaves sight; the placement preview ignores what is not seen, and the simulation's refusal uses the same words either way; orders on unseen targets read as orders on nothing.
+
+## The Colony (gate 6)
+
+### Biofilm
+- Every finished biofilm core spreads biofilm around itself: 3 tiles when it is finished, one tile more every 4 seconds, up to 10. A starting core has spread in full from the first tick. Walls carry none. Where two players' biofilm meets, the older core holds the tile.
+- Biofilm is derived from the cores standing in the world at the start of every tick; it is never saved, so a loaded match has exactly the same ground. A dead core's biofilm is gone on the next tick.
+- What it does: the Colony builds (except cores and extractors) only on its own biofilm. Whatever stands on its own biofilm takes 25% less damage, and its units regain 1 hit point a second there. Antibodies (the plasma cell's volley) lose 60% against anything standing on biofilm. White Line units walk 20% slower on someone else's biofilm.
+
+### A feeder becomes the building (`BUILD_AT`)
+- The first feeder in the order (by id) walks to the site and becomes the building, growing from 10% like any other. The price is paid at the order; the feeder's supply is freed when it becomes the building.
+- The site is checked at the order and again on arrival. If it is lost on the way (taken, no longer on biofilm), the feeder stops, the money comes back in full and the player is told why. A feeder that dies on the way, or is given another order, also brings the money back.
+- A new core may go anywhere (it makes its own biofilm); an extractor goes on a free deposit of its kind.
+
+### Splitting (`SPLIT`)
+- A Colony fighter standing on its own biofilm, with no attack made or taken for 3 seconds, can split: the full price of the unit is paid and its supply reserved at the order; it stands still for half its training time, then a second unit appears beside it.
+
+## Antigen presentation and tier 2 (gate 6)
+- A dendritic cell samples an enemy it can see (`SAMPLE`; a right-click on an enemy): it stays within half a tile of it for 5 seconds (sampling starts over if it is pushed away), then carries the sample to the nearest standing lymph node. There it is processed for 30 seconds, one sample at a time per lymph node, and the enemy's family opens for the player. A dendritic cell killed on the way loses its sample; a lymph node lost while processing loses what it held.
+- Every enemy unit and building has a family (staph, bacillus, enteric, spiro, pneumo, strep, clostridium). Tier 2 (the thymus academy and the germinal centre, the plasma cell) needs any family opened.
+- Acquired cells (CD4, CD8, Treg, plasma) are trained against the family opened last: +50% damage against that family, −30% against every other.
+- CD4 helpers: acquired cells within 6 tiles of a CD4 attack 1/6 faster (IL-2); macrophages within 6 tiles hit 50% harder and can swallow capsules (IFN-γ). A helper does not help itself.
+- Damage, in order: the weapon's bonus for the target's tags; the attacker's boost; specificity; biofilm under the target; armor; never below 1.
+
+## The AI (gate 6)
+- The AI plays with the player's commands, prices and fog. It sees an observation built for its player (own things in full; enemies only while seen; enemy buildings as remembered) and asks the match only whether a building could stand somewhere, through the same check as the placement preview (limited to what it sees). Its commands run 2 ticks after its thought.
+- Layers: economy (workers, supply, the build plan, expansion, units; every 8–24 ticks by difficulty), army (defence, the wave, raids, scouting, splitting, sampling; every 4–12 ticks), strategy (when to attack, when to give up; every 2–5 seconds). One ledger of money and supply is shared by every layer, including what its commands still on their way will spend.
+- Personalities: the White Line fortifies (a mast cell by its mining line), sends a dendritic cell early and moves to tier 2; the Colony raids carriers with flagellates, spreads biofilm and splits fighters waiting on it.
+- Difficulties: easy (a small army, a first wave by 8 minutes whatever it has, slow to answer, never retreats), normal (scouts, expands, answers what it saw, attacks with an advantage), hard (faster thoughts, a second production building, two towers, raids and waves at once). The same resources and fog on every level.
+- Recovery: lost workers are trained again first; a Colony without a core builds a new one; a site that keeps being blocked is given up after three tries. With no workers it can use, no army and no way to make either, it surrenders (`SURRENDER`, with its reason), which defeats it at once.
+- Its whole state is plain data saved with the match; the same observations always give the same commands.

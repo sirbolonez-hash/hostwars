@@ -8,6 +8,7 @@ import { entityById, type Entity, type Memory, type World } from '../../sim/core
 import { allied, canSee } from '../../sim/vision/vision';
 import { CombatEffects } from './effects';
 import { FogLayer } from './fog';
+import { BiofilmLayer } from './biofilmLayer';
 import type { SimContext } from '../../sim/context';
 import type { SimEvent } from '../../sim/sim';
 import type { AssetRecord, Manifest } from './assets';
@@ -87,6 +88,7 @@ export class WorldView {
   inspected: number | null = null;
   private readonly inspectBox = new Graphics();
   readonly fog: FogLayer;
+  readonly biofilm: BiofilmLayer;
   private readonly effects: CombatEffects;
   /** bodies blinking after a hit: id → until (ms) */
   private readonly flashes = new Map<number, number>();
@@ -104,8 +106,9 @@ export class WorldView {
   ) {
     this.bodies.sortableChildren = true;
     this.fog = new FogLayer(ctx);
+    this.biofilm = new BiofilmLayer(ctx);
     this.effects = new CombatEffects(ctx, manifest, textures);
-    this.root.addChild(this.ground, this.debugGrid, this.underlay, this.inspectBox, this.bodies, this.effects.layer, this.overlay, this.fog.sprite, this.debug);
+    this.root.addChild(this.ground, this.biofilm.sprite, this.debugGrid, this.underlay, this.inspectBox, this.bodies, this.effects.layer, this.overlay, this.fog.sprite, this.debug);
     this.ground.addChild(new Sprite(terrain));
     for (const f of ctx.map.flows) {
       const [x, y, w, h] = f.rect;
@@ -381,6 +384,7 @@ export class WorldView {
     this.effects.update(world, events, world.tick - 1 + alpha, (x, y) => this.seesPoint(x, y), (id) => this.flashes.set(id, timeMs + 120));
     if (this.flashes.size > 200) for (const [id, until] of this.flashes) if (until < timeMs) this.flashes.delete(id);
     this.fog.update(world, this.me);
+    this.biofilm.update(world, this.me, this.fog.off);
     for (const f of this.flows) {
       f.t.tilePosition.x += (f.vx * dtMs) / 1000;
       f.t.tilePosition.y += (f.vy * dtMs) / 1000;

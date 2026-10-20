@@ -79,7 +79,18 @@ Measured (2-core Xeon): 200 units crossing and then fighting: tick average 1.8 m
 
 In the browser: fog with soft edges, enemy units hidden out of sight, remembered buildings in grey; right-click an enemy to attack, A then click to attack-move; impact bursts, projectiles, hit flashes, deaths; a victory, defeat or draw screen. Test lab: an attack army, Colony defenders, reveal the map.
 
-Not yet: the Colony's AI and construction (gate 6), so the Colony only defends.
+## Gate 6 · the Colony and the AI — done, waiting for Yakir's play test
+
+Acceptance: a skirmish, White Line against the Colony, that can be won and lost without the test lab.
+- The Colony (`tests/sim/colony.test.ts`): biofilm spreads from 3 to 10 tiles and never on walls, and goes when its core dies; units mend on it and immune cells wade through it; a feeder pays at the order, walks, and becomes a growing building whose supply is freed; an extractor on its deposit; refunds when the feeder dies, is re-ordered or finds its site taken; the White Line and non-feeders cannot build this way; splitting on own biofilm when calm, refused off it, in combat, without money or supply; save/resume in the middle of a walk to a site and of a split.
+- Antigens (`tests/sim/antigen.test.ts`): sample, carry, 30 s of processing, the family opens and tier 2 with it; a dendritic cell killed on the way loses its sample; only dendritic cells sample, only enemies they see; specificity +50% / −30%; IL-2 shortens a CD8's cooldown; IFN-γ lets a macrophage swallow a capsule.
+- The AI (`tests/ai/ai.test.ts`): hard against easy ends with a winner, the same way twice; easy against hard loses; it beats a player who does nothing, as either faction and from either start; it resumes from a save exactly; a hidden change on the far side changes none of its commands; it recovers from losing every worker and from losing its core; it gives up a field whose site keeps being blocked without letting money pile up; with no lymph node, army or money it surrenders and says why.
+
+AI league on the arena (time to a result): WL hard beats COL easy at 6.6 min, COL normal at 10.8, COL hard at 6.1; COL hard beats WL easy at 7.7; WL normal beats COL easy at 7.2; COL normal beats WL normal at 15.3; easy against easy has no result in 25 minutes. Both AIs together cost about 0.2 ms a tick.
+
+In the browser: a skirmish menu (side, difficulty, test lab); the AI plays the other side; the Colony's feeders get a build menu and become buildings on the biofilm (drawn as a pale film, the enemy's only where seen), fighters split with a button; a dendritic cell samples with a right-click, and the top bar shows the families opened; tips for every new event; the end screen tells when the opponent surrendered.
+
+Not yet: the polish list (unit explanations, the barracks exit animation, map art) after the campaign gates.
 
 ## Repository
 - GitHub: `sirbolonez-hash/hostwars`, branch `main`. Claude pushes directly since 20.10.2026.

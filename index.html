@@ -59,7 +59,7 @@
     #dev h3 { font: 600 12px Assistant, sans-serif; margin: 4px 0 0; color: var(--muted); }
     #selection { color: var(--muted); flex: 1; min-width: 200px; }
     #dev { top: 64px; right: 10px; width: 230px; display: grid; gap: 6px; }
-    #tip:empty { display: none; }
+
     #dev { max-height: calc(100vh - 360px); overflow-y: auto; }
     #dev summary { font: 600 15px Fredoka, Assistant, sans-serif; color: var(--gold); cursor: pointer; }
     #dev details > div { display: grid; gap: 6px; margin-top: 6px; }
@@ -87,6 +87,20 @@
     #start-btn { font-size: 18px; padding: 10px 36px; background: var(--blue); color: #0b1630; text-align: center; }
     #start-btn:disabled { opacity: 0.5; cursor: wait; }
     #load-status { color: var(--gold); min-height: 1.4em; }
+    #start .pick { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; align-items: center; }
+    #start .side { display: grid; justify-items: center; gap: 4px; width: 250px; padding: 12px; text-align: center; }
+    #start .side img { width: 64px; height: 64px; object-fit: contain; }
+    #start .side b { font: 600 18px Fredoka, Assistant, sans-serif; }
+    #start .side small { color: var(--muted); font-weight: 600; line-height: 1.4; }
+    #start .side[aria-pressed="true"] small { color: #0b1630; }
+    #start .level { min-width: 72px; text-align: center; }
+    #start .levels span { color: var(--muted); font-weight: 700; }
+    #start .devpick { color: var(--muted); font-size: 13px; display: flex; gap: 6px; align-items: center; }
+    #tip-box { top: 64px; left: 50%; transform: translateX(-50%); max-width: min(560px, calc(100% - 32px)); text-align: center; z-index: 4; }
+    #tip-box:has(#tip:empty) { display: none; }
+    #dev { top: 120px; }
+    #dev[hidden] { display: none; }
+    #dev .note { color: var(--gold); font-size: 12px; }
     @media (max-width: 700px) { #dev, #help, #eco { display: none; } }
   </style>
 </head>
@@ -95,7 +109,7 @@
 
   <div id="top" class="panel">
     <img src="assets/ui/logo.webp" alt="HOST WARS">
-    <span id="res">ATP 350 · אמינו 0 · אספקה 9/20</span>
+    <span id="res"></span>
     <span id="selection">לא נבחרו יחידות</span>
     <button id="btn-help" type="button" title="עזרה">?</button>
   </div>
@@ -107,36 +121,29 @@
     <div id="eco-body"><div class="idle">טוען…</div></div>
   </div>
 
-  <div id="dev" class="panel">
-    <details open><summary>מעבדת בדיקות</summary><div>
-    <h3>כלכלה</h3>
-    <button id="btn-glut" type="button">+8 נשאי GLUT לשדה הבית</button>
-    <button id="btn-mito" type="button">מפעל מיטוכונדריה ליד השדה הצפוני</button>
-    <button id="btn-pump" type="button">משאבת אמינו על מרבץ החלבון</button>
+  <div id="dev" class="panel" hidden>
+    <details><summary>מעבדת בדיקות</summary><div>
+    <button id="btn-workers" type="button">+8 נשאים לשדה הבית</button>
+    <button id="btn-grant" type="button">+1,000 ATP ו-200 מהמשאב השני</button>
+    <button id="btn-army" type="button">צבא בשבילי ליד הבסיס</button>
+    <button id="btn-enemy-army" type="button">צבא ליריב ליד הבסיס שלו</button>
     <button id="btn-kill" type="button">הרוס את מה שנבחר</button>
-    <button id="btn-grant" type="button">+1,000 ATP ו-200 אמינו</button>
-    <h3>קרב</h3>
-    <button id="btn-army" type="button">צבא תקיפה: 20 נויטרופילים, 6 מקרופאג'ים, 8 אאוזינופילים</button>
-    <button id="btn-defenders" type="button">מגינים לקולוניה: 12 קוקים, 4 דגלונים, 2 שרשראות</button>
     <button id="btn-reveal" type="button" aria-pressed="false">חשוף את כל המפה</button>
-    <h3>תנועה</h3>
-    <button id="btn-20" type="button">+20 נויטרופילים</button>
-    <button id="btn-80" type="button">+80 נויטרופילים ליד המעבר הצר</button>
-    <button id="btn-macro" type="button">+6 מקרופאג'ים (גוף גדול)</button>
-    <h3>כלים</h3>
     <button id="btn-debug" type="button" aria-pressed="false">שכבת ניווט וכרייה (F3)</button>
     <button id="btn-speed" type="button">מהירות ×1</button>
     <button id="btn-pause" type="button">השהה</button>
+    <div id="ai-note" class="note"></div>
     </div></details>
-    <div id="tip"></div>
   </div>
+  <div id="tip-box" class="panel"><div id="tip"></div></div>
 
   <div id="help" class="panel" hidden>
     <b>גרירה</b> — בחירה בתיבה · <b>לחיצה</b> — בחירת יחידה · <b>לחיצה כפולה</b> — כל היחידות מאותו סוג על המסך ·
     <b>Shift</b> — הוספה לבחירה · <b>לחיצה ימנית</b> — תזוזה; על אויב: תקיפה; על גביש עם נשאים: כרייה ·
     <b>A ואז לחיצה</b> — תנועה עם קרב בדרך · <b>S</b> — עצור · <b>H</b> — החזק עמדה (יורה בלי לזוז) ·
     <b>לחיצה על מבנה</b> — הפקודות שלו (אימון, בנייה, ביטול) · <b>לחיצה ימנית עם מבנה ייצור נבחר</b> — נקודת התכנסות ·
-    <b>לחיצה ימנית עם טסיות</b> — עזרה בבנייה או תיקון · <b>Esc</b> — ביטול הצבה ·
+    <b>לחיצה ימנית עם טסיות</b> — עזרה בבנייה או תיקון · <b>לחיצה ימנית על אויב עם תא דנדריטי</b> — דגימה ·
+    <b>מזין נבחר</b> — תפריט בנייה (המזין הופך למבנה) · <b>Esc</b> — ביטול הצבה ·
     <b>Ctrl+מספר</b> — שמירת קבוצה · <b>מספר</b> — בחירת קבוצה (פעמיים: מצלמה אליה) · <b>רווח</b> — מצלמה לבחירה ·
     <b>חצים / קצה המסך / גלגלת לחוצה</b> — הזזת מצלמה · <b>גלגלת</b> — זום · <b>Ctrl+A</b> — כולם
   </div>
@@ -146,9 +153,19 @@
   <div id="start">
     <div class="card">
       <img src="assets/ui/logo.webp" alt="HOST WARS">
-      <h1>שער 5 · קרב וערפל</h1>
-      <p>הנשאים יוצאים לכרות, והבסיס נבנה מצומת הלימפה. מה שלא רואים מכוסה בערפל: מבנה אויב שראיתם נשאר כזיכרון אפור, ויחידות אויב נעלמות כשיוצאים מטווח הראייה.</p>
-      <p>מה לבדוק: במעבדת הבדיקות — צבא תקיפה ומגינים לקולוניה. סמנו את הצבא, A ולחיצה ליד בסיס הקולוניה, ותראו אותם נלחמים בדרך. הקולוניה רק מתגוננת (אין לה עדיין AI). השמידו את ליבת הביופילם כדי לנצח.</p>
+      <h1>סקירמיש · הזירה</h1>
+      <p>בחרו צד ויריב. היריב משחק באותם חוקים בדיוק: אותם מחירים ואותו ערפל.</p>
+      <div class="pick" role="radiogroup" aria-label="הצד שלכם">
+        <button type="button" class="side" data-faction="wl" aria-pressed="true"><img src="assets/ui/emblem_wl.webp" alt=""><b>השורה הלבנה</b><small>מערכת החיסון: מבנים מוזמנים בצומת הלימפה, דגימת אנטיגן פותחת תאים ספציפיים</small></button>
+        <button type="button" class="side" data-faction="col" aria-pressed="false"><img src="assets/ui/emblem_col.webp" alt=""><b>הקולוניה</b><small>החיידקים: מזין הופך למבנה, הכול נבנה על ביופילם, ולוחמים מתחלקים בשקט</small></button>
+      </div>
+      <div class="pick levels" role="radiogroup" aria-label="קושי">
+        <span>יריב:</span>
+        <button type="button" class="level" data-level="easy" aria-pressed="false">קל</button>
+        <button type="button" class="level" data-level="normal" aria-pressed="true">רגיל</button>
+        <button type="button" class="level" data-level="hard" aria-pressed="false">קשה</button>
+      </div>
+      <label class="devpick"><input type="checkbox" id="pick-dev"> מעבדת בדיקות (כפתורי עזר למפתחים)</label>
       <button id="start-btn" type="button" disabled>התחל</button>
       <div id="load-status">טוען…</div>
     </div>

@@ -272,11 +272,18 @@ export class Controls {
 
   /** Attack what is under the point, or (attack-move) fight one's way there. Returns false if nothing was ordered. */
   private attackAt(sx: number, sy: number, moveIfNone: boolean): boolean {
-    const units = this.selectedUnits();
-    const armed = units.filter((u) => u.cb !== null).map((u) => u.id);
-    if (armed.length === 0) return false;
+    const all = this.selectedUnits();
     const [wx, wy] = this.cam.toWorld(sx, sy);
     const foe = this.foeAt(wx, wy);
+    // dendritic cells sample an enemy instead of walking up to it
+    const samplers = foe ? all.filter((u) => this.game.ctx.catalog.units.get(u.type)?.role === 'intel') : [];
+    if (samplers.length) this.game.issue({ type: 'SAMPLE', units: samplers.map((u) => u.id), target: foe!.id });
+    const units = all.filter((u) => !samplers.includes(u));
+    const armed = units.filter((u) => u.cb !== null).map((u) => u.id);
+    if (armed.length === 0) {
+      if (samplers.length) this.view.addMarker({ x: wx, y: wy, born: performance.now(), color: 0xc58cff });
+      return samplers.length > 0;
+    }
     const rest = units.filter((u) => u.cb === null).map((u) => u.id);
     const x = Math.round(wx / PX);
     const y = Math.round(wy / PX);

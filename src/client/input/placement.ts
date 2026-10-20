@@ -22,13 +22,16 @@ export const PLACE_TEXT: Record<PlaceReason, string> = {
   no_biofilm: 'רק על ביופילם שלכם',
 };
 
+
 export class Placer {
   readonly layer = new Container();
   private readonly tiles = new Graphics();
   private ghost: Sprite | null = null;
   private readonly label: Text;
-  /** the lymph node whose order is being placed */
+  /** the lymph node whose order is being placed, or the feeder that will become the building */
   hq: number | null = null;
+  /** 'order': placing a lymph node's paid order; 'feeder': choosing where a feeder goes to become it */
+  mode: 'order' | 'feeder' = 'order';
   type: string | null = null;
   tx = 0;
   ty = 0;
@@ -49,12 +52,13 @@ export class Placer {
     return this.hq !== null;
   }
 
-  start(hq: number, type: string): void {
+  start(hq: number, type: string, mode: 'order' | 'feeder' = 'order'): void {
     this.cancel();
     const def = this.game.ctx.catalog.buildings.get(type);
     if (!def) return;
     this.hq = hq;
     this.type = type;
+    this.mode = mode;
     const tex = this.textures.get(def.art);
     if (tex) {
       this.ghost = new Sprite(tex);
@@ -117,9 +121,14 @@ export class Placer {
     this.label.position.set(cx, (ty + fh) * TILE_PX + 6);
   }
 
-  /** Sends the order; placement mode ends when the building appears (see Hud). */
+  /** Sends the order. A lymph node's order: placement ends when the building appears (see CommandCard). A feeder: at once. */
   click(): void {
-    if (this.hq === null || this.reason) return;
+    if (this.hq === null || this.reason || !this.type) return;
+    if (this.mode === 'feeder') {
+      this.game.issue({ type: 'BUILD_AT', units: [this.hq], build: this.type, tx: this.tx, ty: this.ty });
+      this.cancel();
+      return;
+    }
     this.game.issue({ type: 'PLACE_BUILD', units: [], building: this.hq, tx: this.tx, ty: this.ty });
   }
 }

@@ -123,3 +123,25 @@ Each entry: the problem, the options, the choice, what it costs, and what would 
 
 ## 2026-10-20 · Idle units fight back within a leash
 - An idle unit attacks what it sees and chases up to 8 tiles from where the fight began, then walks back without fighting. Attack-move has no leash. The arc's cosine comes from the content tool, since the simulation uses no trigonometry.
+
+## 2026-10-20 · Biofilm is derived, not saved
+- Biofilm is laid at the start of every tick from the cores standing in the world (radius from each core's finish tick), the same way vision is. A loaded match sees exactly the same ground, and nothing about biofilm needs to be hashed or migrated.
+
+## 2026-10-20 · A feeder pays at the order and is refunded if the site is lost
+- The architecture says the feeder becomes the building. Choice: the price is paid when the order is given (like the White Line's order at the lymph node), the site is checked again on arrival, and every way of not arriving (killed, re-ordered, site taken) refunds in full.
+
+## 2026-10-20 · Specificity follows the family opened last
+- Acquired cells get the family opened last when they finish training: +50% against it, −30% against the rest. Sampling the right enemy matters, and a second sample retrains new cells, not old ones.
+
+## 2026-10-20 · The AI lives outside the simulation and plays through commands
+- `src/ai` imports only types from the simulation (checked by a test). `src/match/aiPlayer.ts` builds its observation (`src/sim/vision/observe.ts`) when a layer is due and submits its commands 2 ticks ahead through the same queue as a player's. Vision and biofilm are recomputed before it looks, so a resumed match feeds it exactly the same observation. Its state goes into a save next to the world and the queue.
+- The placement check it may ask runs on the world with the player's vision filter, like the client's preview; a hidden enemy building still occupies the navigation grid, so a site under one reads as taken. Accepted for now (the preview has the same property).
+
+## 2026-10-20 · Units slide along walls; waypoints are passed only with a clear way on
+- An AI wave stood stuck against a wall corner for minutes: a unit skipped a waypoint by distance alone and then stepped into a wall tile, and the step was undone every tick. Now a waypoint is passed only when the way to the next one is clear for the body, and a step into a wall keeps the part that stays on open ground (a slide).
+
+## 2026-10-20 · Both deposit kinds at both bases
+- The skirmish lets the player take either side, so each base has a protein deposit and an iron deposit; each faction works only its own kind.
+
+## 2026-10-20 · Measured balance, left for the polish phase
+- AI league on the arena (25 minutes at most): the stronger difficulty wins nearly every pairing. In equal-cost open fights the White Line's basic units beat the Colony's; CD8s and eosinophils lose to cheaper swarms unless specific or helped. At equal difficulty the Colony is slightly ahead. Numbers stay as they are until the campaign gives them context.
