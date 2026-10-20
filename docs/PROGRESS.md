@@ -21,6 +21,9 @@ Also proven by tests:
 
 Not yet: navigation (gate 2), economy (3), construction and production (4), combat and vision (5).
 
+## Repository
+- GitHub: `sirbolonez-hash/hostwars`, branch `main`. Claude pushes directly since 20.10.2026.
+
 ## Open
-- GitHub repository connected to the session, and Netlify linked to it.
+- Netlify site linked to the repository: the URL is still unknown here.
 - Exact model of the reference machine's graphics (the gate 0 shell shows it once it runs on Yakir's computer).
