@@ -63,7 +63,13 @@ export interface BuildingDef {
   weapon: string | null;
   needsBiofilm: boolean;
   workSlots: number; // extractors: carriers that can work it at once; 0 for every other building
+  /** where it may be placed: near own buildings, where a builder stands, on a deposit, on own biofilm, or never */
+  placement: Placement;
+  art: string; // asset drawn for it (usually its own id)
+  artScale: number; // thousandths
 }
+
+export type Placement = 'near' | 'builder' | 'resource' | 'biofilm' | 'none';
 
 export type ResourceKind = 'glucose' | 'protein' | 'iron';
 
@@ -80,6 +86,8 @@ export interface ResourceDef {
 export interface FactionDef {
   id: FactionId;
   hq: string;
+  /** how it builds: ordered at the lymph node, a worker turned into the building (gate 6), or hijacked cells (gate 6) */
+  construction: 'order' | 'morph' | 'hijack';
   start: { unit: string; count: number }[];
   basic: number;
   advanced: number;

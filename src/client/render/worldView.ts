@@ -30,6 +30,8 @@ interface View {
   phase: number;
   moving: number; // 0..1, eased
   baseScale: number;
+  art: string;
+  damaged: boolean;
 }
 
 export interface Marker {
@@ -71,6 +73,9 @@ export class WorldView {
   private labelClock = 0;
   private readonly harvestFrames: Texture[];
   private readonly orbFrames: Texture[];
+  private readonly growFrames: Texture[];
+  /** hit point and growth bars, redrawn every frame */
+  private readonly bars = new Graphics();
   debugOn = false;
   /** the player whose economy is shown (loads, popups, saturation) */
   me = 1;
@@ -102,6 +107,8 @@ export class WorldView {
     const frames = (id: string) => (manifest.assets[id]?.frames ?? []).map((n) => textures.get(n)).filter((t): t is Texture => t !== undefined);
     this.harvestFrames = frames('fx_glucose_harvest');
     this.orbFrames = frames('fx_atp_orbs');
+    this.growFrames = frames('fx_build_grow');
+    this.overlay.addChild(this.bars);
     for (const f of ctx.map.fields) {
       const t = new Text({
         text: '',
@@ -115,14 +122,17 @@ export class WorldView {
   }
 
   private makeView(e: Entity): View {
-    const rec = this.manifest.assets[e.type];
-    const tex = this.textures.get(e.type);
+    // a building may borrow another's art at its own scale (the outpost is a small lymph node)
+    const bdef = this.ctx.catalog.buildings.get(e.type);
+    const art = bdef?.art ?? e.type;
+    const rec = this.manifest.assets[art];
+    const tex = this.textures.get(art);
     const body = new Sprite(tex ?? this.shapes.dot);
     if (!tex) {
       body.tint = 0xff00ff;
       body.width = 24;
       body.height = 24;
-    }
+    } else if (bdef) body.scale.set(bdef.artScale / 1000);
     body.anchor.set(rec?.anchor?.[0] ?? 0.5, rec?.anchor?.[1] ?? 0.5);
     this.bodies.addChild(body);
     let shadow: Sprite | null = null;
@@ -148,7 +158,7 @@ export class WorldView {
     }
     return {
       body, shadow, ring, mark, cargo: null, cargoKind: '', fx: null, rec, facing: 1,
-      lastX: e.x, lastY: e.y, phase: (e.id * 1.37) % 6.28, moving: 0, baseScale: body.scale.x,
+      lastX: e.x, lastY: e.y, phase: (e.id * 1.37) % 6.28, moving: 0, baseScale: body.scale.x, art, damaged: false,
     };
   }
 
@@ -196,6 +206,7 @@ export class WorldView {
       if (e.building) {
         v.body.position.set(x, y);
         v.body.zIndex = y;
+        if (catalog.buildings.has(e.type)) this.syncBuilding(e, v, x, y, t);
         const rd = catalog.resources.get(e.type);
         if (rd && e.res) {
           // a crystal shrinks as it is worked; a deposit is hidden under its extractor
@@ -219,8 +230,11 @@ export class WorldView {
       const g = e.gather;
       const target = g && (g.st === 'harvest' || g.st === 'wait') ? entityById(world, g.target) : undefined;
       if (target && v.moving < 0.5) v.facing = target.x > e.x ? -1 : 1;
-      // procedural life: breathing at rest, a little hop while walking, a bob while harvesting
-      const working = g?.st === 'harvest';
+      // procedural life: breathing at rest, a little hop while walking, a bob while harvesting,
+      // a slow swell while turning into another unit
+      const working = g?.st === 'harvest' || e.job !== null;
+      if (e.morph) v.body.tint = 0xffffff - Math.floor((0.5 + 0.5 * Math.sin(t * 6)) * 0x30) * 0x010100;
+      else if (v.body.tint !== 0xffffff) v.body.tint = 0xffffff;
       const breathe = Math.sin(t * (working ? 7 : 2.6) + v.phase) * (working ? 0.06 : 0.03) * (1 - v.moving);
       const hop = Math.abs(Math.sin(t * 9 + v.phase)) * 3 * v.moving;
       const squash = Math.abs(Math.sin(t * 9 + v.phase)) * 0.05 * v.moving;
@@ -304,7 +318,79 @@ export class WorldView {
       this.updateFieldLabels(world);
     }
     this.drawInspected(world);
+    this.drawBars(world, selected);
     this.drawDebug(world, selected);
+  }
+
+  /** Growing buildings fade in with a growth sparkle; badly damaged ones show their damaged art. */
+  private syncBuilding(e: Entity, v: View, x: number, y: number, t: number): void {
+    const g = e.build;
+    if (g) {
+      v.body.alpha = 0.5 + (0.5 * g.progress) / g.total;
+      if (!v.fx && this.growFrames.length) {
+        v.fx = new AnimatedSprite(this.growFrames);
+        v.fx.anchor.set(0.5, 0.8);
+        v.fx.animationSpeed = 10 / 60;
+        v.fx.play();
+        this.bodies.addChild(v.fx);
+      }
+      if (v.fx) {
+        v.fx.position.set(x, y);
+        v.fx.zIndex = y + 2;
+        v.fx.alpha = 0.7 + 0.3 * Math.sin(t * 3);
+      }
+    } else {
+      v.body.alpha = 1;
+      if (v.fx) {
+        v.fx.destroy();
+        v.fx = null;
+      }
+    }
+    const damaged = !g && e.hp * 2 < e.maxHp;
+    if (damaged !== v.damaged) {
+      const tex = this.textures.get(damaged ? `${v.art}_dmg` : v.art);
+      if (tex) v.body.texture = tex;
+      v.damaged = damaged;
+    }
+  }
+
+  /** Bars: hit points of hurt or selected units, of own hurt buildings; growth of growing buildings. */
+  private drawBars(world: World, selected: Set<number>): void {
+    const g = this.bars;
+    g.clear();
+    const { catalog } = this.ctx;
+    for (const e of world.entities) {
+      if (e.res && !catalog.buildings.has(e.type)) continue;
+      const own = e.owner === this.me;
+      const growing = e.build !== null;
+      const hurt = e.hp < e.maxHp;
+      const sel = selected.has(e.id) || this.inspected === e.id;
+      if (!(sel || (hurt && !growing) || (growing && own))) continue;
+      const fp = catalog.footprints.get(e.type);
+      const w = fp ? fp[0] * TILE_PX * 0.6 : 26;
+      const top = fp ? e.y * PX - fp[1] * TILE_PX * 0.5 - 22 : e.y * PX - (this.views.get(e.id)?.rec?.h ?? 46) * 0.75 - 4;
+      const x0 = e.x * PX - w / 2;
+      const frac = e.hp / e.maxHp;
+      g.rect(x0 - 1, top - 1, w + 2, 6).fill({ color: 0x1c0f1a, alpha: 0.85 });
+      g.rect(x0, top, w * frac, 4).fill({ color: frac > 0.6 ? 0x7ee081 : frac > 0.3 ? 0xffd34d : 0xe8173f });
+      if (growing) {
+        const b = e.build!;
+        g.rect(x0 - 1, top + 5, w + 2, 5).fill({ color: 0x1c0f1a, alpha: 0.85 });
+        g.rect(x0, top + 6, (w * b.progress) / b.total, 3).fill({ color: 0x5aa0ff });
+      }
+    }
+    // the rally of the inspected building
+    const b = this.inspected !== null ? entityById(world, this.inspected) : undefined;
+    if (b && b.owner === this.me && b.rally) {
+      const r = b.rally;
+      const t = r.target ? entityById(world, r.target) : undefined;
+      const rx = (t ? t.x : r.x) * PX;
+      const ry = (t ? t.y : r.y) * PX;
+      g.moveTo(b.x * PX, b.y * PX).lineTo(rx, ry).stroke({ width: 2, color: 0x9fd0ff, alpha: 0.7 });
+      g.circle(rx, ry, 6).fill({ color: 0x9fd0ff, alpha: 0.9 });
+      g.moveTo(rx, ry).lineTo(rx, ry - 20).stroke({ width: 2, color: 0xffffff });
+      g.rect(rx, ry - 20, 12, 8).fill({ color: 0x5aa0ff });
+    }
   }
 
   /** "+10" and a burst of ATP where my loads come in. */

@@ -1,57 +1,14 @@
 // Gate 3 acceptance: gathering, unloading, ATP, saturation. A destroyed depot or crystal
 // must never break the game, and resources are conserved through every transition.
 import { describe, expect, it } from 'vitest';
-import type { Cmd, CommandEnvelope } from '../../src/sim/commands/commands';
-import type { SimContext } from '../../src/sim/context';
-import { createWorld, entityById, spawnUnit, type Entity, type World } from '../../src/sim/core/world';
-import { checkInvariants, step, type SimEvent } from '../../src/sim/sim';
-import { asciiMap, catalog, matchOn, newCtx, setup } from './helpers';
+import type { Cmd } from '../../src/sim/commands/commands';
+import { entityById, spawnUnit, type Entity, type World } from '../../src/sim/core/world';
+import type { SimEvent } from '../../src/sim/sim';
+import { arenaMatch, asciiMap, catalog, harness, matchOn, type Harness } from './helpers';
 
 const T = 256;
 
-/** A match with a command helper and a tick runner that checks invariants every tick. */
-function harness(world: World, ctx: SimContext) {
-  const seq = new Map<number, number>();
-  let pending: CommandEnvelope[] = [];
-  const events: SimEvent[] = [];
-  const problems: string[] = [];
-  const h = {
-    world,
-    ctx,
-    events,
-    problems,
-    cmd(player: number, cmd: Cmd) {
-      const s = (seq.get(player) ?? 0) + 1;
-      seq.set(player, s);
-      pending.push({ player, seq: s, tick: world.tick, cmd });
-    },
-    /** runs `n` ticks; `each` sees the world after every tick */
-    run(n: number, each?: (evs: SimEvent[]) => void | boolean) {
-      for (let k = 0; k < n; k++) {
-        const now = pending;
-        pending = [];
-        const r = step(world, ctx, now);
-        events.push(...r.events);
-        for (const ev of r.events) if (ev.type === 'rejected') problems.push(`tick ${ev.tick}: rejected ${ev.rejection.reason}`);
-        for (const p of checkInvariants(world, ctx)) problems.push(`tick ${world.tick}: ${p}`);
-        if (each?.(r.events) === true) return;
-      }
-    },
-    delivered(owner: number, kind?: string) {
-      return events.reduce((s, e) => (e.type === 'delivered' && e.owner === owner && (!kind || e.kind === kind) ? s + e.amount : s), 0);
-    },
-    stopped() {
-      return events.filter((e): e is Extract<SimEvent, { type: 'gather_stopped' }> => e.type === 'gather_stopped');
-    },
-  };
-  return h;
-}
-
-function arena(dev = true) {
-  const ctx = newCtx();
-  const world = createWorld(ctx, { ...setup, dev });
-  return harness(world, ctx);
-}
+const arena = arenaMatch;
 
 const carriersOf = (w: World, owner: number) => w.entities.filter((e) => e.owner === owner && (catalog.units.get(e.type)?.carry ?? 0) > 0);
 const crystals = (w: World, field: number) => w.entities.filter((e) => e.res && e.res.field === field && catalog.resources.has(e.type));
@@ -60,13 +17,13 @@ const stockOf = (es: Entity[]) => es.reduce((s, e) => s + (e.res?.stock ?? 0), 0
 const cargoOf = (w: World, owner: number) => carriersOf(w, owner).reduce((s, e) => s + e.cargo, 0);
 
 /** Glucose a player can account for: still in the ground of `fields`, carried, banked, or lost with dead carriers. */
-function glucoseLedger(h: ReturnType<typeof harness>, owner: number, fields: number[], startBasic: number) {
+function glucoseLedger(h: Harness, owner: number, fields: number[], startBasic: number) {
   const ground = fields.reduce((s, f) => s + stockOf(crystals(h.world, f)), 0);
   const lost = h.events.reduce((s, e) => (e.type === 'died' && e.owner === owner ? s + e.cargo : s), 0);
   return ground + cargoOf(h.world, owner) + (h.world.players[owner - 1]!.basic - startBasic) + lost;
 }
 
-function addCarriers(h: ReturnType<typeof harness>, owner: number, n: number, x0: number, y0: number): Entity[] {
+function addCarriers(h: Harness, owner: number, n: number, x0: number, y0: number): Entity[] {
   const type = owner === 1 ? 'unit_wl_glut' : 'unit_col_feeder';
   return Array.from({ length: n }, (_, k) => spawnUnit(h.world, catalog, type, owner, (x0 + (k % 6)) * T + 128, (y0 + Math.floor(k / 6)) * T + 128));
 }
@@ -378,7 +335,7 @@ describe('gathering (gate 3)', () => {
 });
 
 describe('GATHER validation', () => {
-  function rejection(prep: (h: ReturnType<typeof harness>) => Cmd): string | null {
+  function rejection(prep: (h: Harness) => Cmd): string | null {
     const h = arena();
     const cmd = prep(h);
     h.cmd(1, cmd);
@@ -386,7 +343,7 @@ describe('GATHER validation', () => {
     const r = h.events.find((e) => e.type === 'rejected');
     return r && r.type === 'rejected' ? r.rejection.reason : null;
   }
-  const ids = (h: ReturnType<typeof harness>) => carriersOf(h.world, 1).map((e) => e.id);
+  const ids = (h: Harness) => carriersOf(h.world, 1).map((e) => e.id);
 
   it('accepts crystals, own extractors and own dropoffs', () => {
     expect(rejection((h) => ({ type: 'GATHER', units: ids(h), target: crystals(h.world, 1)[0]!.id }))).toBeNull();

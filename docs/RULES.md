@@ -99,3 +99,38 @@ Measured on the arena (5 s harvest, 1 s unload, crystals 4 tiles from the HQ): o
 ### Dev matches
 - `DEV_SPAWN` with a building id places one finished building with its centre on the tile under the point, if the footprint is open ground with no unit on it or next to it (`site_blocked` otherwise). An extractor goes on the free deposit of its kind under the point and links to it.
 - `DEV_KILL {targets}` sets the listed entities' hit points to 0; they die in the death phase of that tick (resources and buildings too).
+
+## Base and production (gate 4)
+
+### Money and supply
+- An order pays in full and reserves its supply in the same action, or is refused and changes nothing (`no_resources`, `supply_capped`, `queue_full`, `requirements`, `cannot_produce`, `not_ready`).
+- Supply used = the supply of living units. Supply reserved = the supply of every queued unit plus the extra of every morph in progress. An order needs used + reserved + its own ≤ cap.
+- The cap counts finished buildings only (a growing capillary gives nothing yet), never above the faction's 120.
+- Going over the cap happens only when a supply building is lost: units stay, a unit already in training finishes, and no waiting unit starts until used + training ≤ cap again.
+
+### Production queues
+- Each production building has a queue of up to 5. Only the front unit trains; it starts on the tick it reaches the front (the tick it was ordered, for an empty queue) and is done after the unit's training time.
+- A finished unit appears on the free spot nearest the building's exit (the tile below the middle of its footprint), searching up to 3 tiles through open ground from the building, so never on the far side of a wall. With no spot it stays finished in the queue (`exit_blocked`, reported once), charged once, and the next unit does not start; it appears the first tick there is room.
+- Cancel: a unit not yet started is refunded in full, a started (or finished and waiting) one 75%. Each item is refunded at most once.
+- A production building destroyed: units not yet started are refunded in full; the one in training is lost; nothing appears. Reserved supply returns.
+- Rally: a point (new units walk there), a unit (they walk to where it is), or a crystal or an extractor (new carriers start mining; other units walk there). The match starts with the lymph node's rally on the home field.
+
+### Building
+- The White Line orders a building at the lymph node, which holds one order at a time; the order pays in full (`QUEUE_BUILD`). Placing it costs nothing more (`PLACE_BUILD`), and frees the slot for the next order. Placed buildings grow at the same time as each other.
+- A site is refused (the order stays, nothing is charged) when: it leaves the map; any tile is a wall, blood or taken by a building or resource (`bad_ground`, `site_blocked`); an enemy unit stands on it (`site_blocked`, the same words whether or not the player can see it); it would cover any production building's exit, or its own exit is not open ground (`blocks_exit`); or the placement rule fails:
+  - most buildings: within 8 tiles (edge to edge) of one of the player's buildings (`too_far`);
+  - the lymph outpost: where a platelet squad of the player stands, within 2 tiles (`no_builder`);
+  - an extractor: exactly on a free deposit of its kind (`no_deposit`), and it links to it.
+- Friendly units standing on the site step to the nearest open spot when the building appears; every unit whose path now runs into it searches again at once.
+- Two placements in one tick: the first stands; the second finds no order (or a taken site) and pays nothing.
+- Growth: the building stands from the first tick with 10% of its hit points and gains the rest evenly over its build time; it is a target from the first tick. Damage taken while growing stays taken.
+- A growing building does nothing yet: no supply, no production, no dropoff, no work slots.
+- Cancel an unplaced order: full refund. Cancel a growing building: 75% back, the building goes. A growing building destroyed: nothing back.
+
+### Platelets
+- `ASSIST_BUILD`: platelet squads walk to a growing building of theirs and help: the first squad adds 50% growth speed, the second 25%, more add nothing. They stop when it is done.
+- `REPAIR`: on a finished, damaged building. Every half second a squad restores 1/(build time in half-seconds) of the building's hit points (at least 30 s' worth for buildings with no build time), paying in proportion so that a full repair costs a quarter of the building's price. Without the money it waits; it stops when the building is whole.
+- Any other order ends the job.
+
+### Morph
+- `DEPLOY`: a monocyte turns into a macrophage once the spleen stands. It pays the macrophage's price and reserves the extra supply at the order, stands still for the training time and takes no orders, then changes type keeping its share of hit points.

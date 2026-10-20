@@ -7,7 +7,7 @@ import { stampBuilding, type SimContext } from '../context';
 import { SUB } from './fixed';
 import { seedRng, type RngState } from './rng';
 
-export const WORLD_VERSION = 3;
+export const WORLD_VERSION = 4;
 export const NEUTRAL = 0;
 
 export interface Player {
@@ -17,6 +17,8 @@ export interface Player {
   basic: number;
   advanced: number;
   supplyUsed: number;
+  /** supply held by queued units and morphs that have not finished */
+  supplyReserved: number;
   supplyCap: number;
   defeated: boolean;
 }
@@ -25,7 +27,53 @@ export type Order =
   | { kind: 'idle' }
   | { kind: 'move'; x: number; y: number }
   | { kind: 'hold' }
-  | { kind: 'gather' }; // details in Entity.gather
+  | { kind: 'gather' } // details in Entity.gather
+  | { kind: 'job' } // a builder helping a building grow or repairing it; details in Entity.job
+  | { kind: 'morph' }; // turning into another unit; details in Entity.morph
+
+/** One unit in a production queue. Paid and its supply reserved when ordered. */
+export interface QueueItem {
+  unit: string;
+  paid: [number, number];
+  done: number; // ticks of training done
+  started: boolean; // cancelling a started item refunds 75%
+  blocked: boolean; // trained, waiting for a free exit
+}
+
+/** A building that is still growing (it stands on the map from the first tick). */
+export interface BuildState {
+  progress: number; // work done, in thousandths of a tick
+  total: number; // buildTicks × 1000
+  paid: [number, number];
+}
+
+/** Where new units go: a point, or an entity (a unit to join, a crystal to mine). */
+export interface Rally {
+  x: number;
+  y: number;
+  target: number; // 0 = the point
+}
+
+/** A building ordered (and paid) at a lymph node, waiting to be placed. */
+export interface BuildOrder {
+  type: string;
+  paid: [number, number];
+}
+
+/** A builder's work: helping a building grow, or repairing it. */
+export interface Job {
+  kind: 'assist' | 'repair';
+  target: number;
+  tries: number;
+  next: number; // tick of the next repair step
+}
+
+export interface Morph {
+  into: string;
+  until: number;
+  paid: [number, number];
+  extra: number; // supply reserved on top of the unit's own
+}
 
 /**
  * Resource state. On a crystal: what is left and who works it. On a deposit (protein, iron):
@@ -98,6 +146,16 @@ export interface Entity {
   /** load a carrier holds; not money until unloaded, and lost if the carrier dies */
   cargo: number;
   cargoKind: '' | 'glucose' | 'protein' | 'iron';
+  /** growing buildings */
+  build: BuildState | null;
+  /** production buildings: up to 5 units */
+  queue: QueueItem[] | null;
+  rally: Rally | null;
+  /** lymph nodes: one building ordered and not yet placed */
+  buildOrder: BuildOrder | null;
+  /** builders at work */
+  job: Job | null;
+  morph: Morph | null;
 }
 
 export interface World {
@@ -149,7 +207,7 @@ export function createWorld(ctx: SimContext, setup: MatchSetup): World {
   setup.players.forEach((p, i) => {
     const f = catalog.factions.get(p.faction);
     if (!f) throw new Error(`unknown faction ${p.faction}`);
-    world.players.push({ id: i + 1, faction: p.faction, team: p.team, basic: f.basic, advanced: f.advanced, supplyUsed: 0, supplyCap: 0, defeated: false });
+    world.players.push({ id: i + 1, faction: p.faction, team: p.team, basic: f.basic, advanced: f.advanced, supplyUsed: 0, supplyReserved: 0, supplyCap: 0, defeated: false });
   });
   for (const r of map.resources) {
     const [fw, fh] = catalog.footprints.get(r.type)!;
@@ -174,21 +232,35 @@ export function createWorld(ctx: SimContext, setup: MatchSetup): World {
   return world;
 }
 
-function supplyCapOf(world: World, catalog: Catalog, owner: number): number {
+/** Supply cap: finished buildings only, never above the faction's cap. */
+export function supplyCapOf(world: World, catalog: Catalog, owner: number): number {
   const f = catalog.factions.get(world.players[owner - 1]!.faction)!;
   let cap = 0;
-  for (const e of world.entities) if (e.owner === owner && e.building) cap += catalog.buildings.get(e.type)?.supplyProvided ?? 0;
+  for (const e of world.entities) if (e.owner === owner && e.building && !e.build && e.hp > 0) cap += catalog.buildings.get(e.type)?.supplyProvided ?? 0;
   return Math.min(cap, f.supplyCap);
 }
 
-export function spawnBuilding(world: World, ctx: SimContext, type: string, owner: number, x: number, y: number): Entity {
+const BLANK = { gather: null, cargo: 0, cargoKind: '' as const, build: null, queue: null, rally: null, buildOrder: null, job: null, morph: null };
+
+/** Hit points a growing building has from growth alone at `progress`: 10% at the start, all at the end. */
+export function growthHp(maxHp: number, progress: number, total: number): number {
+  const base = Math.max(1, Math.floor(maxHp / 10));
+  return total <= 0 ? maxHp : base + Math.floor(((maxHp - base) * Math.min(progress, total)) / total);
+}
+
+/** A building; `paid` makes it start growing from 10% hit points (placed by a player), otherwise it stands finished. */
+export function spawnBuilding(world: World, ctx: SimContext, type: string, owner: number, x: number, y: number, paid?: [number, number]): Entity {
   const def = ctx.catalog.buildings.get(type);
   if (!def) throw new Error(`unknown building ${type}`);
+  const grows = paid !== undefined && def.buildTicks > 0;
+  const total = def.buildTicks * 1000;
   const e: Entity = {
-    id: world.nextId++, type, owner, x: Math.trunc(x), y: Math.trunc(y), hp: def.hp, maxHp: def.hp,
+    id: world.nextId++, type, owner, x: Math.trunc(x), y: Math.trunc(y), hp: grows ? growthHp(def.hp, 0, total) : def.hp, maxHp: def.hp,
     building: true, bornTick: world.tick, order: { kind: 'idle' }, mv: null,
     res: def.workSlots > 0 ? { stock: 0, field: 0, slots: new Array<number>(def.workSlots).fill(0), link: 0 } : null,
-    gather: null, cargo: 0, cargoKind: '',
+    ...BLANK,
+    build: grows ? { progress: 0, total, paid: [...paid] } : null,
+    queue: def.produces.length > 0 ? [] : null,
   };
   world.entities.push(e);
   stampBuilding(ctx, type, e.x, e.y, 1);
@@ -204,7 +276,7 @@ export function spawnResource(world: World, ctx: SimContext, type: string, x: nu
     id: world.nextId++, type, owner: NEUTRAL, x: Math.trunc(x), y: Math.trunc(y), hp: 1, maxHp: 1,
     building: true, bornTick: world.tick, order: { kind: 'idle' }, mv: null,
     res: { stock: def.stock, field: def.kind === 'glucose' ? field : 0, slots: new Array<number>(def.slots).fill(0), link: 0 },
-    gather: null, cargo: 0, cargoKind: '',
+    ...BLANK,
   };
   world.entities.push(e);
   stampBuilding(ctx, type, e.x, e.y, 1);
@@ -218,7 +290,8 @@ export function spawnUnit(world: World, catalog: Catalog, type: string, owner: n
     id: world.nextId++, type, owner,
     x: clampInt(Math.trunc(x), 0, world.mapW - 1), y: clampInt(Math.trunc(y), 0, world.mapH - 1),
     hp: def.hp, maxHp: def.hp, building: false, bornTick: world.tick, order: { kind: 'idle' }, mv: null,
-    res: null, gather: null, cargo: 0, cargoKind: '',
+    res: null,
+    ...BLANK,
   };
   world.entities.push(e);
   if (owner !== NEUTRAL) world.players[owner - 1]!.supplyUsed += def.supply;
@@ -247,7 +320,12 @@ export function removeEntity(world: World, ctx: SimContext, id: number): Entity 
     const p = world.players[e.owner - 1]!;
     if (e.building) p.supplyCap = supplyCapOf(world, ctx.catalog, e.owner);
     else p.supplyUsed -= ctx.catalog.units.get(e.type)?.supply ?? 0;
+    // supply held for its queue or its morph goes back (refunds are settled before this, in the death phase)
+    for (const q of e.queue ?? []) p.supplyReserved -= ctx.catalog.units.get(q.unit)?.supply ?? 0;
+    if (e.morph) p.supplyReserved -= e.morph.extra;
   }
+  // nobody keeps a rally on it
+  for (const o of world.entities) if (o.rally && o.rally.target === id) o.rally = { x: o.rally.x, y: o.rally.y, target: 0 };
   return e;
 }
 

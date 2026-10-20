@@ -53,6 +53,20 @@ In the browser: carriers start mining when the match starts (the Colony too); ri
 
 Not yet: construction and production (4), combat and vision (5), so no fleeing and no routing around enemies.
 
+## Gate 4 · base and production — done
+
+Acceptance (`tests/sim/production.test.ts`): every charge, refund and blocked-exit test passes.
+- an order pays and reserves supply together; a refused one (money, supply, full queue, wrong building) changes nothing.
+- cancel: waiting units back in full, a started one 75%, each once; a building destroyed at 99%: no ghost unit, waiting units refunded, the one in training lost.
+- a walled-in exit: the unit waits finished, charged once, the next one does not start, and it appears once there is room.
+- a capillary destroyed: units stay, training goes on, nothing new starts until under the cap again.
+- building: one order at the lymph node, paid at the order; bad sites refused without a charge; two placements in one tick, one stands; growth from 10% to full over the build time, supply only when done; cancel 75%, destroyed nothing; repair paid over time; the outpost only where platelets stand; the amino pump only on the deposit, worked once grown; a building placed across a moving group: they walk around it, nobody inside.
+- a monocyte turns into a macrophage; save/resume in the middle of training and growth.
+
+Measured: a capillary grows in 399 ticks alone, 267 with one platelet squad, 228 with two, 229 with three.
+
+In the browser: click the lymph node for its card (train carriers, order buildings with the reason on every button that cannot be pressed yet), place the ordered building on a green or red ghost, watch it grow; right-click with a production building selected sets its rally (the lymph node starts on the home field); platelets help or repair with a right-click.
+
 ## Repository
 - GitHub: `sirbolonez-hash/hostwars`, branch `main`. Claude pushes directly since 20.10.2026.
 

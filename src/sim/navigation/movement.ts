@@ -234,6 +234,41 @@ export function processPathQueue(world: World, ctx: SimContext, index: Map<numbe
   return used;
 }
 
+/**
+ * A building appeared on tiles (tx, ty, fw, fh): units standing there step to the nearest
+ * open spot, and every travelling unit whose remaining path now runs into something searches
+ * again (player-order priority, so the detour comes at once).
+ */
+export function afterFootprintChange(world: World, ctx: SimContext, tx: number, ty: number, fw: number, fh: number): void {
+  const nav = ctx.nav;
+  for (const e of world.entities) {
+    if (e.building) continue;
+    const size = unitSize(ctx, e);
+    const ux = Math.floor(e.x / SUB);
+    const uy = Math.floor(e.y / SUB);
+    if (ux >= tx && ux < tx + fw && uy >= ty && uy < ty + fh) {
+      const [nx, ny] = nodeOf(e.x, e.y, size);
+      const spot = nearestPassable(nav, nx, ny, size, 8);
+      if (spot) [e.x, e.y] = centreOf(spot[0], spot[1], size);
+    }
+    const mv = e.mv;
+    if (!mv || mv.waiting) continue;
+    const r = checkRadius(size, radius(ctx, e));
+    let px = e.x;
+    let py = e.y;
+    let clear = true;
+    for (let k = mv.i; k < mv.path.length && clear; k += 2) {
+      clear = bodyClear(nav, px, py, mv.path[k]!, mv.path[k + 1]!, r);
+      px = mv.path[k]!;
+      py = mv.path[k + 1]!;
+    }
+    if (!clear) {
+      mv.waiting = true;
+      enqueue(world, e.id, 0);
+    }
+  }
+}
+
 /** Ends travel. A plain move order ends with it (and reports); any other order carries on from here. */
 function endTravel(e: Entity, events: MoveEvent[], type: MoveEvent['type']): void {
   e.mv = null;

@@ -7,6 +7,7 @@ import { entityById, type Entity } from '../../sim/core/world';
 import { carryOf, isCrystal, isDeposit, isDropoffOf, isExtractor } from '../../sim/economy/gather';
 import type { Game } from '../game';
 import { PX, type WorldView } from '../render/worldView';
+import type { Placer } from './placement';
 import { TILE_PX } from '../render/terrain';
 
 const ZOOM_MIN = 0.6;
@@ -63,6 +64,7 @@ export class Controls {
     private readonly view: WorldView,
     readonly cam: Camera,
     private readonly box: Graphics,
+    readonly placer: Placer,
   ) {
     canvas.addEventListener('contextmenu', (e) => e.preventDefault());
     canvas.addEventListener('pointerdown', (e) => this.down(e));
@@ -138,6 +140,12 @@ export class Controls {
 
   private down(e: PointerEvent): void {
     const [sx, sy] = this.screen(e);
+    if (this.placer.active && e.button !== 1) {
+      // placing a building: left click places, right click puts it back in the order slot
+      if (e.button === 0) this.placer.click();
+      else this.placer.cancel();
+      return;
+    }
     if (e.button === 1) {
       this.panning = [sx, sy];
       e.preventDefault();
@@ -156,6 +164,11 @@ export class Controls {
   private move(e: PointerEvent): void {
     const [sx, sy] = this.screen(e);
     this.mouse = [sx, sy];
+    if (this.placer.active) {
+      const [wx, wy] = this.cam.toWorld(sx, sy);
+      this.placer.hover(wx, wy);
+      return;
+    }
     if (e.target === this.canvas && !this.dragStart) {
       // a hand over something the selected carriers can work
       const [wx, wy] = this.cam.toWorld(sx, sy);
@@ -238,14 +251,44 @@ export class Controls {
     return this.liveSelection().map((id) => entityById(this.game.world, id)).filter((e): e is Entity => e !== undefined);
   }
 
+  /** The player's building whose rally is being set: an inspected production building of theirs. */
+  private rallyBuilding(): Entity | null {
+    if (this.inspected === null) return null;
+    const b = entityById(this.game.world, this.inspected);
+    return b && b.owner === this.game.me && b.queue ? b : null;
+  }
+
   private order(sx: number, sy: number): void {
-    const units = this.selectedUnits();
-    if (units.length === 0) return;
     const [wx, wy] = this.cam.toWorld(sx, sy);
     const x = Math.round(wx / PX);
     const y = Math.round(wy / PX);
     if (x < 0 || y < 0 || x >= this.game.world.mapW || y >= this.game.world.mapH) return;
-    const target = this.gatherTarget(units, this.pickBuilding(wx, wy));
+    const units = this.selectedUnits();
+    const rb = units.length === 0 ? this.rallyBuilding() : null;
+    if (rb) {
+      // a production building: right click sets where new units go (a crystal: carriers mine it)
+      const on = this.pick(wx, wy) ?? this.pickBuilding(wx, wy);
+      const target = on && on.id !== rb.id && (on.owner === this.game.me || (on.res !== null && on.owner === 0)) ? on.id : 0;
+      this.game.issue({ type: 'SET_RALLY', units: [], building: rb.id, x, y, target });
+      this.view.addMarker({ x: wx, y: wy, born: performance.now(), color: 0x9fd0ff });
+      return;
+    }
+    if (units.length === 0) return;
+    const ctx = this.game.ctx;
+    const on = this.pickBuilding(wx, wy);
+    // builders: help a growing building of ours, or repair a damaged one; the rest walk there
+    if (on && on.owner === this.game.me && ctx.catalog.buildings.has(on.type)) {
+      const builders = units.filter((u) => ctx.catalog.units.get(u.type)?.role === 'builder');
+      const job = on.build ? 'ASSIST_BUILD' : on.hp < on.maxHp ? 'REPAIR' : null;
+      if (builders.length && job) {
+        this.game.issue({ type: job, units: builders.map((u) => u.id), target: on.id });
+        const rest = units.filter((u) => !builders.includes(u)).map((u) => u.id);
+        if (rest.length) this.game.issue({ type: 'MOVE', units: rest, x, y });
+        this.view.addMarker({ x: wx, y: wy, born: performance.now(), color: 0x9fd0ff });
+        return;
+      }
+    }
+    const target = this.gatherTarget(units, on);
     let walkers = units;
     if (target) {
       // carriers work it; everyone else walks over
@@ -304,6 +347,10 @@ export class Controls {
         if (this.selected.size) this.game.issue({ type: 'HOLD', units: this.liveSelection() });
         break;
       case 'Escape':
+        if (this.placer.active) {
+          this.placer.cancel();
+          break;
+        }
         this.selected.clear();
         this.inspected = null;
         this.onChange();

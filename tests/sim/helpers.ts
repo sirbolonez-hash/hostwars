@@ -1,6 +1,7 @@
 import { loadCatalog, loadMap, newMatchContext } from '../../src/sim/content/load';
 import type { MapDef } from '../../src/sim/content/types';
-import type { CommandEnvelope } from '../../src/sim/commands/commands';
+import type { Cmd, CommandEnvelope } from '../../src/sim/commands/commands';
+import { checkInvariants, step, type SimEvent } from '../../src/sim/sim';
 import { createContext, type SimContext } from '../../src/sim/context';
 import { nextInt, seedRng } from '../../src/sim/core/rng';
 import { createWorld, type MatchSetup, type World } from '../../src/sim/core/world';
@@ -70,4 +71,66 @@ export function monkey(seed: number, rate = 8): (world: World, tick: number) => 
             : { type: 'HOLD' as const, units };
     return [{ player, seq: s, tick: tick + nextInt(rng, 3), cmd }];
   };
+}
+
+/** A match with a command helper and a tick runner that checks invariants every tick. */
+export function harness(world: World, ctx: SimContext) {
+  const seq = new Map<number, number>();
+  let pending: CommandEnvelope[] = [];
+  const events: SimEvent[] = [];
+  const problems: string[] = [];
+  const rejected: { tick: number; player: number; reason: string }[] = [];
+  return {
+    world,
+    ctx,
+    events,
+    problems,
+    rejected,
+    cmd(player: number, cmd: Cmd) {
+      const s = (seq.get(player) ?? 0) + 1;
+      seq.set(player, s);
+      pending.push({ player, seq: s, tick: world.tick, cmd });
+    },
+    /** runs up to `n` ticks; `each` sees the events of every tick and may return true to stop */
+    run(n: number, each?: (evs: SimEvent[]) => void | boolean) {
+      for (let k = 0; k < n; k++) {
+        const now = pending;
+        pending = [];
+        const r = step(world, ctx, now);
+        events.push(...r.events);
+        for (const ev of r.events) {
+          if (ev.type !== 'rejected') continue;
+          rejected.push({ tick: ev.tick, player: ev.rejection.player, reason: ev.rejection.reason });
+          problems.push(`tick ${ev.tick}: rejected ${ev.rejection.reason}`);
+        }
+        for (const p of checkInvariants(world, ctx)) problems.push(`tick ${world.tick}: ${p}`);
+        if (each?.(r.events) === true) return;
+      }
+    },
+    /** runs one tick with this command and returns the rejection reason, or null */
+    try(player: number, cmd: Cmd): string | null {
+      const before = rejected.length;
+      this.cmd(player, cmd);
+      this.run(1);
+      if (rejected.length > before) {
+        problems.splice(problems.length - (rejected.length - before), rejected.length - before);
+        return rejected[rejected.length - 1]!.reason;
+      }
+      return null;
+    },
+    delivered(owner: number, kind?: string) {
+      return events.reduce((s, e) => (e.type === 'delivered' && e.owner === owner && (!kind || e.kind === kind) ? s + e.amount : s), 0);
+    },
+    stopped() {
+      return events.filter((e): e is Extract<SimEvent, { type: 'gather_stopped' }> => e.type === 'gather_stopped');
+    },
+  };
+}
+export type Harness = ReturnType<typeof harness>;
+
+/** The arena as a test match (dev commands allowed unless `dev` is false). */
+export function arenaMatch(dev = true): Harness {
+  const ctx = newCtx();
+  const world = createWorld(ctx, { ...setup, dev });
+  return harness(world, ctx);
 }

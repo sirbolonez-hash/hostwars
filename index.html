@@ -28,6 +28,29 @@
     #res .r { display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; }
     #res img { height: 22px; width: auto; }
     #res .income { color: var(--green); font-weight: 600; }
+    #res .over { color: #ff7a7a; }
+    #btn-help { padding: 3px 10px; text-align: center; }
+    #cmd { bottom: 10px; right: 10px; width: 440px; display: grid; gap: 8px; font-size: 13px; }
+    #cmd[hidden] { display: none; }
+    #cmd .head { display: flex; align-items: center; gap: 8px; font-size: 15px; }
+    #cmd .head img { height: 40px; width: auto; }
+    #cmd .head span { margin-inline-start: auto; color: var(--muted); font-variant-numeric: tabular-nums; }
+    #cmd .bar { height: 8px; background: rgba(255,255,255,0.1); border-radius: 4px; overflow: hidden; }
+    #cmd .bar i { display: block; height: 100%; width: 0; background: var(--blue); }
+    #cmd .queue { display: flex; gap: 6px; }
+    #cmd .slot { width: 48px; height: 48px; border-radius: 8px; border: 1px dashed var(--line); position: relative; display: grid; place-items: center; overflow: hidden; }
+    #cmd .slot.full { border-style: solid; background: rgba(90,160,255,0.12); cursor: pointer; }
+    #cmd .slot img { max-width: 40px; max-height: 40px; }
+    #cmd .slot i { position: absolute; left: 0; bottom: 0; height: 4px; background: var(--green); }
+    #cmd .slot i.blocked { background: #ff7a7a; width: 100% !important; }
+    #cmd .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(132px, 1fr)); gap: 6px; }
+    #cmd .act { display: grid; grid-template-columns: 34px 1fr; grid-template-rows: auto auto; column-gap: 6px; align-items: center; padding: 4px 6px; min-height: 46px; }
+    #cmd .act img { grid-row: span 2; max-width: 34px; max-height: 34px; justify-self: center; }
+    #cmd .act .n { font-size: 13px; line-height: 1.2; }
+    #cmd .act small { color: var(--muted); font-weight: 600; font-size: 11px; line-height: 1.2; }
+    #cmd .act[disabled] { opacity: 0.5; cursor: not-allowed; }
+    #cmd .hint { color: var(--muted); }
+    #cmd .warn { color: #ffb347; font-weight: 700; }
     #eco { top: 64px; left: 10px; width: 330px; font-size: 13px; }
     #eco h2 { font: 600 15px Fredoka, Assistant, sans-serif; margin: 0 0 4px; color: var(--gold); }
     #eco-body > div { padding: 2px 0; }
@@ -36,13 +59,17 @@
     #dev h3 { font: 600 12px Assistant, sans-serif; margin: 4px 0 0; color: var(--muted); }
     #selection { color: var(--muted); flex: 1; min-width: 200px; }
     #dev { top: 64px; right: 10px; width: 230px; display: grid; gap: 6px; }
-    #dev h2 { font: 600 15px Fredoka, Assistant, sans-serif; margin: 0 0 2px; color: var(--gold); }
+    #tip:empty { display: none; }
+    #dev { max-height: calc(100vh - 360px); overflow-y: auto; }
+    #dev summary { font: 600 15px Fredoka, Assistant, sans-serif; color: var(--gold); cursor: pointer; }
+    #dev details > div { display: grid; gap: 6px; margin-top: 6px; }
     button { font: 700 14px Assistant, sans-serif; border: 1px solid var(--line); border-radius: 8px; padding: 6px 10px; background: rgba(90, 160, 255, 0.16); color: var(--ink); cursor: pointer; text-align: right; }
     button:hover { background: rgba(90, 160, 255, 0.32); }
     button:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
     button[aria-pressed="true"] { background: var(--blue); color: #0b1630; }
     #tip { color: var(--green); font-size: 13px; min-height: 1em; }
-    #help { bottom: 10px; right: 10px; font-size: 13px; color: var(--muted); max-width: 440px; }
+    #help { bottom: 10px; left: 50%; transform: translateX(-50%); font-size: 13px; color: var(--muted); max-width: 520px; z-index: 5; }
+    #help[hidden] { display: none; }
     #help b { color: var(--ink); }
     #perf { bottom: 10px; left: 10px; font-family: ui-monospace, Menlo, monospace; font-size: 12px; direction: ltr; text-align: left; color: var(--muted); }
     #gpu { display: block; }
@@ -65,7 +92,10 @@
     <img src="assets/ui/logo.webp" alt="HOST WARS">
     <span id="res">ATP 350 · אמינו 0 · אספקה 9/20</span>
     <span id="selection">לא נבחרו יחידות</span>
+    <button id="btn-help" type="button" title="עזרה">?</button>
   </div>
+
+  <div id="cmd" class="panel" hidden></div>
 
   <div id="eco" class="panel" aria-live="polite">
     <h2>כלכלה</h2>
@@ -73,12 +103,13 @@
   </div>
 
   <div id="dev" class="panel">
-    <h2>מעבדת בדיקות</h2>
+    <details open><summary>מעבדת בדיקות</summary><div>
     <h3>כלכלה</h3>
     <button id="btn-glut" type="button">+8 נשאי GLUT לשדה הבית</button>
     <button id="btn-mito" type="button">מפעל מיטוכונדריה ליד השדה הצפוני</button>
     <button id="btn-pump" type="button">משאבת אמינו על מרבץ החלבון</button>
     <button id="btn-kill" type="button">הרוס את מה שנבחר</button>
+    <button id="btn-grant" type="button">+1,000 ATP ו-200 אמינו</button>
     <h3>תנועה</h3>
     <button id="btn-20" type="button">+20 נויטרופילים</button>
     <button id="btn-80" type="button">+80 נויטרופילים ליד המעבר הצר</button>
@@ -87,12 +118,15 @@
     <button id="btn-debug" type="button" aria-pressed="false">שכבת ניווט וכרייה (F3)</button>
     <button id="btn-speed" type="button">מהירות ×1</button>
     <button id="btn-pause" type="button">השהה</button>
+    </div></details>
     <div id="tip"></div>
   </div>
 
-  <div id="help" class="panel">
+  <div id="help" class="panel" hidden>
     <b>גרירה</b> — בחירה בתיבה · <b>לחיצה</b> — בחירת יחידה · <b>לחיצה כפולה</b> — כל היחידות מאותו סוג על המסך ·
     <b>Shift</b> — הוספה לבחירה · <b>לחיצה ימנית</b> — תזוזה, ועל גביש עם נשאים: כרייה · <b>S</b> — עצור · <b>H</b> — החזק עמדה ·
+    <b>לחיצה על מבנה</b> — הפקודות שלו (אימון, בנייה, ביטול) · <b>לחיצה ימנית עם מבנה ייצור נבחר</b> — נקודת התכנסות ·
+    <b>לחיצה ימנית עם טסיות</b> — עזרה בבנייה או תיקון · <b>Esc</b> — ביטול הצבה ·
     <b>Ctrl+מספר</b> — שמירת קבוצה · <b>מספר</b> — בחירת קבוצה (פעמיים: מצלמה אליה) · <b>רווח</b> — מצלמה לבחירה ·
     <b>חצים / קצה המסך / גלגלת לחוצה</b> — הזזת מצלמה · <b>גלגלת</b> — זום · <b>Ctrl+A</b> — כולם
   </div>
@@ -102,9 +136,9 @@
   <div id="start">
     <div class="card">
       <img src="assets/ui/logo.webp" alt="HOST WARS">
-      <h1>שער 3 · כלכלה</h1>
-      <p>נשאי ה-GLUT יוצאים לכרות מיד: כל אחד ממלא מטען מגביש גלוקוז, מביא אותו לצומת הלימפה, ורק אז ה-ATP נכנס לקופה. מעל כל שדה מופיע כמה נשאים עובדים בו מתוך המקסימום המועיל — שניים לכל גביש.</p>
-      <p>מה לבדוק: הוסיפו נשאים, שלחו חלק לשדה הצפוני הרחוק, בנו לידו מפעל מיטוכונדריה ותראו את הדרך מתקצרת. הרסו מחסן או גביש באמצע עבודה — שום דבר לא אמור להיתקע.</p>
+      <h1>שער 4 · בסיס וייצור</h1>
+      <p>הנשאים יוצאים לכרות מיד. לחצו על צומת הלימפה: משם מאמנים נשאים ומזמינים מבנים — משלמים בהזמנה, מציבים על המפה, והמבנה צומח מ-10% עד שהוא מוכן. כל כפתור שעוד אי אפשר ללחוץ עליו אומר למה.</p>
+      <p>מה לבדוק: בנו צומת נימים ומח עצם, אמנו טסיות ושלחו אותן לעזור לבנייה. נסו לבטל, להרוס באמצע, לחסום יציאה — שום דבר לא אמור לחייב פעמיים או להיתקע.</p>
       <button id="start-btn" type="button" disabled>התחל</button>
       <div id="load-status">טוען…</div>
     </div>

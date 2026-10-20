@@ -4,6 +4,7 @@
 import type { SimContext } from '../context';
 import { isInt } from '../core/fixed';
 import type { World } from '../core/world';
+import { validateBuildingCmd, validateUnitJob } from '../build/production';
 import { validateGather } from '../economy/gather';
 
 export const MAX_UNITS_PER_COMMAND = 200;
@@ -14,13 +15,32 @@ export type Cmd =
   | { type: 'HOLD'; units: number[] }
   /** carriers work `target` (crystal, deposit with an extractor, extractor), or return their load to it (own dropoff) */
   | { type: 'GATHER'; units: number[]; target: number }
+  /** builders help a growing building grow / repair a damaged one */
+  | { type: 'ASSIST_BUILD'; units: number[]; target: number }
+  | { type: 'REPAIR'; units: number[]; target: number }
+  /** units that can turn into another (monocyte → macrophage) start turning */
+  | { type: 'DEPLOY'; units: number[] }
+  // building commands: `units` is empty, `building` names the building
+  | { type: 'TRAIN'; units: number[]; building: number; unit: string; count: number }
+  /** cancel a queued unit (index; -1 = the last), the growing building itself, or a lymph node's unplaced order */
+  | { type: 'CANCEL'; units: number[]; building: number; what: 'queue' | 'build' | 'order'; index: number }
+  /** a lymph node orders (and pays for) a building, to be placed */
+  | { type: 'QUEUE_BUILD'; units: number[]; building: number; build: string }
+  /** places the ordered building with its top-left tile at (tx, ty) */
+  | { type: 'PLACE_BUILD'; units: number[]; building: number; tx: number; ty: number }
+  /** where new units go: a point, or an entity (a crystal for carriers, a unit to join) */
+  | { type: 'SET_RALLY'; units: number[]; building: number; x: number; y: number; target: number }
   /**
    * test matches only: puts `count` units of `unit` around (x, y), ignoring cost and supply;
    * a building id places one building with its centre on that tile (an extractor: on the deposit there)
    */
   | { type: 'DEV_SPAWN'; units: number[]; unit: string; count: number; x: number; y: number }
   /** test matches only: destroys the listed entities at the end of the tick (any owner, resources too) */
-  | { type: 'DEV_KILL'; units: number[]; targets: number[] };
+  | { type: 'DEV_KILL'; units: number[]; targets: number[] }
+  /** test matches only: adds resources */
+  | { type: 'DEV_GRANT'; units: number[]; basic: number; advanced: number };
+
+const BUILDING_CMDS = new Set(['TRAIN', 'CANCEL', 'QUEUE_BUILD', 'PLACE_BUILD', 'SET_RALLY']);
 
 export const MAX_DEV_SPAWN = 100;
 
@@ -52,7 +72,25 @@ export type RejectReason =
   | 'no_extractor'
   | 'depleted'
   | 'no_carriers'
-  | 'site_blocked';
+  | 'site_blocked'
+  | 'not_a_building'
+  | 'not_ready'
+  | 'cannot_produce'
+  | 'queue_full'
+  | 'requirements'
+  | 'no_resources'
+  | 'supply_capped'
+  | 'nothing_to_cancel'
+  | 'no_order'
+  | 'bad_ground'
+  | 'too_far'
+  | 'no_builder'
+  | 'no_builders'
+  | 'blocks_exit'
+  | 'no_deposit'
+  | 'cannot_place'
+  | 'nothing_to_do'
+  | 'cannot_deploy';
 
 export interface Rejection {
   player: number;
@@ -80,7 +118,23 @@ export function checkShape(env: unknown): env is CommandEnvelope {
     case 'HOLD':
       return true;
     case 'GATHER':
+    case 'ASSIST_BUILD':
+    case 'REPAIR':
       return isInt(c.target);
+    case 'DEPLOY':
+      return true;
+    case 'TRAIN':
+      return isInt(c.building) && typeof c.unit === 'string' && isInt(c.count) && (c.units as unknown[]).length === 0;
+    case 'CANCEL':
+      return isInt(c.building) && isInt(c.index) && (c.what === 'queue' || c.what === 'build' || c.what === 'order') && (c.units as unknown[]).length === 0;
+    case 'QUEUE_BUILD':
+      return isInt(c.building) && typeof c.build === 'string' && (c.units as unknown[]).length === 0;
+    case 'PLACE_BUILD':
+      return isInt(c.building) && isInt(c.tx) && isInt(c.ty) && (c.units as unknown[]).length === 0;
+    case 'SET_RALLY':
+      return isInt(c.building) && isInt(c.x) && isInt(c.y) && isInt(c.target) && (c.units as unknown[]).length === 0;
+    case 'DEV_GRANT':
+      return isInt(c.basic) && isInt(c.advanced) && c.basic >= 0 && c.advanced >= 0 && (c.units as unknown[]).length === 0;
     case 'DEV_SPAWN':
       return typeof c.unit === 'string' && isInt(c.count) && isInt(c.x) && isInt(c.y) && (c.units as unknown[]).length === 0;
     case 'DEV_KILL':
@@ -103,6 +157,8 @@ export function validate(world: World, env: CommandEnvelope, index: Map<number, 
     if (env.cmd.x < 0 || env.cmd.y < 0 || env.cmd.x >= world.mapW || env.cmd.y >= world.mapH) return 'out_of_bounds';
     return null;
   }
+  if (env.cmd.type === 'DEV_GRANT') return world.dev ? null : 'not_a_dev_match';
+  if (BUILDING_CMDS.has(env.cmd.type)) return validateBuildingCmd(world, ctx, env.player, env.cmd as Parameters<typeof validateBuildingCmd>[3]);
   if (env.cmd.type === 'DEV_KILL') {
     if (!world.dev) return 'not_a_dev_match';
     if (env.cmd.targets.length === 0) return 'no_units';
@@ -131,6 +187,10 @@ export function validate(world: World, env: CommandEnvelope, index: Map<number, 
     const carriers = units.map((id) => index.get(id)).filter((e) => e !== undefined && (ctx.catalog.units.get(e.type)?.carry ?? 0) > 0);
     if (carriers.length === 0) return 'no_carriers';
     return validateGather(world, ctx, env.player, index.get(env.cmd.target));
+  }
+  if (env.cmd.type === 'ASSIST_BUILD' || env.cmd.type === 'REPAIR' || env.cmd.type === 'DEPLOY') {
+    const live = units.map((id) => index.get(id)).filter((e): e is World['entities'][number] => e !== undefined);
+    return validateUnitJob(world, ctx, env.player, env.cmd, live);
   }
   return null;
 }

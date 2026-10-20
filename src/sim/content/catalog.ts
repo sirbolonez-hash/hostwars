@@ -86,8 +86,11 @@ export function validateContent(c: ContentFiles, knownAssets?: Set<string>): str
     }
     for (const r of b.requires) if (!r.startsWith('antigen:') && !buildings.has(r)) e(`${at}: requires unknown ${r}`);
     if (b.weapon !== null && !weapons.has(b.weapon)) e(`${at}: unknown weapon ${b.weapon}`);
-    if (knownAssets && !knownAssets.has(b.id)) e(`${at}: no asset with this id`);
-    ints(at, b, ['workSlots']);
+    if (knownAssets && !knownAssets.has(b.art)) e(`${at}: no asset ${b.art} to draw it`);
+    ints(at, b, ['workSlots', 'artScale'], 0);
+    if (!['near', 'builder', 'resource', 'biofilm', 'none'].includes(b.placement)) e(`${at}: unknown placement ${String(b.placement)}`);
+    if ((b.placement === 'resource') !== (b.onResource !== null)) e(`${at}: an extractor is placed on its resource, and only it`);
+    if (b.produces.length > 0 && b.footprint[1] > 4) e(`${at}: production building too tall for its exit rule`);
     if ((b.role === 'extractor') !== (b.onResource !== null)) e(`${at}: only an extractor sits on a resource`);
     if (b.role === 'extractor' && (b.workSlots < 1 || b.dropoff)) e(`${at}: an extractor needs work slots and is not a dropoff`);
     if (b.role !== 'extractor' && b.workSlots !== 0) e(`${at}: only an extractor has work slots`);
@@ -138,6 +141,7 @@ export function validateContent(c: ContentFiles, knownAssets?: Set<string>): str
     if (!hq) e(`${at}: hq ${f.hq} does not exist`);
     else if (!hq.critical) e(`${at}: hq must be critical`);
     ints(at, f, ['basic', 'advanced', 'supplyCap']);
+    if (!['order', 'morph', 'hijack'].includes(f.construction)) e(`${at}: unknown construction ${String(f.construction)}`);
     for (const s of f.start) {
       if (!units.has(s.unit)) e(`${at}: start unit ${s.unit} does not exist`);
       if (!isInt(s.count) || s.count < 1) e(`${at}: start count for ${s.unit}`);

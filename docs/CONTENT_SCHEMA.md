@@ -48,11 +48,11 @@ Asset ids follow `<kind>_<faction>_<name>`, with factions `wl` (White Line), `co
 | `content/buildings/slice.json` | building definitions (`BuildingDef`) |
 | `content/weapons/slice.json` | weapon definitions (`WeaponDef`) |
 | `content/resources/slice.json` | resource definitions (`ResourceDef`): `kind` (glucose, protein, iron), `stock`, `footprint`, `slots` (carriers at once; 0 = worked through an extractor), `harvestTicks` |
-| `content/factions.json` | starting conditions per faction |
+| `content/factions.json` | starting conditions per faction, and `construction`: `order` (the lymph node orders buildings), `morph` (a worker becomes the building), `hijack` |
 
 The slice files are generated from `tools/content/slice_values.py`, which keeps the numbers in human units (seconds, tiles, tiles per second) next to the conversion. Edit the table there and rerun it; do not hand-edit the JSON.
 
-Buildings also carry `workSlots` (an extractor's slots; 0 for every other building) and `onResource` (the deposit kind an extractor sits on). Carriers are units with `carry` > 0 and must be small bodies.
+Buildings also carry `placement` (`near`: within 8 tiles of an own building; `builder`: where a builder stands; `resource`: on a free deposit; `biofilm`: on own biofilm, gate 6; `none`: never ordered), `art` and `artScale` (the picture drawn for it and its scale in thousandths), `workSlots` (an extractor's slots; 0 for every other building) and `onResource` (the deposit kind an extractor sits on). Carriers are units with `carry` > 0 and must be small bodies.
 
 `src/sim/content/catalog.ts` validates everything before a match: integer types and ranges, unique ids, known weapons, tags and buildings, producers that list what they produce, an acyclic requirement graph, starting units that fit the HQ's supply, resources (glucose worked directly with slots; protein and iron through an extractor of the same footprint, with slots), and (in tests) an asset for every unit, building and resource.
 

@@ -5,6 +5,8 @@
 import { entityById, type Entity } from '../../sim/core/world';
 import { carryOf, isCrystal, isExtractor } from '../../sim/economy/gather';
 import type { GatherStopReason } from '../../sim/economy/gather';
+import type { RejectReason } from '../../sim/commands/commands';
+import { PLACE_TEXT } from '../input/placement';
 import type { Game } from '../game';
 import type { Controls } from '../input/controls';
 import type { WorldView } from '../render/worldView';
@@ -23,6 +25,22 @@ const STOP_TEXT: Record<GatherStopReason, string> = {
   no_dropoff: 'אין לאן לפרוק — המטען נשאר אצל הנשאים עד שיהיה צומת לימפה או מפעל מיטוכונדריה',
   path_blocked: 'לא נמצאה דרך אל המשאב',
   no_extractor: 'המשאבה נהרסה',
+};
+
+/** Why an order of mine was refused, in words that never reveal what is hidden. */
+const REJECT_TEXT: Partial<Record<RejectReason, string>> = {
+  ...PLACE_TEXT,
+  no_resources: 'אין מספיק משאבים',
+  supply_capped: 'אין מספיק אספקה — בנו צומת נימים',
+  queue_full: 'התור מלא',
+  requirements: 'חסר מבנה דרוש',
+  not_ready: 'המבנה עדיין בצמיחה',
+  no_order: 'אין בנייה שמחכה להצבה',
+  nothing_to_do: 'אין כאן מה לעשות',
+  no_builders: 'רק טסיות בונות ומתקנות',
+  no_extractor: 'צריך קודם מבנה כרייה על המרבץ',
+  depleted: 'המשאב התרוקן',
+  cannot_deploy: 'אין מה להתמיר',
 };
 
 export interface HudIcons {
@@ -67,6 +85,14 @@ export class Hud {
       if (dep) this.devBuild('bld_wl_aminopump', [dep.x, dep.y]);
     });
     on('btn-kill', () => this.killSelected());
+    on('btn-grant', () => {
+      this.game.issue({ type: 'DEV_GRANT', units: [], basic: 1000, advanced: 200 });
+      this.tip('נוספו 1,000 ATP ו-200 אמינו.');
+    });
+    on('btn-help', () => {
+      const h = $('help');
+      h.hidden = !h.hidden;
+    });
     on('btn-20', () => this.spawn('unit_wl_neutrophil', 20));
     on('btn-80', () => this.spawn('unit_wl_neutrophil', 80, [18 * 256, 28 * 256]));
     on('btn-macro', () => this.spawn('unit_wl_macrophage', 6));
@@ -258,6 +284,18 @@ export class Hud {
       }
     }
     for (const [reason, n] of stops) this.tip(`${n === 1 ? 'נשא עצר' : `${n} נשאים עצרו`}: ${STOP_TEXT[reason]}`, 8000);
+    for (const ev of this.game.events) {
+      if (ev.type === 'rejected' && ev.rejection.player === this.game.me) this.tip(REJECT_TEXT[ev.rejection.reason] ?? 'הפקודה לא בוצעה', 4000);
+      if (ev.type === 'exit_blocked' && ev.owner === this.game.me) {
+        const b = entityById(this.game.world, ev.building);
+        this.tip(`היציאה של ${b ? nameOf(b.type) : 'המבנה'} חסומה — היחידה מחכה למקום פנוי`, 8000);
+      }
+      if (ev.type === 'built' && ev.owner === this.game.me) {
+        const b = entityById(this.game.world, ev.entity);
+        if (b) this.tip(`${nameOf(b.type)} מוכן`, 4000);
+      }
+      if (ev.type === 'morphed' && ev.owner === this.game.me) this.tip('ההתמרה הושלמה', 3000);
+    }
     if (this.tipUntil && performance.now() > this.tipUntil) {
       $('tip').textContent = '';
       this.tipUntil = 0;
@@ -284,7 +322,7 @@ export class Hud {
       $('res').innerHTML =
         `<span class="r" title="ATP"><img src="${this.icons.atp}" alt="">ATP ${fmt(p.basic)}</span>` +
         `<span class="r" title="חומצות אמינו"><img src="${this.icons.amino}" alt="">אמינו ${fmt(p.advanced)}</span>` +
-        `<span class="r">אספקה ${p.supplyUsed}/${p.supplyCap}</span>` +
+        `<span class="r${p.supplyUsed > p.supplyCap ? ' over' : ''}" title="בשימוש / תקרה${p.supplyReserved ? ' (שמור בתורים)' : ''}">אספקה ${p.supplyUsed}${p.supplyReserved ? `+${p.supplyReserved}` : ''}/${p.supplyCap}</span>` +
         `<span class="r income">+${fmt(perMin)} ATP לדקה</span>`;
       const st = [...this.game.simTimes].sort((a, b) => a - b);
       const p95 = st.length ? st[Math.floor(st.length * 0.95)]! : 0;

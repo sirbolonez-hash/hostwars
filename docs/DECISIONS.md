@@ -95,3 +95,16 @@ Each entry: the problem, the options, the choice, what it costs, and what would 
 
 ## 2026-10-20 · The Colony mines from the test lab
 - Choice: the client sends the Colony's opening GATHER as player 2 (test matches only), so both economies run in the arena before the AI exists (gate 6).
+
+## 2026-10-20 · One building order at a time; placed buildings grow side by side
+- The architecture says the lymph node orders buildings "in one queue", paid at the order. Choice: it holds one order; placing it frees the slot, and buildings on the map grow at the same time. Growth time on the map is the limit, and platelets are what speeds it.
+- Revisit if: bases go up too fast in play (then one growing building per lymph node).
+
+## 2026-10-20 · Friendly units step off a new building instead of delaying it
+- The architecture had placement wait until friendly units cleared the site. With carriers passing through bodies, a site in a mining line could wait forever. Choice: the building appears at once and friendly units on it step to the nearest open spot; an enemy on the site still refuses it.
+
+## 2026-10-20 · The outpost borrows the lymph node's art
+- `BuildingDef.art` and `artScale` let a building draw another's picture: the lymph outpost is the lymph node at 75% on a 3x3 footprint.
+
+## 2026-10-20 · The Colony builds in gate 6
+- The Colony turns a feeder into a building on its biofilm; the biofilm layer comes with the Colony's gate. Until then the Colony trains from the buildings it has, and `QUEUE_BUILD` belongs to factions that build by order (`construction: 'order'`).

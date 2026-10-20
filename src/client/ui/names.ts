@@ -17,6 +17,7 @@ export const NAMES: Record<string, string> = {
   unit_col_toxin: 'מייצר רעלן',
   bld_wl_lymphnode: 'צומת לימפה',
   bld_wl_capillary: 'צומת נימים',
+  bld_wl_outpost: 'שלוחת לימפה',
   bld_wl_mitochondria: 'מפעל מיטוכונדריה',
   bld_wl_marrow: 'שלוחת מח עצם',
   bld_wl_spleen: 'מחסן הטחול',

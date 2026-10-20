@@ -2,6 +2,7 @@
  {
   "id": "wl",
   "hq": "bld_wl_lymphnode",
+  "construction": "order",
   "start": [
    {
     "unit": "unit_wl_glut",
@@ -21,6 +22,7 @@
  {
   "id": "col",
   "hq": "bld_col_biofilm_core",
+  "construction": "morph",
   "start": [
    {
     "unit": "unit_col_feeder",

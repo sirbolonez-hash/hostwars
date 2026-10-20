@@ -1,5 +1,5 @@
-// Gate 3: the test arena with an economy. White Line against a Colony that only mines;
-// select, move, gather, and watch the loads come in. No construction or combat yet.
+// The test arena: White Line against a Colony that only mines. Select, move, gather, build,
+// train; the Colony has no AI yet (gate 6).
 
 import { Application, Assets, Container, Graphics, Sprite, Texture } from 'pixi.js';
 import { loadCatalog, loadMap } from './sim/content/load';
@@ -11,6 +11,8 @@ import { makeShapes } from './client/render/shapes';
 import { drawTerrain, TILE_PX } from './client/render/terrain';
 import { WorldView } from './client/render/worldView';
 import { Hud } from './client/ui/hud';
+import { CommandCard } from './client/ui/commandCard';
+import { Placer } from './client/input/placement';
 
 const status = document.getElementById('load-status')!;
 
@@ -80,13 +82,32 @@ async function main(): Promise<void> {
   const cam = new Camera(map.w * TILE_PX, map.h * TILE_PX);
   const [sx, sy] = map.starts[0]!;
   cam.centreOn((sx + 2) * TILE_PX, (sy + 2) * TILE_PX, app.screen.width, app.screen.height);
-  const controls = new Controls(app.canvas, game, view, cam, box);
-  // icons for the DOM, cut out of the atlas once
-  const iconUrl = async (id: string) => {
+  const placer = new Placer(game, textures, () => true);
+  view.root.addChild(placer.layer);
+  const controls = new Controls(app.canvas, game, view, cam, box, placer);
+  // icons for the DOM, cut out of the atlas once and shrunk to button size
+  const iconCache = new Map<string, string>();
+  const iconUrl = (id: string, size = 72): string => {
     const t = textures.get(id);
-    return t ? await app.renderer.extract.base64(new Sprite(t)) : '';
+    if (!t) return '';
+    const big = app.renderer.extract.canvas(new Sprite(t)) as HTMLCanvasElement;
+    const small = document.createElement('canvas');
+    const k = size / Math.max(big.width, big.height);
+    small.width = Math.max(1, Math.round(big.width * k));
+    small.height = Math.max(1, Math.round(big.height * k));
+    small.getContext('2d')!.drawImage(big, 0, 0, small.width, small.height);
+    return small.toDataURL('image/png');
   };
-  const icons = { atp: await iconUrl('icon_atp'), amino: await iconUrl('icon_amino') };
+  const iconOf = (id: string): string => {
+    let url = iconCache.get(id);
+    if (url === undefined) {
+      url = iconUrl(id);
+      iconCache.set(id, url);
+    }
+    return url;
+  };
+  const icons = { atp: iconOf('icon_atp'), amino: iconOf('icon_amino') };
+  const card = new CommandCard(game, controls, placer, iconOf);
   const hud = new Hud(game, controls, view, gpu, { spawn: [(sx + 8) * 256, (sy + 6) * 256], depot: [16 * 256 + 128, 10 * 256 + 128] }, icons);
 
   // nothing runs until the player presses start
@@ -108,6 +129,8 @@ async function main(): Promise<void> {
         .filter((e) => e.res && e.res.field > 0)
         .sort((a, b) => (hq ? Math.hypot(a.x - hq.x, a.y - hq.y) - Math.hypot(b.x - hq.x, b.y - hq.y) : 0))[0];
       if (carriers.length && crystal) game.issueAs(player, { type: 'GATHER', units: carriers.map((e) => e.id), target: crystal.id });
+      // new carriers from the lymph node go mining too
+      if (hq && crystal) game.issueAs(player, { type: 'SET_RALLY', units: [], building: hq.id, x: crystal.x, y: crystal.y, target: crystal.id });
     }
   });
 
@@ -118,10 +141,11 @@ async function main(): Promise<void> {
     view.sync(game.world, game.prev, alpha, controls.selected, performance.now(), dt, game.events);
     cam.apply(view.root);
     hud.update(dt);
+    card.update();
   });
 
   // expose for quick checks from the browser console
-  (window as unknown as { hostwars: unknown }).hostwars = { game, view, controls, assets: Assets };
+  (window as unknown as { hostwars: unknown }).hostwars = { game, view, controls, placer, card, assets: Assets };
 }
 
 main().catch((e: unknown) => {

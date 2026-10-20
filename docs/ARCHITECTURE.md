@@ -28,6 +28,8 @@ content/ ──► src/sim ◄── commands ◄── src/client/input, src/ai
 | `src/sim/commands/commands.ts` | command types, shape check, validation, the queue |
 | `src/sim/navigation/*` | grid, A*, line checks, arrival spots, movement (phase 5). `travelTo` lets another order travel as one of its steps |
 | `src/sim/economy/gather.ts` | phase 7: the carrier cycle (to target, harvest, to dropoff, unload), work slots, the GATHER order and its validation |
+| `src/sim/build/placement.ts` | where a building may stand (shared by the simulation and the client's preview) |
+| `src/sim/build/production.ts` | phase 7 after gathering: morphs, builders, growth, production queues; the orders TRAIN, CANCEL, QUEUE_BUILD, PLACE_BUILD, SET_RALLY, ASSIST_BUILD, REPAIR, DEPLOY; refunds when something is lost |
 
 An entity carries all its state in plain fields: `order` and `mv` (movement), `res` (stock, field, work slots and the deposit ↔ extractor link on resources and extractors), `gather` (the carrier's stage, target, dropoff, timer and failed approaches) and `cargo` / `cargoKind`. Reservations live in one place, the slot array of the target, so releasing one is a single scan and a save holds them exactly.
 
@@ -39,6 +41,8 @@ An entity carries all its state in plain fields: `order` and `mv` (movement), `r
 | `src/client/render/terrain.ts` | draws the map once into a canvas (ground, blood, membrane walls) → one texture |
 | `src/client/render/worldView.ts` | sprites for every entity, interpolated between ticks; procedural breathing and hop; crystals that shrink as they are worked; loads in carriers' hands, the harvest sparkle, "+10" and ATP orbs on delivery, saturation over each field; selection rings, team markers, move markers; navigation and gathering debug layer (F3) |
 | `src/client/input/controls.ts` | camera (arrows, screen edge, middle drag, wheel zoom 0.6–1.6), selection (click, box, shift, double-click), inspecting a building or resource, right-click move or gather (carriers gather, the rest walk), S/H, control groups |
+| `src/client/input/placement.ts` | placing an ordered building: a ghost snapped to tiles, each tile green or red, the reason in words |
+| `src/client/ui/commandCard.ts` | the command card: train, queue (click to cancel), build menu, cancel growth, deploy; each disabled button says why |
 | `src/client/ui/hud.ts` | Hebrew HUD in the DOM: resources with icons and income per minute, the economy panel (fields, saturation, the warning 90 s before a field runs out, idle carriers), why carriers stopped, selection and inspection, test lab, performance line |
 
 ## Simulation clock

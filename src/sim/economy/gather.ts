@@ -56,8 +56,9 @@ export function isExtractor(ctx: SimContext, e: Entity): boolean {
   return ctx.catalog.buildings.get(e.type)?.role === 'extractor';
 }
 
+/** A finished dropoff of `owner` (a growing one takes nothing yet). */
 export function isDropoffOf(ctx: SimContext, e: Entity, owner: number): boolean {
-  return e.owner === owner && e.hp > 0 && ctx.catalog.buildings.get(e.type)?.dropoff === true;
+  return e.owner === owner && e.hp > 0 && e.build === null && ctx.catalog.buildings.get(e.type)?.dropoff === true;
 }
 
 const alive = (e: Entity | undefined): e is Entity => e !== undefined && e.hp > 0;
@@ -72,7 +73,7 @@ function sourceOf(world: World, ctx: SimContext, t: Entity): Entity | undefined 
 
 /** Can `owner`'s carriers work `t` right now? */
 export function workable(world: World, ctx: SimContext, t: Entity | undefined, owner: number): t is Entity {
-  if (!alive(t) || !t.res) return false;
+  if (!alive(t) || !t.res || t.build) return false;
   if (t.owner !== NEUTRAL && t.owner !== owner) return false;
   const src = sourceOf(world, ctx, t);
   return alive(src) && src.res !== null && src.res.stock > 0;
@@ -240,6 +241,7 @@ export function validateGather(world: World, ctx: SimContext, player: number, ta
     if (ext.owner !== player) return 'not_owner';
   }
   if (!isExtractor(ctx, ext)) return 'bad_target';
+  if (ext.build) return 'not_ready';
   return workable(world, ctx, ext, player) ? null : 'depleted';
 }
 

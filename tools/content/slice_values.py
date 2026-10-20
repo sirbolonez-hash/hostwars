@@ -28,10 +28,15 @@ def unit(id, faction, role, cost, train_s, supply, hp, speed_tps, nav, sight_t, 
 
 
 def building(id, faction, role, cost, build_s, hp, fp, sight_t=8, armor=1, supply=0, dropoff=False, produces=(), requires=(),
-             critical=False, on=None, weapon=None, biofilm=False, slots=0):
+             critical=False, on=None, weapon=None, biofilm=False, slots=0, placement=None, art=None, art_scale=1000):
+    # placement: 'near' = within 8 tiles of an own building; 'builder' = where a platelet squad stands;
+    # 'resource' = on a free deposit; 'biofilm' = on own biofilm (gate 6); 'none' = never ordered
+    if placement is None:
+        placement = 'resource' if on else ('biofilm' if biofilm else 'near')
     return dict(id=id, faction=faction, role=role, cost=list(cost), buildTicks=S(build_s), hp=hp, armor=armor, footprint=list(fp),
                 supplyProvided=supply, dropoff=dropoff, produces=list(produces), requires=list(requires), sight=T(sight_t),
-                critical=critical, onResource=on, weapon=weapon, needsBiofilm=biofilm, workSlots=slots)
+                critical=critical, onResource=on, weapon=weapon, needsBiofilm=biofilm, workSlots=slots, placement=placement,
+                art=art or id, artScale=art_scale)
 
 
 def resource(id, kind, stock, fp, slots, harvest_s):
@@ -76,7 +81,10 @@ units = [
 
 buildings = [
     building('bld_wl_lymphnode', 'wl', 'hq', (0, 0), 0, 1500, (4, 4), sight_t=10, armor=2, supply=20, dropoff=True,
-             produces=('unit_wl_glut',), critical=True),
+             produces=('unit_wl_glut',), critical=True, placement='none'),
+    # the expansion: a smaller lymph node (its art at 75%), only where platelets stand
+    building('bld_wl_outpost', 'wl', 'expansion', (400, 0), 60, 900, (3, 3), sight_t=9, armor=1, supply=10, dropoff=True,
+             produces=('unit_wl_glut',), placement='builder', art='bld_wl_lymphnode', art_scale=750),
     building('bld_wl_capillary', 'wl', 'supply', (100, 0), 20, 400, (2, 2), supply=12, requires=('bld_wl_lymphnode',)),
     building('bld_wl_mitochondria', 'wl', 'dropoff', (100, 0), 20, 600, (3, 2), dropoff=True, requires=('bld_wl_lymphnode',)),
     building('bld_wl_marrow', 'wl', 'production', (150, 0), 30, 900, (3, 3), critical=True, requires=('bld_wl_capillary',),
@@ -87,8 +95,8 @@ buildings = [
     building('bld_wl_mastcell', 'wl', 'defense', (140, 0), 30, 500, (2, 2), requires=('bld_wl_marrow',), weapon='w_histamine'),
     building('bld_wl_germinal', 'wl', 'tech', (250, 100), 60, 900, (3, 3), critical=True, requires=('bld_wl_spleen', 'antigen:any'),
              produces=('unit_wl_plasma',)),
-    building('bld_col_biofilm_core', 'col', 'hq', (0, 0), 0, 1400, (4, 4), sight_t=10, supply=20, dropoff=True,
-             produces=('unit_col_feeder',), critical=True),
+    building('bld_col_biofilm_core', 'col', 'hq', (400, 0), 60, 1400, (4, 4), sight_t=10, supply=20, dropoff=True,
+             produces=('unit_col_feeder',), critical=True, placement='biofilm'),
     building('bld_col_fermentation', 'col', 'supply', (120, 0), 25, 550, (3, 2), supply=10, dropoff=True, biofilm=True,
              requires=('bld_col_biofilm_core',)),
     building('bld_col_fission', 'col', 'production', (150, 0), 30, 850, (3, 3), critical=True, biofilm=True,
@@ -110,9 +118,9 @@ resources = [
 ]
 
 factions = [
-    dict(id='wl', hq='bld_wl_lymphnode', start=[dict(unit='unit_wl_glut', count=8), dict(unit='unit_wl_monocyte', count=1)],
+    dict(id='wl', hq='bld_wl_lymphnode', construction='order', start=[dict(unit='unit_wl_glut', count=8), dict(unit='unit_wl_monocyte', count=1)],
          basic=350, advanced=0, supplyCap=120, basicName='ATP', advancedName='חומצות אמינו'),
-    dict(id='col', hq='bld_col_biofilm_core', start=[dict(unit='unit_col_feeder', count=8), dict(unit='unit_col_flagellate', count=1)],
+    dict(id='col', hq='bld_col_biofilm_core', construction='morph', start=[dict(unit='unit_col_feeder', count=8), dict(unit='unit_col_flagellate', count=1)],
          basic=350, advanced=0, supplyCap=120, basicName='ATP', advancedName='ברזל'),
 ]
 
